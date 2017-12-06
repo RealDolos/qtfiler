@@ -6,6 +6,8 @@ defmodule Qtfile.Repo.Migrations.CreateUsers do
       add :name, :string
       add :username, :string
       add :password, :string
+      add :status, :string, default: "active"
+      add :role, :string, default: "user"
 
       timestamps()
     end

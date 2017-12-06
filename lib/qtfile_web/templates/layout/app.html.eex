@@ -12,16 +12,16 @@
   </head>
 
   <body>
-    <div class="container">
-      <header class="header">
-        <nav role="navigation">
-          <ul class="nav nav-pills pull-right">
-            <li><a href="https://hexdocs.pm/phoenix">Get Started</a></li>
-          </ul>
-        </nav>
-        <span class="logo"></span>
-      </header>
+      <% logged_in? = Plug.Conn.get_session(@conn, :user_id) != nil %>
+      <%= render QtfileWeb.SharedView, "header.html", Map.put(assigns, :header_elements,
+          [
+              %{text: "profile", url: "/profile", condition: fn -> logged_in? end},
+              %{text: "login", url: "/login", condition: fn -> not logged_in? end},
+              %{text: "register", url: "/register", condition: fn -> not logged_in? end},
+              %{text: "logout", url: "/api/logout", condition: fn -> logged_in? end},
+          ]) %>
 
+    <div class="container">
       <p class="alert alert-info" role="alert"><%= get_flash(@conn, :info) %></p>
       <p class="alert alert-danger" role="alert"><%= get_flash(@conn, :error) %></p>
 

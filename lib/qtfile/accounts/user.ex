@@ -8,6 +8,8 @@ defmodule Qtfile.Accounts.User do
     field :name, :string
     field :password, :string
     field :username, :string
+    field :status, :string
+    field :role, :string
 
     timestamps()
   end
@@ -16,7 +18,7 @@ defmodule Qtfile.Accounts.User do
   def changeset(%User{} = user, attrs) do
     user
     |> cast(attrs, [:name, :username, :password])
-    |> validate_required([:name, :username, :password])
+    |> validate_required([:name, :username, :password, :status, :role])
     |> unique_constraint(:username)
   end
 end

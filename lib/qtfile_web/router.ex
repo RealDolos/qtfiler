@@ -17,6 +17,16 @@ defmodule QtfileWeb.Router do
     pipe_through :browser # Use the default browser stack
 
     get "/", PageController, :index
+    get "/login", UserController, :login_page
+    get "/register", UserController, :register_page
+
+  end
+
+  scope "/api", QtfileWeb do
+    pipe_through :api
+
+    post "/login", UserController, :login
+    get "/logout", UserController, :logout
   end
 
   # Other scopes may use custom stacks.

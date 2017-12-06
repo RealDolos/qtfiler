@@ -37,6 +37,14 @@ defmodule Qtfile.Accounts do
   """
   def get_user!(id), do: Repo.get!(User, id)
 
+  def get_user_by_username(username) do
+    query = from u in User,
+      select: u,
+      where: u.username == ^username
+
+    Repo.one(query)
+  end
+
   @doc """
   Creates a user.
 
@@ -50,9 +58,26 @@ defmodule Qtfile.Accounts do
 
   """
   def create_user(attrs \\ %{}) do
-    %User{}
-    |> User.changeset(attrs)
-    |> Repo.insert()
+    case RegistrationTokens.verify_token(Map.get(attrs, "token", "")) do
+      true ->
+        # attrs = Map.put(attrs, "password", Bcrypt.hash_pwd_salt(Map.get(attrs, "password")))
+        attrs =
+        if Mix.env == :prod do
+          Map.put(attrs, "password", Bcrypt.hash_pwd_salt(Map.get(attrs, "password")))
+        else
+          Map.put(attrs, "password", Map.get(attrs, "password"))
+        end
+
+        changeset = %User{}
+        |> User.changeset(attrs)
+        # |> Ecto.Changeset.cast_assoc(:credential, with: &Credential.changeset/2)
+        # |> Ecto.Changeset.cast_assoc(:token, with: &TokenHash.changeset/2)
+
+        Repo.insert(changeset)
+      false ->
+        {:error, :invalid_token}
+    end
+
   end
 
   @doc """
@@ -100,5 +125,39 @@ defmodule Qtfile.Accounts do
   """
   def change_user(%User{} = user) do
     User.changeset(user, %{})
+  end
+
+  def authenticate_by_username_password(username, password) do
+    username = String.downcase(username)
+
+    query =
+      from u in User,
+      select: %{hashed_password: u.password, user: u},
+      where: fragment("lower(?)", u.username) == type(^username, :string)
+
+    case Repo.one(query) do
+      %{hashed_password: hashed_password, user: user} ->
+        authenticate_by_username_password_helper(%{hashed_password: hashed_password, user: user}, password)
+      nil ->
+        {:error, :unauthorized}
+    end
+  end
+
+  defp authenticate_by_username_password_helper(%{hashed_password: hashed_password, user: user}, password) do
+    if Mix.env == :prod do
+      cond do
+        Bcrypt.verify_pass(password, hashed_password) ->
+          {:ok, user}
+        true ->
+          {:error, :unauthorized}
+      end
+    else
+      cond do
+        password == hashed_password ->
+          {:ok, user}
+        true ->
+          {:error, :unauthorized}
+      end
+    end
   end
 end

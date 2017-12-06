@@ -1,0 +1,17 @@
+<%= form_for @conn, user_path(@conn, :register), [method: :post, as: :user], fn(f) -> %>
+<div class="form-group">
+    <%= text_input f, :name, placeholder: "name" %> <span>this is your display name</span>
+</div>
+
+<div class="form-group">
+    <%= text_input f, :username, placeholder: "username" %> <span>this is what you use to login. other people do not see this</span>
+</div>
+
+<div class="form-group">
+    <%= password_input f, :password, placeholder: "password" %> <span>use a secure password or get bent</span>
+</div>
+
+<div class="form-group">
+    <%= submit "register" %>
+</div>
+<% end %>

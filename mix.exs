@@ -43,6 +43,8 @@ defmodule Qtfile.Mixfile do
       {:cowboy, "~> 1.0"},
       {:arc, "~> 0.8.0"},
       {:uuid, "~> 1.1"},
+      {:comeonin, "~> 4.0", only: :prod},
+      {:bcrypt_elixir, "~> 1.0", only: :prod},
     ]
   end
 
