@@ -55,8 +55,8 @@ defmodule Qtfile.Files do
     |> Repo.insert()
   end
 
-  def add_file(uuid, filename, room_id) do
-    create_file(%{uuid: uuid, filename: filename, room_id: room_id})
+  def add_file(uuid, filename, room_id, hash) do
+    create_file(%{uuid: uuid, filename: filename, room_id: room_id, hash: hash})
   end
 
   @doc """

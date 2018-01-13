@@ -5,7 +5,8 @@ var dnd = require("fine-uploader/lib/dnd");
 var uploader = new qq.FineUploaderBasic({
     request: {
         endpoint: "/api/upload",
-        params: {"room_id": window.config.room_id}
+        params: {"room_id": window.config.room_id},
+        inputName: "file"
     },
     retry: {
         enableAuto: true

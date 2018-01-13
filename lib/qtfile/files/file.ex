@@ -8,7 +8,7 @@ defmodule Qtfile.Files.File do
     field :filename, :string
     field :uuid, :string
     field :room_id, :string
-    field :hash, :string
+    field :hash, :binary
 
     timestamps()
   end
@@ -16,8 +16,8 @@ defmodule Qtfile.Files.File do
   @doc false
   def changeset(%File{} = file, attrs) do
     file
-    |> cast(attrs, [:uuid, :filename, :room_id])
-    |> validate_required([:uuid, :filename, :room_id])
+    |> cast(attrs, [:uuid, :filename, :room_id, :hash])
+    |> validate_required([:uuid, :filename, :room_id, :hash])
     |> unique_constraint(:uuid)
   end
 end

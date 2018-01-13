@@ -6,7 +6,7 @@ defmodule Qtfile.Repo.Migrations.CreateFiles do
       add :uuid, :string
       add :filename, :string
       add :room_id, :string
-      add :hash, :string
+      add :hash, :binary
 
       timestamps()
     end
