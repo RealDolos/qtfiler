@@ -8,7 +8,6 @@ defmodule Qtfile.Files.File do
     field :filename, :string
     field :uuid, :string
     field :room_id, :string
-    field :size, :integer
     field :hash, :string
 
     timestamps()
