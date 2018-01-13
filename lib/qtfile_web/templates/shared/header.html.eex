@@ -5,8 +5,9 @@
             | <a class="nav-text" href="<%= url %>"><%= text %></a>
         <%= end %>
     </div>
+
+    <%= if Mix.env == :dev do %>
+        <div class="red">THIS IS A DEV VERSION OF THE SITE. PLEASE DO NOT USE. PASSWORDS ARE SAVED IN PLAINTEXT IN DEV ENVIRONMENT</div>
+    <%= end %>
 </div>
 
-<%= if Mix.env == :dev do %>
-    <div class="red">THIS IS A DEV VERSION OF THE SITE. PLEASE DO NOT USE. PASSWORDS ARE SAVED IN PLAINTEXT IN DEV ENVIRONMENT</div>
-<%= end %>

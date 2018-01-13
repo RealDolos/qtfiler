@@ -92,7 +92,7 @@ defmodule Qtfile.SingleToken do
     changeset = %{token: generate_token()}
 
     %Token{}
-    |> Token.changeset(attrs)
+    |> Token.changeset(changeset)
     |> Repo.insert()
 
     Map.get(changeset, :token)

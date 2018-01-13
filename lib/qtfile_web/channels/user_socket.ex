@@ -2,7 +2,7 @@ defmodule QtfileWeb.UserSocket do
   use Phoenix.Socket
 
   ## Channels
-  # channel "room:*", QtfileWeb.RoomChannel
+  channel "room:*", QtfileWeb.RoomChannel
 
   ## Transports
   transport :websocket, Phoenix.Transports.WebSocket
@@ -19,8 +19,18 @@ defmodule QtfileWeb.UserSocket do
   #
   # See `Phoenix.Token` documentation for examples in
   # performing token verification on connect.
-  def connect(_params, socket) do
-    {:ok, socket}
+  def connect(%{"token" => token}, socket) do
+    case Phoenix.Token.verify(socket, Application.get_env(:qtfile, :token_secret_key_base), token, max_age: 31557600) do
+      {:ok, user_id} ->
+        socket = assign(socket, :user, Qtfile.Accounts.get_user!(user_id))
+        {:ok, socket}
+      {:error, _} ->
+        :error
+    end
+  end
+
+  def connect(_params, _socket) do
+    :error
   end
 
   # Socket id's are topics that allow you to identify all sockets for a given user:

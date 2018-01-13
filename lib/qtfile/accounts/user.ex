@@ -8,8 +8,15 @@ defmodule Qtfile.Accounts.User do
     field :name, :string
     field :password, :string
     field :username, :string
-    field :status, :string
-    field :role, :string
+    # Available statuses:
+    # active - not banned
+    # banned - banned
+    field :status, :string, default: "active"
+    # Available roles:
+    # admin - runs the site
+    # mod - moderates the site
+    # user - regular user, no special privs
+    field :role, :string, default: "user"
 
     timestamps()
   end

@@ -12,6 +12,11 @@
 </div>
 
 <div class="form-group">
+    <%= password_input f, :token, placeholder: "token" %> <span>get a registration token from the site administrator</span>
+</div>
+
+<div class="form-group">
     <%= submit "register" %>
 </div>
 <% end %>
+

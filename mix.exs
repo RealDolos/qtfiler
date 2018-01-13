@@ -20,7 +20,7 @@ defmodule Qtfile.Mixfile do
   def application do
     [
       mod: {Qtfile.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:logger, :runtime_tools, :arc_ecto]
     ]
   end
 
@@ -42,6 +42,7 @@ defmodule Qtfile.Mixfile do
       {:gettext, "~> 0.11"},
       {:cowboy, "~> 1.0"},
       {:arc, "~> 0.8.0"},
+      {:arc_ecto, "~> 0.7.0"},
       {:uuid, "~> 1.1"},
       {:comeonin, "~> 4.0", only: :prod},
       {:bcrypt_elixir, "~> 1.0", only: :prod},

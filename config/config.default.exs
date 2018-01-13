@@ -7,12 +7,13 @@ use Mix.Config
 
 # General application configuration
 config :qtfile,
-  ecto_repos: [Qtfile.Repo]
+  ecto_repos: [Qtfile.Repo],
+  token_secret_key_base: "REPLACE THIS"
 
 # Configures the endpoint
 config :qtfile, QtfileWeb.Endpoint,
   url: [host: "localhost"],
-  secret_key_base: "",
+  secret_key_base: "REPLACE THIS",
   render_errors: [view: QtfileWeb.ErrorView, accepts: ~w(html json)],
   pubsub: [name: Qtfile.PubSub,
            adapter: Phoenix.PubSub.PG2]

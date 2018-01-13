@@ -1,0 +1,3 @@
+<div id="room-container">
+    <%= print_all_rooms() %>
+</div>

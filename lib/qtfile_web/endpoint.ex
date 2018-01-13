@@ -36,7 +36,9 @@ defmodule QtfileWeb.Endpoint do
   plug Plug.Session,
     store: :cookie,
     key: "_qtfile_key",
-    signing_salt: "lCKOtTOh"
+    signing_salt: "lCKOtTOh",
+    max_age: 31557600,
+    encryption_salt: (Application.get_env(:qtfile, QtfileWeb.Endpoint) |> Keyword.get(:secret_key_base))
 
   plug QtfileWeb.Router
 

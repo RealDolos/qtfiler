@@ -11,6 +11,8 @@ defmodule QtfileWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug :fetch_session
+    plug :fetch_flash
   end
 
   scope "/", QtfileWeb do
@@ -20,17 +22,50 @@ defmodule QtfileWeb.Router do
     get "/login", UserController, :login_page
     get "/register", UserController, :register_page
 
+    scope "/" do
+      pipe_through :logged_in?
+
+      get "/new", RoomController, :create_room
+      get "/rooms", RoomsController, :index
+
+    end
+  end
+
+  scope "/r", QtfileWeb do
+    pipe_through [:browser, :logged_in?]
+
+    get "/", RoomController, :not_found
+    get "/:room_id", RoomController, :index
   end
 
   scope "/api", QtfileWeb do
     pipe_through :api
 
     post "/login", UserController, :login
+    post "/register", UserController, :register
     get "/logout", UserController, :logout
+
+    scope "/" do
+      pipe_through :logged_in?
+
+      post "/upload", FileController, :upload
+    end
   end
 
   # Other scopes may use custom stacks.
   # scope "/api", QtfileWeb do
   #   pipe_through :api
   # end
+
+  defp logged_in?(conn, _) do
+    case get_session(conn, :user_id) do
+      nil ->
+        conn
+        |> send_resp(:forbidden, "")
+        |> redirect(to: "/")
+        |> halt()
+      user_id ->
+        conn
+    end
+  end
 end

@@ -1,3 +1,6 @@
+<% user_id = Plug.Conn.get_session(@conn, :user_id) %>
+<% logged_in? = user_id != nil %>
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -6,30 +9,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
+    <%= if logged_in? do %>
+        <%= tag :meta, name: "channel_token", content: Phoenix.Token.sign(@conn, Application.get_env(:qtfile, :token_secret_key_base), user_id, max_age: 31557600) %>
+    <% end %>
 
-    <title>Hello Qtfile!</title>
+    <title><%= title() %></title>
     <link rel="stylesheet" href="<%= static_path(@conn, "/css/app.css") %>">
+    <script src="<%= static_path(@conn, "/js/app.js") %>"></script>
   </head>
 
   <body>
-      <% logged_in? = Plug.Conn.get_session(@conn, :user_id) != nil %>
       <%= render QtfileWeb.SharedView, "header.html", Map.put(assigns, :header_elements,
           [
+              %{text: "rooms", url: "/rooms", condition: fn -> logged_in? end},
+              %{text: "new room", url: "/new", condition: fn -> logged_in? end},
               %{text: "profile", url: "/profile", condition: fn -> logged_in? end},
+              %{text: "logout", url: "/api/logout", condition: fn -> logged_in? end},
+
               %{text: "login", url: "/login", condition: fn -> not logged_in? end},
               %{text: "register", url: "/register", condition: fn -> not logged_in? end},
-              %{text: "logout", url: "/api/logout", condition: fn -> logged_in? end},
           ]) %>
 
     <div class="container">
-      <p class="alert alert-info" role="alert"><%= get_flash(@conn, :info) %></p>
-      <p class="alert alert-danger" role="alert"><%= get_flash(@conn, :error) %></p>
 
       <main role="main">
         <%= render @view_module, @view_template, assigns %>
       </main>
 
+
+      <p class="alert alert-info" role="alert"><%= get_flash(@conn, :info) %></p>
+      <p class="alert alert-danger" role="alert"><%= get_flash(@conn, :error) %></p>
     </div> <!-- /container -->
-    <script src="<%= static_path(@conn, "/js/app.js") %>"></script>
   </body>
 </html>

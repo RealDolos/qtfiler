@@ -1,0 +1,23 @@
+<%= form_for @conn, file_path(@conn, :upload), [multipart: true], fn f -> %>
+<div class="form-group">
+    <label>upload a file!</label>
+    <%= file_input f, :file, class: "form-control" %>
+    <%= hidden_input f, :room_id, value: @room_id, class: "form-control" %>
+</div>
+
+<div class="form-group">
+    <%= submit "submit", class: "submit" %>
+</div>
+<% end %>
+
+<div id="file-dropzone">DROP FILES HERE</div>
+
+<script>
+ window.config = {"room_id":"<%= @room_id %>"};
+</script>
+
+<!-- <script src="<%= static_path(@conn, "/js/uploader.js") %>"></script>
+     <script>require("js/uploader.js")</script>
+-->
+<script src="<%= static_path(@conn, "/js/room.js") %>"></script>
+<script>require("js/room.js")</script>

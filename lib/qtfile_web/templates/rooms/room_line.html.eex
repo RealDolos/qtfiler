@@ -1,0 +1,9 @@
+<div class="room">
+    <span>id: <a href="<%= room_path(QtfileWeb.Endpoint, :index, @room_id) %>" class="room-id"><%= @room_id %></a></span>
+    |
+    <span class="room-name">name: <%= @room_name %></span>
+    |
+    <span class="room-owner">owner: <%= @room_owner %></span>
+    |
+    <span class="room-file-count">file amount: <%= @file_count %></span>
+</div>

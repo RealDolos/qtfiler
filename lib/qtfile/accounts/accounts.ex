@@ -7,6 +7,7 @@ defmodule Qtfile.Accounts do
   alias Qtfile.Repo
 
   alias Qtfile.Accounts.User
+  alias Qtfile.SingleToken
 
   @doc """
   Returns the list of users.
@@ -58,7 +59,8 @@ defmodule Qtfile.Accounts do
 
   """
   def create_user(attrs \\ %{}) do
-    case RegistrationTokens.verify_token(Map.get(attrs, "token", "")) do
+    IO.inspect attrs
+    case SingleToken.verify_token(Map.get(attrs, "token", "")) do
       true ->
         # attrs = Map.put(attrs, "password", Bcrypt.hash_pwd_salt(Map.get(attrs, "password")))
         attrs =
@@ -67,6 +69,9 @@ defmodule Qtfile.Accounts do
         else
           Map.put(attrs, "password", Map.get(attrs, "password"))
         end
+
+        attrs = Map.put(attrs, "role", "user")
+        attrs = Map.put(attrs, "status", "active")
 
         changeset = %User{}
         |> User.changeset(attrs)

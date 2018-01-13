@@ -2,7 +2,12 @@ exports.config = {
   // See http://brunch.io/#documentation for docs.
   files: {
     javascripts: {
-      joinTo: "js/app.js"
+      // joinTo: "js/app.js"
+        joinTo: {
+            // "js/uploader.js": "js/uploader.js",
+            "js/room.js": ["js/uploader.js", "js/room.js"],
+            "js/app.js": /(js\/app\.js|^(?!js))/
+        }
 
       // To use a separate vendor.js bundle, specify two files path
       // http://brunch.io/docs/config#-files-
@@ -52,7 +57,7 @@ exports.config = {
 
   modules: {
     autoRequire: {
-      "js/app.js": ["js/app"]
+        "js/app.js": ["js/app"]
     }
   },
 
