@@ -1,10 +1,8 @@
 //import "js/uploader.js";
+const socket = require("./socket");
+const FileList = require("./file-list");
 const qq = require("fine-uploader/lib/core");
 const dnd = require("fine-uploader/lib/dnd");
-import FileList from "./file-list";
-import socket from "./socket";
-
-
 const fileList = new FileList(document.getElementById("file-list"));
 const room_id = window.config.room_id;
 const channel = socket.channel("room:" + room_id, {});
@@ -13,6 +11,7 @@ channel.on("files", payload => {
     payload.body.forEach(file => {
         fileList.addFile(file);
     });
+    fileList.render();
 });
 
 channel.join()
@@ -33,13 +32,16 @@ const uploader = new qq.FineUploaderBasic({
     callbacks: {
         onSubmitted: function(id, name) {
             fileList.addUpload(id, name);
+            fileList.render();
             return true;
         },
         onProgress: function(id, name, uploaded, total) {
             fileList.progressUpload(id, uploaded, total);
+            fileList.render();
         },
         onComplete: function(id, name, response, xhr) {
             fileList.completeUpload(id);
+            fileList.render();
         }
     },
     maxConnections: 1

@@ -9,8 +9,8 @@ class Upload {
         this.element = document.createElement("div");
     }
 
-    initialRender(odd) {
-        this.element.className = "file-container " + (odd ? "file-odd" : "");
+    initialRender() {
+        this.element.className = "file-container";
     }
 
     render() {
@@ -23,4 +23,4 @@ class Upload {
     }
 };
 
-export default Upload;
+module.exports = Upload;

@@ -3,7 +3,7 @@
 
 // To use Phoenix channels, the first step is to import Socket
 // and connect at the socket path in "lib/web/endpoint.ex":
-import {Socket} from "phoenix";
+Socket = require("phoenix").Socket;
 
 let channel_token = document.querySelector("#channel_token").content;
 let socket = new Socket("/socket", {params: {token: channel_token}});
@@ -56,4 +56,4 @@ socket.connect();
 
 // Now that you are connected, you can join channels with a topic:
 
-export default socket;
+module.exports = socket;

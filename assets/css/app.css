@@ -164,3 +164,11 @@ button, .button {
 .file-link {
     margin-left: 7px;
 }
+
+.mod {
+
+}
+
+.hidden {
+    visibility: hidden;
+}

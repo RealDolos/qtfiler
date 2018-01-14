@@ -12,6 +12,20 @@ class File {
         this.uploader_badge = document.createElement("span");
         this.element.appendChild(this.link);
         this.element.appendChild(this.uploader_badge);
+        this.deleteButton = document.createElement("div");
+        this.element.appendChild(this.deleteButton);
+        const self = this;
+        this.deleteButton.onclick = function(ev) {
+            self.delete();
+        };
+    }
+
+    async delete() {
+        const url = location.hostname + "/api/mod/delete" + "?uuid=" + self.uuid;
+        const result = await fetch(url);
+        const data = await result.json();
+        console.log(data);
+        this.kys();
     }
 
     initialRender(odd) {
@@ -23,6 +37,8 @@ class File {
         this.link.target = "_blank";
         this.uploader_badge.innerText = this.uploader;
         this.uploader_badge.className = "file-uploader";
+        this.deleteButton.innerText = "delete";
+        this.deleteButton.className = "delete mod";
     }
 
     render() {
@@ -33,4 +49,4 @@ class File {
     }
 }
 
-export default File;
+module.exports = File;

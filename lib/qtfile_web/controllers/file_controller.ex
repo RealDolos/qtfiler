@@ -46,7 +46,7 @@ defmodule QtfileWeb.FileController do
     path = Application.get_env(:arc, :storage_dir, "uploads/rooms")
 
     if file != nil do
-      absolute_path = path <> "/" <> file.room_id <> "/" <> uuid <> "-original" <> file.extension
+      absolute_path = get_absolute_path(file)
 
       send_file(conn, 200, absolute_path)
     else
@@ -88,4 +88,27 @@ defmodule QtfileWeb.FileController do
   defp store_in_db(_ok_filename_tuple, conn, _room_id, _uuid, _path) do
     json conn, %{success: false, error: "failed to upload file", preventRetry: true}
   end
+
+  def delete(conn, %{"uuid" => uuid}) do
+    file = Qtfile.Files.get_file_by_uuid(uuid)
+    if file != nil do
+      Qtfile.Files.delete_file(file)
+      absolute_path = get_absolute_path(file)
+      File.rm(absolute_path)
+      conn
+      |> put_status(200)
+      |> json(%{success: true})
+    else
+      conn
+      |> put_status(404)
+      |> json(%{success: false})
+    end
+  end
+
+  defp get_absolute_path(file) do
+    path = Application.get_env(:arc, :storage_dir, "uploads/rooms")
+    path <> "/" <> file.room_id <> "/" <> file.uuid <> "-original" <> file.extension
+  end
+
+  
 end

@@ -51,6 +51,12 @@ defmodule QtfileWeb.Router do
 
       post "/upload", FileController, :upload
     end
+
+    scope "/mod" do
+      pipe_through :is_mod?
+
+      post "/delete", FileController, :delete
+    end
   end
 
   # Other scopes may use custom stacks.
@@ -67,6 +73,19 @@ defmodule QtfileWeb.Router do
         |> halt()
       user_id ->
         conn
+    end
+  end
+
+  defp is_mod?(conn, params) do
+    logged_in?(conn, params)
+    user = Qtfile.Accounts.get_user!(get_session(conn, :user_id))
+    if user.role == "mod" or user.role == "admin" do
+      conn
+    else
+      conn
+      |> send_resp(:forbidden, "")
+      |> redirect(to: "/")
+      |> halt()
     end
   end
 end
