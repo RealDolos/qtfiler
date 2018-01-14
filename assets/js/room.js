@@ -6,6 +6,19 @@ import socket from "./socket";
 
 
 const fileList = new FileList(document.getElementById("uploads"));
+let room_id = window.config.room_id;
+let channel = socket.channel("room:" + room_id, {});
+
+channel.on("files", payload => {
+    payload.body.forEach(file => {
+        fileList.addFile(file);
+    });
+});
+
+channel.join()
+    .receive("ok", resp => { console.log("Joined successfully", resp); })
+    .receive("error", resp => { console.log("Unable to join", resp); });
+
 
 const uploader = new qq.FineUploaderBasic({
     request: {

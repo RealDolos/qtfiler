@@ -10,7 +10,8 @@ exports.config = {
                 "js/room.js",
                 "js/socket.js",
                 "js/file-list.js",
-                "js/upload.js"
+                "js/upload.js",
+                "js/file.js"
             ],
             "js/app.js": /(js\/app\.js|^(?!js))/
         }

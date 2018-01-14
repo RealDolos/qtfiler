@@ -1,11 +1,13 @@
 "use strict";
 
 import Upload from "./upload";
+import File from "./file"
 
 class FileList {
     constructor(element) {
         this.uploading = new Map();
         this.uploaded = new Map();
+        this.files = new Map();
         this.element = element;
     }
 
@@ -27,6 +29,13 @@ class FileList {
         const upload = this.uploading.get(id);
         upload.kys();
         this.uploading.delete(id);
+    }
+
+    addFile(data) {
+        const file = File.create(data);
+        this.files.set(file.uuid, file);
+        this.element.appendChild(file.element);
+        file.render();
     }
 }
 
