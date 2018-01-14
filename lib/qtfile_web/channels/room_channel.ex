@@ -14,18 +14,23 @@ defmodule QtfileWeb.RoomChannel do
     {:error, %{reason: "Unavailable"}}
   end
 
-  def handle_in("broadcast_notification", %{"title" => title, "body" => body}, socket) do
-    IO.inspect title
-    IO.inspect body
-    broadcast!(socket, "notification", %{title: title, body: body})
-    {:noreply, socket}
-  end
+  # def handle_in("broadcast_notification", %{"title" => title, "body" => body}, socket) do
+  #   IO.inspect title
+  #   IO.inspect body
+  #   broadcast!(socket, "notification", %{title: title, body: body})
+  #   {:noreply, socket}
+  # end
 
   def handle_info({:after_join, room_id}, socket) do
     #:timer.apply_interval(300, __MODULE__, :increment, [socket])
-    files = 
+    files = Qtfile.Files.get_files_by_room_id(room_id)
+    push(socket, "files", %{body: files})
 
     {:noreply, socket}
+  end
+
+  def broadcast_new_files(files, room_id) do
+    QtfileWeb.Endpoint.broadcast_from!(self(), "room:" <> room_id, "files", %{body: files})
   end
 
   def increment(socket) do

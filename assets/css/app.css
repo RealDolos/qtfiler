@@ -18,6 +18,15 @@
     margin: 0px;
 }
 
+a {
+    /* color: #4458ED; */
+    color: #3961F8;
+}
+
+a:visited {
+    color: #9660FA;
+}
+
 body {
 	font-family: Open Sans;
 	font-size: 16px;

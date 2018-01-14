@@ -29,9 +29,9 @@ defmodule Qtfile.ImageFile do
   end
 
   # Override the persisted filenames:
-  def filename(version, _) do
+  def filename(version, {file, scope}) do
     # version
-    Ecto.UUID.generate() <> "-#{version}"
+    "#{scope.uuid}-#{version}"
   end
 
   # Override the storage directory:

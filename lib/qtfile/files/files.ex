@@ -37,6 +37,22 @@ defmodule Qtfile.Files do
   """
   def get_file!(id), do: Repo.get!(File, id)
 
+  def get_files_by_room_id(room_id) do
+    query = from f in File,
+      select: %{filename: f.filename, hash: f.hash, room_id: f.room_id, uuid: f.uuid},
+      where: f.room_id == ^room_id
+
+    Repo.all(query)
+  end
+
+  def get_file_by_uuid(uuid) do
+    query = from f in File,
+      select: f,
+      where: f.uuid == ^uuid
+
+    Repo.one(query)
+  end
+
   @doc """
   Creates a file.
 
@@ -55,8 +71,9 @@ defmodule Qtfile.Files do
     |> Repo.insert()
   end
 
-  def add_file(uuid, filename, room_id, hash) do
-    create_file(%{uuid: uuid, filename: filename, room_id: room_id, hash: hash})
+  def add_file(uuid, filename, room_id, hash, size) do
+    create_file(%{uuid: uuid, filename: filename, extension: Path.extname(filename), room_id: room_id, hash: hash, size: size})
+    QtfileWeb.RoomChannel.broadcast_new_files([%{filename: filename, hash: hash, room_id: room_id, uuid: uuid, size: size}], room_id)
   end
 
   @doc """

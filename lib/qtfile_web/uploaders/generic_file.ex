@@ -22,8 +22,9 @@ defmodule Qtfile.GenericFile do
   # end
 
   # Override the persisted filenames:
-  def filename(version, _) do
-    Ecto.UUID.generate() <> "generic"
+  def filename(version, {file, scope}) do
+    # version
+    "#{scope.uuid}-#{version}"
   end
 
   # Override the storage directory:
