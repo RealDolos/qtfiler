@@ -80,7 +80,7 @@ defmodule QtfileWeb.FileController do
     ip_address = Qtfile.Util.get_ip_address(conn)
 
     hash = Qtfile.Util.hash(:sha, file_path)
-    Qtfile.Files.add_file(uuid, filename, room_id, hash, file_size, uploader, ip_address, 5)
+    Qtfile.Files.add_file(uuid, filename, room_id, hash, file_size, uploader, ip_address, 24 * 60 * 60)
 
     json conn, %{success: true}
   end
