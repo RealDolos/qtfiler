@@ -5,9 +5,9 @@ import FileList from "./file-list";
 import socket from "./socket";
 
 
-const fileList = new FileList(document.getElementById("uploads"));
-let room_id = window.config.room_id;
-let channel = socket.channel("room:" + room_id, {});
+const fileList = new FileList(document.getElementById("file-list"));
+const room_id = window.config.room_id;
+const channel = socket.channel("room:" + room_id, {});
 
 channel.on("files", payload => {
     payload.body.forEach(file => {

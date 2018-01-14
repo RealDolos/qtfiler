@@ -14,7 +14,7 @@ class FileList {
     addUpload(id, name) {
         const upload = new Upload(id, name);
         this.uploading.set(id, upload);
-        this.element.appendChild(upload.element);
+        this.element.prepend(upload.element);
         upload.render();
     }
 
@@ -34,7 +34,7 @@ class FileList {
     addFile(data) {
         const file = File.create(data);
         this.files.set(file.uuid, file);
-        this.element.appendChild(file.element);
+        this.element.prepend(file.element);
         file.render();
     }
 }
