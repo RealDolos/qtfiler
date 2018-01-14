@@ -1,10 +1,13 @@
 <div class="form-group">
     <label>upload a file!</label>
-    <div id="file-dropzone">DROP FILES HERE</div>
-    <div id="submit" class="submit">Submit</div>
+    <div id="file-dropzone">
+      DROP FILES HERE
+      <br/>
+      <div id="submit" class="submit">Upload</div>
+      <br/>
+      <div id="file-list" class="file-list"></div>
+    </div>
 </div>
-
-<div id="file-list" class="file-list"></div>
 
 <script>
  window.config = {"room_id":"<%= @room_id %>"};
