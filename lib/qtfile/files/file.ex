@@ -13,6 +13,7 @@ defmodule Qtfile.Files.File do
     field :size, :integer
     field :uploader, :string
     field :ip_address, :string
+    field :ttl, :integer # seconds
 
     timestamps()
   end
@@ -20,8 +21,8 @@ defmodule Qtfile.Files.File do
   @doc false
   def changeset(%File{} = file, attrs) do
     file
-    |> cast(attrs, [:uuid, :filename, :extension, :room_id, :hash, :size, :uploader, :ip_address])
-    |> validate_required([:uuid, :filename, :extension, :room_id, :hash, :size, :uploader, :ip_address])
+    |> cast(attrs, [:uuid, :filename, :extension, :room_id, :hash, :size, :uploader, :ip_address, :ttl])
+    |> validate_required([:uuid, :filename, :extension, :room_id, :hash, :size, :uploader, :ip_address, :ttl])
     |> unique_constraint(:uuid)
   end
 end

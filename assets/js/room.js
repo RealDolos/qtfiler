@@ -16,7 +16,7 @@ var uploader = new qq.FineUploaderBasic({
 });
 
 var dragAndDrop = new dnd.DragAndDrop({
-    dropZoneElements: [document.querySelector("#file-dropzone")],
+    dropZoneElements: [document.querySelector("#file-dropzone"), document.body],
     callbacks: {
         processingDroppedFiles: function() {
             //TODO: display some sort of a "processing" or spinner graphic
@@ -29,3 +29,22 @@ var dragAndDrop = new dnd.DragAndDrop({
     }
 });
 
+function resizeElementHeight(element) {
+    var height = 0;
+    var body = window.document.body;
+    if (window.innerHeight) {
+        height = window.innerHeight;
+    } else if (body.parentElement.clientHeight) {
+        height = body.parentElement.clientHeight;
+    } else if (body && body.clientHeight) {
+        height = body.clientHeight;
+    }
+    element.style.height = ((height - element.offsetTop) + "px");
+}
+
+window.addEventListener("resize", function() {
+    resizeElementHeight(document.querySelector("#file-dropzone"));
+});
+
+
+resizeElementHeight(document.querySelector("#file-dropzone"));

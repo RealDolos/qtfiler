@@ -2,13 +2,11 @@ defmodule QtfileWeb.FileController do
   use QtfileWeb, :controller
   @image_extensions ~w(.jpg .jpeg .png)
 
-  def upload(conn, %{"room_id" => room_id, "file" => [file|t]}) do
-    upload(conn, %{"room_id" => room_id, "file" => file})
-
-    upload(conn, %{"room_id" => room_id, "file" => t})
+  def upload(conn, %{"room_id" => room_id, "file" => file}) when not is_list(file) do
+    upload(conn, %{"room_id" => room_id, "file" => [file]})
   end
 
-  def upload(conn, %{"room_id" => room_id, "file" => file} = params) do
+  def upload(conn, %{"room_id" => room_id, "file" => files} = params) do
     if Qtfile.Rooms.room_exists?(room_id) do
       upload_room_exists(conn, params)
     else
@@ -20,21 +18,23 @@ defmodule QtfileWeb.FileController do
     json conn, %{success: false, error: "failed to provide room id in request", preventRetry: true}
   end
 
-  defp upload_room_exists(conn, %{"room_id" => room_id, "file" => file}) do
-    %{filename: filename} = file
-    room = Qtfile.Rooms.get_room_by_room_id!(room_id)
-    uuid = Ecto.UUID.generate()
-    scope = %{room_id: room_id, uuid: uuid}
+  defp upload_room_exists(conn, %{"room_id" => room_id, "file" => files}) do
+    Enum.map(files, fn(file) ->
+      %{filename: filename} = file
+      room = Qtfile.Rooms.get_room_by_room_id!(room_id)
+      uuid = Ecto.UUID.generate()
+      scope = %{room_id: room_id, uuid: uuid}
 
-    cond do
-      check_extension(filename, @image_extensions) == true ->
-        Qtfile.ImageFile.store({file, scope})
-        |> store_in_db(conn, room_id, uuid, Qtfile.ImageFile.storage_dir(:original, {file, room}))
+      cond do
+        check_extension(filename, @image_extensions) == true ->
+          Qtfile.ImageFile.store({file, scope})
+          |> store_in_db(conn, room_id, uuid, Qtfile.ImageFile.storage_dir(:original, {file, room}))
 
-      true ->
-        Qtfile.GenericFile.store({file, scope})
-        |> store_in_db(conn, room_id, uuid, Qtfile.GenericFile.storage_dir(:original, {file, room}))
-    end
+        true ->
+          Qtfile.GenericFile.store({file, scope})
+          |> store_in_db(conn, room_id, uuid, Qtfile.GenericFile.storage_dir(:original, {file, room}))
+      end
+    end) |> hd()
 
     # conn
     # |> redirect(to: room_path(conn, :index, room_id))
@@ -75,8 +75,12 @@ defmodule QtfileWeb.FileController do
           0
       end
 
+    user_id = get_session(conn, :user_id)
+    uploader = Qtfile.Accounts.get_user!(user_id) |> Map.get(:name)
+    ip_address = Qtfile.Util.get_ip_address(conn)
+
     hash = Qtfile.Util.hash(:sha, file_path)
-    Qtfile.Files.add_file(uuid, filename, room_id, hash, file_size)
+    Qtfile.Files.add_file(uuid, filename, room_id, hash, file_size, uploader, ip_address)
 
     json conn, %{success: true}
   end

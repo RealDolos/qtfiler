@@ -39,7 +39,7 @@ defmodule Qtfile.Files do
 
   def get_files_by_room_id(room_id) do
     query = from f in File,
-      select: %{filename: f.filename, hash: f.hash, room_id: f.room_id, uuid: f.uuid},
+      select: %{filename: f.filename, hash: f.hash, room_id: f.room_id, uuid: f.uuid, uploader: f.uploader},
       where: f.room_id == ^room_id
 
     Repo.all(query)
@@ -71,9 +71,10 @@ defmodule Qtfile.Files do
     |> Repo.insert()
   end
 
-  def add_file(uuid, filename, room_id, hash, size) do
-    create_file(%{uuid: uuid, filename: filename, extension: Path.extname(filename), room_id: room_id, hash: hash, size: size})
-    QtfileWeb.RoomChannel.broadcast_new_files([%{filename: filename, hash: hash, room_id: room_id, uuid: uuid, size: size}], room_id)
+  def add_file(uuid, filename, room_id, hash, size, uploader, ip_address) do
+    create_file(%{uuid: uuid, filename: filename, extension: Path.extname(filename), room_id: room_id, hash: hash, size: size, uploader: uploader, ip_address: ip_address})
+
+    QtfileWeb.RoomChannel.broadcast_new_files([%{filename: filename, hash: hash, room_id: room_id, uuid: uuid, size: size, uploader: uploader, ip_address: ip_address}], room_id)
   end
 
   @doc """

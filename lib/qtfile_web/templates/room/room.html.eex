@@ -10,9 +10,10 @@
 </div>
 <% end %>
 
-<div id="file-dropzone">DROP FILES HERE</div>
+<div id="file-dropzone">
+    <div id="file-list"></div>
+</div>
 
-<div id="file-list"></div>
 
 <script>
  window.config = {"room_id":"<%= @room_id %>"};
