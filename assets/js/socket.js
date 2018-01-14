@@ -55,4 +55,5 @@ let socket = new Socket("/socket", {params: {token: channel_token}});
 socket.connect();
 
 // Now that you are connected, you can join channels with a topic:
+
 export default socket;

@@ -9,6 +9,9 @@ defmodule Qtfile.Repo.Migrations.CreateFiles do
       add :room_id, :string
       add :hash, :string
       add :size, :integer
+      add :uploader, :string
+      add :ip_address, :string
+      add :ttl, :integer
 
       timestamps()
     end

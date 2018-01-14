@@ -6,6 +6,8 @@
     --green-text: #57FF53;
 	--red-text: #FF0000;
 	--qtstream: #f1d98d;
+  --dark-background: #282828;
+  --lighter-dark-background: #2d2d2d;
 }
 
 @open-sans {
@@ -32,6 +34,7 @@ body {
 	font-size: 16px;
 	background-color: #242424;
 	color: white;
+  overflow: hidden;
 }
 
 .body-smaller {
@@ -137,7 +140,27 @@ button {
 }
 
 #file-dropzone {
-    width: 300px;
-    height: 300px;
-    background-color: hotpink;
+    display: flex;
+    width: 100%;
+    background-color: #2d2d2d;
+	  border-top: 2px solid #555555;
+    margin-top: 10px;
+    overflow: auto;
+}
+
+#file-list {
+    flex: 1;
+}
+
+.file-container {
+    width: 100%;
+    background-color: var(--lighter-dark-background);
+}
+
+.file-odd {
+    background-color: var(--dark-background);
+}
+
+.file-link {
+    margin-left: 7px;
 }

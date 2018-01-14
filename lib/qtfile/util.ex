@@ -7,4 +7,8 @@ defmodule Qtfile.Util do
     |> :crypto.hash_final
     |> Base.encode16(case: :lower)
   end
+
+  def get_ip_address(%{remote_ip: {one, two, three, four}}) do
+    "#{one}.#{two}.#{three}.#{four}"
+  end
 end
