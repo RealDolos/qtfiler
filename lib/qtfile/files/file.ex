@@ -6,9 +6,13 @@ defmodule Qtfile.Files.File do
 
   schema "files" do
     field :filename, :string
+    field :extension, :string
     field :uuid, :string
     field :room_id, :string
-    field :hash, :binary
+    field :hash, :string
+    field :size, :integer
+    field :uploader, :string
+    field :ip_address, :string
 
     timestamps()
   end
@@ -16,8 +20,8 @@ defmodule Qtfile.Files.File do
   @doc false
   def changeset(%File{} = file, attrs) do
     file
-    |> cast(attrs, [:uuid, :filename, :room_id, :hash])
-    |> validate_required([:uuid, :filename, :room_id, :hash])
+    |> cast(attrs, [:uuid, :filename, :extension, :room_id, :hash, :size, :uploader, :ip_address])
+    |> validate_required([:uuid, :filename, :extension, :room_id, :hash, :size, :uploader, :ip_address])
     |> unique_constraint(:uuid)
   end
 end

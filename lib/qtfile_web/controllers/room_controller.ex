@@ -2,6 +2,7 @@ defmodule QtfileWeb.RoomController do
   use QtfileWeb, :controller
 
   def index(conn, %{"room_id" => room_id}) do
+    IO.inspect conn, label: "CONN"
     if Qtfile.Rooms.room_exists?(room_id) do
       conn
       |> assign(:room_id, room_id)

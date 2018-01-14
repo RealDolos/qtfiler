@@ -5,6 +5,7 @@
     <div id="uploads" class="uploads"></div>
 </div>
 
+<div id="file-list"></div>
 <script>
  window.config = {"room_id":"<%= @room_id %>"};
 </script>

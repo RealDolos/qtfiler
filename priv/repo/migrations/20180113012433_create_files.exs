@@ -5,8 +5,10 @@ defmodule Qtfile.Repo.Migrations.CreateFiles do
     create table(:files) do
       add :uuid, :string
       add :filename, :string
+      add :extension, :string
       add :room_id, :string
-      add :hash, :binary
+      add :hash, :string
+      add :size, :integer
 
       timestamps()
     end

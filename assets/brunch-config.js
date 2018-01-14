@@ -5,7 +5,7 @@ exports.config = {
       // joinTo: "js/app.js"
         joinTo: {
             // "js/uploader.js": "js/uploader.js",
-            "js/room.js": ["js/uploader.js", "js/room.js"],
+            "js/room.js": ["js/uploader.js", "js/room.js", "js/socket.js"],
             "js/app.js": /(js\/app\.js|^(?!js))/
         }
 

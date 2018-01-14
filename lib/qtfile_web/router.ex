@@ -27,7 +27,8 @@ defmodule QtfileWeb.Router do
 
       get "/new", RoomController, :create_room
       get "/rooms", RoomsController, :index
-
+      get "/get/:uuid/:realfilename", FileController, :download
+      get "/get/:uuid/", FileController, :download_no_filename
     end
   end
 

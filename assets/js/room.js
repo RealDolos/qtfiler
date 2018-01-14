@@ -1,6 +1,7 @@
 //import "js/uploader.js";
 var qq = require("fine-uploader/lib/core");
 var dnd = require("fine-uploader/lib/dnd");
+import socket from "./socket";
 
 
 var uploading = {};
@@ -42,7 +43,8 @@ var uploader = new qq.FineUploaderBasic({
             document.getElementById("uploads").removeChild(upload);
             delete uploading[id];
         }
-    }
+    },
+    maxConnections: 1
 });
 
 var dragAndDrop = new dnd.DragAndDrop({
@@ -59,4 +61,3 @@ var dragAndDrop = new dnd.DragAndDrop({
     }
 });
 
-console.log("haha");

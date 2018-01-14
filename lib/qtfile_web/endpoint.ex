@@ -25,7 +25,8 @@ defmodule QtfileWeb.Endpoint do
   plug Plug.Parsers,
     parsers: [:urlencoded, :multipart, :json],
     pass: ["*/*"],
-    json_decoder: Poison
+    json_decoder: Poison,
+    length: 4_000_000_000 # 4GB
 
   plug Plug.MethodOverride
   plug Plug.Head
