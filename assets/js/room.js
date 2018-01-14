@@ -1,10 +1,11 @@
 //import "js/uploader.js";
 const qq = require("fine-uploader/lib/core");
 const dnd = require("fine-uploader/lib/dnd");
+import FileList from "./file-list";
 import socket from "./socket";
 
 
-const uploading = {};
+const fileList = new FileList(document.getElementById("uploads"));
 
 const uploader = new qq.FineUploaderBasic({
     request: {
@@ -18,30 +19,14 @@ const uploader = new qq.FineUploaderBasic({
     button: document.getElementById("submit"),
     callbacks: {
         onSubmitted: function(id, name) {
-            uploading[id] = {
-                name: name
-            };
-            const upload = document.createElement("div");
-            upload.setAttribute("id", "upload-" + id);
-            const uploadText = document.createTextNode(name + " 0%");
-            upload.appendChild(uploadText);
-            document.getElementById("uploads").appendChild(upload);
+            fileList.addUpload(id, name);
             return true;
         },
         onProgress: function(id, name, uploaded, total) {
-            const fileProgress = uploading[id];
-            const progress = Math.round(100 * uploaded / total);
-            const uploadText = document.createTextNode(fileProgress.name + " " + progress + "%");
-            const upload = document.getElementById("upload-" + id);
-            if (upload.firstChild) {
-                upload.removeChild(upload.firstChild);
-            }
-            upload.appendChild(uploadText);
+            fileList.progressUpload(id, uploaded, total);
         },
         onComplete: function(id, name, response, xhr) {
-            const upload = document.getElementById("upload-" + id);
-            document.getElementById("uploads").removeChild(upload);
-            delete uploading[id];
+            fileList.completeUpload(id);
         }
     },
     maxConnections: 1
