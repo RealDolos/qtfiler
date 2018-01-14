@@ -68,7 +68,7 @@ defmodule QtfileWeb.Router do
     case get_session(conn, :user_id) do
       nil ->
         conn
-        |> send_resp(:forbidden, "bllaa")
+        |> send_resp(:forbidden, "Not logged in")
         |> halt()
       user_id ->
         conn
@@ -79,7 +79,7 @@ defmodule QtfileWeb.Router do
     user = Qtfile.Accounts.get_user!(get_session(conn, :user_id))
     unless user.role == "mod" or user.role == "admin" do
       conn
-      |> send_resp(:forbidden, "aaa")
+      |> send_resp(:forbidden, "Insufficient privileges")
       |> halt()
     else
       conn
