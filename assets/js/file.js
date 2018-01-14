@@ -41,7 +41,7 @@ class File {
         this.uploader_badge.innerText = this.uploader;
         this.uploader_badge.className = "file-uploader";
         this.deleteButton.innerText = "delete";
-        this.deleteButton.className = "delete mod";
+        this.deleteButton.className = "delete mod button";
     }
 
     render() {
