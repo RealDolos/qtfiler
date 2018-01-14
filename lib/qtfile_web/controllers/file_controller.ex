@@ -19,26 +19,28 @@ defmodule QtfileWeb.FileController do
   end
 
   defp upload_room_exists(conn, %{"room_id" => room_id, "file" => files}) do
-    Enum.map(files, fn(file) ->
-      %{filename: filename} = file
-      room = Qtfile.Rooms.get_room_by_room_id!(room_id)
-      uuid = Ecto.UUID.generate()
-      scope = %{room_id: room_id, uuid: uuid}
+    response =
+      Enum.map(files, fn(file) ->
+        %{filename: filename} = file
+        room = Qtfile.Rooms.get_room_by_room_id!(room_id)
+        uuid = Ecto.UUID.generate()
+        scope = %{room_id: room_id, uuid: uuid}
 
-      cond do
-        check_extension(filename, @image_extensions) == true ->
-          Qtfile.ImageFile.store({file, scope})
-          |> store_in_db(conn, room_id, uuid, Qtfile.ImageFile.storage_dir(:original, {file, room}))
+        cond do
+          check_extension(filename, @image_extensions) == true ->
+            Qtfile.ImageFile.store({file, scope})
+            |> store_in_db(conn, room_id, uuid, room, Qtfile.ImageFile.storage_dir(:original, {file, room}))
 
-        true ->
-          Qtfile.GenericFile.store({file, scope})
-          |> store_in_db(conn, room_id, uuid, Qtfile.GenericFile.storage_dir(:original, {file, room}))
-      end
-    end) |> hd()
+          true ->
+            Qtfile.GenericFile.store({file, scope})
+            |> store_in_db(conn, room_id, uuid, room, Qtfile.GenericFile.storage_dir(:original, {file, room}))
+        end
+      end) |> hd()
 
     # conn
     # |> redirect(to: room_path(conn, :index, room_id))
     # json conn, %{success: true}
+    json conn, response
   end
 
   def download(conn, %{"uuid" => uuid, "realfilename" => _realfilename}) do
@@ -65,7 +67,7 @@ defmodule QtfileWeb.FileController do
     Enum.member?(extensions, file_extension)
   end
 
-  defp store_in_db({:ok, filename}, conn, room_id, uuid, path) do
+  defp store_in_db({:ok, filename}, conn, room_id, uuid, room, path) do
     file_path = Path.absname(path <> "/" <> uuid <> "-original" <> Path.extname(filename))
     file_size =
       case File.stat(file_path) do
@@ -78,14 +80,15 @@ defmodule QtfileWeb.FileController do
     user_id = get_session(conn, :user_id)
     uploader = Qtfile.Accounts.get_user!(user_id) |> Map.get(:name)
     ip_address = Qtfile.Util.get_ip_address(conn)
+    %{file_ttl: file_ttl} = room
 
     hash = Qtfile.Util.hash(:sha, file_path)
-    Qtfile.Files.add_file(uuid, filename, room_id, hash, file_size, uploader, ip_address)
+    Qtfile.Files.add_file(uuid, filename, room_id, hash, file_size, uploader, ip_address, file_ttl)
 
-    json conn, %{success: true}
+    %{success: true}
   end
 
   defp store_in_db(_ok_filename_tuple, conn, _room_id, _uuid, _path) do
-    json conn, %{success: false, error: "failed to upload file", preventRetry: true}
+    %{success: false, error: "failed to upload file", preventRetry: true}
   end
 end

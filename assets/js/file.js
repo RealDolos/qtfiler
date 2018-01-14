@@ -15,7 +15,7 @@ class File {
     }
 
     initialRender(odd) {
-        this.element.className = "file-container " + (odd ? "file-odd" : "");
+        this.element.className = "file-container " + (odd ? "file-odd" : "file-even");
         this.link.className = "file-link";
         this.link.setAttribute("data-hash-sha1", this.hash);
         this.link.innerText = this.filename;

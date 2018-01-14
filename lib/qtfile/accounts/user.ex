@@ -24,7 +24,7 @@ defmodule Qtfile.Accounts.User do
   @doc false
   def changeset(%User{} = user, attrs) do
     user
-    |> cast(attrs, [:name, :username, :password])
+    |> cast(attrs, [:name, :username, :password, :status, :role])
     |> validate_required([:name, :username, :password, :status, :role])
     |> unique_constraint(:username)
   end

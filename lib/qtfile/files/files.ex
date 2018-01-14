@@ -71,10 +71,10 @@ defmodule Qtfile.Files do
     |> Repo.insert()
   end
 
-  def add_file(uuid, filename, room_id, hash, size, uploader, ip_address) do
-    create_file(%{uuid: uuid, filename: filename, extension: Path.extname(filename), room_id: room_id, hash: hash, size: size, uploader: uploader, ip_address: ip_address})
+  def add_file(uuid, filename, room_id, hash, size, uploader, ip_address, file_ttl) do
+    create_file(%{uuid: uuid, filename: filename, extension: Path.extname(filename), room_id: room_id, hash: hash, size: size, uploader: uploader, ip_address: ip_address, file_ttl: file_ttl})
 
-    QtfileWeb.RoomChannel.broadcast_new_files([%{filename: filename, hash: hash, room_id: room_id, uuid: uuid, size: size, uploader: uploader, ip_address: ip_address}], room_id)
+    QtfileWeb.RoomChannel.broadcast_new_files([%{filename: filename, hash: hash, room_id: room_id, uuid: uuid, size: size, uploader: uploader, ip_address: ip_address, file_ttl: file_ttl}], room_id)
   end
 
   @doc """

@@ -11,7 +11,7 @@ defmodule Qtfile.Repo.Migrations.CreateFiles do
       add :size, :integer
       add :uploader, :string
       add :ip_address, :string
-      add :ttl, :integer
+      add :file_ttl, :integer
 
       timestamps()
     end

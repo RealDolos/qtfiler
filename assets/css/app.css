@@ -68,6 +68,10 @@ body {
 	/* width: 100%; */
 }
 
+#header-image {
+    max-width: 40px;
+}
+
 .qtstream {
 	padding-left: 10px;
 	color: var(--qtstream);
@@ -154,6 +158,8 @@ button, .button {
 
 .file-container {
     width: 100%;
+    padding-top: 3px;
+    padding-bottom: 4px;
     background-color: var(--lighter-dark-background);
 }
 
@@ -163,4 +169,21 @@ button, .button {
 
 .file-link {
     margin-left: 7px;
+    text-decoration: none;
+    vertical-align: middle;
+}
+
+.file-uploader
+{
+	  background: #232126;
+	  border-style: solid;
+	  border-color: #58525b;
+	  border-width: 1px;
+	  border-radius: 2px;
+	  padding-left: 2px;
+	  padding-right: 2px;
+	  font-size: 11px;
+	  top: 50%;
+	  margin-left:5px;
+    vertical-align: middle;
 }
