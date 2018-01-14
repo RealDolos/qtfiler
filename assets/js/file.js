@@ -20,9 +20,9 @@ class File {
         this.link.href = `/get/${this.uuid}/${this.filename}`;
         this.link.target = "_blank";
         const uploader_badge = document.createElement("span");
-        uploader_badge.innerText = file.uploader;
+        uploader_badge.innerText = this.uploader;
         uploader_badge.className = "file-uploader";
-        this.link.prepend(uploader_badge);
+        this.element.appendChild(uploader_badge);
     }
 
     kys() {

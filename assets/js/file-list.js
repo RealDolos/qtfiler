@@ -1,7 +1,7 @@
 "use strict";
 
 import Upload from "./upload";
-import File from "./file"
+import File from "./file";
 
 class FileList {
     constructor(element) {
