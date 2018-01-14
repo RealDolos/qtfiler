@@ -80,7 +80,7 @@ defmodule QtfileWeb.FileController do
     ip_address = Qtfile.Util.get_ip_address(conn)
 
     hash = Qtfile.Util.hash(:sha, file_path)
-    Qtfile.Files.add_file(uuid, filename, room_id, hash, file_size, uploader, ip_address)
+    Qtfile.Files.add_file(uuid, filename, room_id, hash, file_size, uploader, ip_address, 5)
 
     json conn, %{success: true}
   end
@@ -98,10 +98,12 @@ defmodule QtfileWeb.FileController do
       conn
       |> put_status(200)
       |> json(%{success: true})
+      |> halt
     else
       conn
       |> put_status(404)
       |> json(%{success: false})
+      |> halt
     end
   end
 
@@ -109,6 +111,4 @@ defmodule QtfileWeb.FileController do
     path = Application.get_env(:arc, :storage_dir, "uploads/rooms")
     path <> "/" <> file.room_id <> "/" <> file.uuid <> "-original" <> file.extension
   end
-
-  
 end

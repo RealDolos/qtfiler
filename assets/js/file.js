@@ -21,8 +21,11 @@ class File {
     }
 
     async delete() {
-        const url = location.hostname + "/api/mod/delete" + "?uuid=" + self.uuid;
-        const result = await fetch(url);
+        const url = "/api/mod/delete" + "?uuid=" + this.uuid;
+        const result = await fetch(url, {
+            method: "POST",
+            credentials: "include"
+        });
         const data = await result.json();
         console.log(data);
         this.kys();

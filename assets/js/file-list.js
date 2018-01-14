@@ -10,7 +10,7 @@ class FileList {
         this.files = new Map();
         this.element = element;
         this.odd = false;
-        this.mod = false;
+        this.role = "user";
     }
 
     addUpload(id, name) {
@@ -41,13 +41,16 @@ class FileList {
         file.initialRender(this.odd);
         file.render();
         this.odd = !this.odd;
+        this.render();
     }
 
     render() {
-        if (!this.mod) {
-            const mods = document.getElementsByClassName("mod");
-            for (const mod of mods) {
+        const mods = document.getElementsByClassName("mod");
+        for (const mod of mods) {
+            if (!(this.role == "mod") || (this.role == "admin")) {
                 mod.classList.add("hidden");
+            } else {
+                mod.classList.remove("hidden");
             }
         }
     }

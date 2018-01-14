@@ -53,7 +53,7 @@ defmodule QtfileWeb.Router do
     end
 
     scope "/mod" do
-      pipe_through :is_mod?
+      pipe_through [:logged_in?, :is_mod?]
 
       post "/delete", FileController, :delete
     end
@@ -68,24 +68,21 @@ defmodule QtfileWeb.Router do
     case get_session(conn, :user_id) do
       nil ->
         conn
-        |> send_resp(:forbidden, "")
-        |> redirect(to: "/")
+        |> send_resp(:forbidden, "bllaa")
         |> halt()
       user_id ->
         conn
     end
   end
 
-  defp is_mod?(conn, params) do
-    logged_in?(conn, params)
+  defp is_mod?(conn, _) do
     user = Qtfile.Accounts.get_user!(get_session(conn, :user_id))
-    if user.role == "mod" or user.role == "admin" do
+    unless user.role == "mod" or user.role == "admin" do
       conn
+      |> send_resp(:forbidden, "aaa")
+      |> halt()
     else
       conn
-      |> send_resp(:forbidden, "")
-      |> redirect(to: "/")
-      |> halt()
     end
   end
 end
