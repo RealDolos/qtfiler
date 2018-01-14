@@ -5,8 +5,12 @@ class Upload {
         this.id = id;
         this.name = name;
         this.uploaded = 0;
-        this.total = 0;
+        this.total = 1;
         this.element = document.createElement("div");
+    }
+
+    initialRender(odd) {
+        this.element.className = "file-container " + (odd ? "file-odd" : "");
     }
 
     render() {
