@@ -6,7 +6,9 @@ defmodule Qtfile.Rooms.Room do
 
   schema "rooms" do
     field :disabled, :boolean, default: false
-    field :file_ttl, :integer, default: 72
+    # Seconds
+    # 259200 is 72 hours
+    field :file_ttl, :integer, default: 259200
     field :files, {:array, :map}, default: []
     field :motd, :string
     field :owner, :string
@@ -19,7 +21,7 @@ defmodule Qtfile.Rooms.Room do
   def default_room_name, do: "New Room"
   def default_files, do: []
   def default_motd, do: ""
-  def default_file_ttl, do: 72
+  def default_file_ttl, do: 259200
   def default_disabled, do: false
 
 

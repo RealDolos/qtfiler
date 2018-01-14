@@ -72,11 +72,11 @@ defmodule Qtfile.Files do
     |> Repo.insert()
   end
 
-  def add_file(uuid, filename, room_id, hash, size, uploader, ip_address, ttl) do
-    result = create_file(%{uuid: uuid, filename: filename, extension: Path.extname(filename), room_id: room_id, hash: hash, size: size, uploader: uploader, ip_address: ip_address, ttl: ttl})
+  def add_file(uuid, filename, room_id, hash, size, uploader, ip_address, file_ttl) do
+    result = create_file(%{uuid: uuid, filename: filename, extension: Path.extname(filename), room_id: room_id, hash: hash, size: size, uploader: uploader, ip_address: ip_address, file_ttl: file_ttl})
     case result do
       {:ok, _} ->
-        QtfileWeb.RoomChannel.broadcast_new_files([%{filename: filename, hash: hash, room_id: room_id, uuid: uuid, size: size, uploader: uploader, ttl: ttl}], room_id)
+        QtfileWeb.RoomChannel.broadcast_new_files([%{filename: filename, hash: hash, room_id: room_id, uuid: uuid, size: size, uploader: uploader, file_ttl: file_ttl}], room_id)
         :ok
       {:error, changeset} ->
         Logger.error("failed to add file to db")
