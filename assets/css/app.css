@@ -127,7 +127,7 @@ hr {
 	margin-bottom: 5px;
 }
 
-button {
+button, .button {
 	color: red;
 	font-size: 14px;
 	display: inline-block;

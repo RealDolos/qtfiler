@@ -29,7 +29,7 @@ const uploader = new qq.FineUploaderBasic({
     retry: {
         enableAuto: true
     },
-    button: document.getElementById("submit"),
+    button: document.getElementById("upload-button"),
     callbacks: {
         onSubmitted: function(id, name) {
             fileList.addUpload(id, name);
