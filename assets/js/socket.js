@@ -6,8 +6,6 @@
 import {Socket} from "phoenix";
 
 let channel_token = document.querySelector("#channel_token").content;
-let room_id = window.config.room_id;
-
 let socket = new Socket("/socket", {params: {token: channel_token}});
 
 // When you connect, you'll often need to authenticate the client.
@@ -57,44 +55,5 @@ let socket = new Socket("/socket", {params: {token: channel_token}});
 socket.connect();
 
 // Now that you are connected, you can join channels with a topic:
-let channel = socket.channel("room:" + room_id, {});
-let file_list = document.querySelector("#file-list");
-
-channel.on("files", payload => {
-    let even = false;
-
-    payload.body.forEach(file => {
-        even = add_file_to_list(file, even);
-    });
-});
-
-function add_file_to_list(file, even) {
-    console.log(file);
-    let container = document.createElement("div");
-    container.className = "file-container";
-    even ? container.className += " file-even" : container.className += " file-odd";
-    even = !even;
-
-    let link = document.createElement("a");
-    link.className = "file-link";
-    link.setAttribute("data-hash-sha1", file.hash);
-    link.innerText = file.filename;
-    link.href = `/get/${file.uuid}/${file.filename}`;
-    link.target = "_blank";
-
-    let uploader_badge = document.createElement("span");
-    uploader_badge.innerText = file.uploader;
-    uploader_badge.className = "file-uploader";
-
-    container.appendChild(link);
-    container.appendChild(uploader_badge);
-    file_list.insertBefore(container, file_list.children[0]);
-
-    return even;
-}
-
-channel.join()
-    .receive("ok", resp => { console.log("Joined successfully", resp); })
-    .receive("error", resp => { console.log("Unable to join", resp); });
 
 export default socket;

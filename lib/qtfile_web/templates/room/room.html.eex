@@ -1,19 +1,13 @@
-<%= form_for @conn, file_path(@conn, :upload), [multipart: true], fn f -> %>
 <div class="form-group">
     <label>upload a file!</label>
-    <%= file_input f, :file, class: "form-control", multiple: true %>
-    <%= hidden_input f, :room_id, value: @room_id, class: "form-control" %>
+    <div id="file-dropzone">
+      DROP FILES HERE
+      <br/>
+      <div id="submit" class="submit">Upload</div>
+      <br/>
+      <div id="file-list" class="file-list"></div>
+    </div>
 </div>
-
-<div class="form-group">
-    <%= submit "submit", class: "submit" %>
-</div>
-<% end %>
-
-<div id="file-dropzone">
-    <div id="file-list"></div>
-</div>
-
 
 <script>
  window.config = {"room_id":"<%= @room_id %>"};
