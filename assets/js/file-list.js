@@ -1,7 +1,7 @@
 "use strict";
 
-import Upload from "./upload";
-import File from "./file";
+const Upload  = require("./upload");
+const File  = require ("./file");
 
 class FileList {
     constructor(element) {
@@ -10,15 +10,15 @@ class FileList {
         this.files = new Map();
         this.element = element;
         this.odd = false;
+        this.role = "user";
     }
 
     addUpload(id, name) {
         const upload = new Upload(id, name);
         this.uploading.set(id, upload);
         this.element.prepend(upload.element);
-        upload.initialRender(this.odd);
+        upload.initialRender();
         upload.render();
-        this.odd = !this.odd;
     }
 
     progressUpload(id, uploaded, total) {
@@ -32,7 +32,6 @@ class FileList {
         const upload = this.uploading.get(id);
         upload.kys();
         this.uploading.delete(id);
-        this.odd = !this.odd;
     }
 
     addFile(data) {
@@ -42,8 +41,20 @@ class FileList {
         file.initialRender(this.odd);
         file.render();
         this.odd = !this.odd;
+        this.render();
+    }
+
+    render() {
+        const mods = document.getElementsByClassName("mod");
+        for (const mod of mods) {
+            if (!(this.role == "mod") || (this.role == "admin")) {
+                mod.classList.add("hidden");
+            } else {
+                mod.classList.remove("hidden");
+            }
+        }
     }
 }
 
 
-export default FileList;
+module.exports = FileList;

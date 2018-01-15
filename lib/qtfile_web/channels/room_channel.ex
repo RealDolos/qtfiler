@@ -3,6 +3,7 @@ defmodule QtfileWeb.RoomChannel do
 
   def join("room:" <> room_id, message, socket) do
     if Qtfile.Rooms.room_exists?(room_id) do
+      send(self(), {:role, socket.assigns[:user].role})
       send(self(), {:after_join, room_id})
       {:ok, socket}
     else
@@ -26,6 +27,11 @@ defmodule QtfileWeb.RoomChannel do
     files = Qtfile.Files.get_files_by_room_id(room_id)
     push(socket, "files", %{body: files})
 
+    {:noreply, socket}
+  end
+
+  def handle_info({:role, role}, socket) do
+    push(socket, "role", %{body: role})
     {:noreply, socket}
   end
 

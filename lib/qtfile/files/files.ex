@@ -4,6 +4,7 @@ defmodule Qtfile.Files do
   """
 
   import Ecto.Query, warn: false
+  require Logger
   alias Qtfile.Repo
 
   alias Qtfile.Files.File
@@ -72,9 +73,16 @@ defmodule Qtfile.Files do
   end
 
   def add_file(uuid, filename, room_id, hash, size, uploader, ip_address, file_ttl) do
-    create_file(%{uuid: uuid, filename: filename, extension: Path.extname(filename), room_id: room_id, hash: hash, size: size, uploader: uploader, ip_address: ip_address, file_ttl: file_ttl})
-
-    QtfileWeb.RoomChannel.broadcast_new_files([%{filename: filename, hash: hash, room_id: room_id, uuid: uuid, size: size, uploader: uploader, ip_address: ip_address, file_ttl: file_ttl}], room_id)
+    result = create_file(%{uuid: uuid, filename: filename, extension: Path.extname(filename), room_id: room_id, hash: hash, size: size, uploader: uploader, ip_address: ip_address, file_ttl: file_ttl})
+    case result do
+      {:ok, _} ->
+        QtfileWeb.RoomChannel.broadcast_new_files([%{filename: filename, hash: hash, room_id: room_id, uuid: uuid, size: size, uploader: uploader, file_ttl: file_ttl}], room_id)
+        :ok
+      {:error, changeset} ->
+        Logger.error("failed to add file to db")
+        Logger.error(inspect(changeset))
+        :error
+    end
   end
 
   @doc """

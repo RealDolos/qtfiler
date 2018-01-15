@@ -187,3 +187,11 @@ button, .button {
 	  margin-left:5px;
     vertical-align: middle;
 }
+
+.mod {
+
+}
+
+.hidden {
+    visibility: hidden;
+}
