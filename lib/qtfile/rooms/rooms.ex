@@ -59,10 +59,9 @@ defmodule Qtfile.Rooms do
 
   def get_files(room_id) do
     query = from r in Room,
-      select: r.files,
-      where: r.room_id == ^room_id
-
-    Repo.all(query)
+      where: r.room_id == ^room_id,
+      preload: [:files]
+    Repo.one(query).files
   end
 
   @doc """

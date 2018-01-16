@@ -26,7 +26,6 @@ defmodule QtfileWeb.RoomChannel do
     #:timer.apply_interval(300, __MODULE__, :increment, [socket])
     files = Qtfile.Files.get_files_by_room_id(room_id)
     push(socket, "files", %{body: files})
-
     {:noreply, socket}
   end
 

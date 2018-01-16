@@ -40,16 +40,29 @@ defmodule Qtfile.Files do
 
   def get_files_by_room_id(room_id) do
     query = from f in File,
-      select: %{filename: f.filename, hash: f.hash, room_id: f.room_id, uuid: f.uuid, uploader: f.uploader},
-      where: f.room_id == ^room_id
+      join: r in assoc(f, :rooms),
+      where: r.room_id == ^room_id,
+      join: u in assoc(f, :users),
+      select: %{
+        uploader: u.name,
+        room_id: r.room_id,
+        filename: f.filename,
+        mime_type: f.mime_type,
+        uuid: f.uuid,
+        hash: f.hash,
+        size: f.size,
+        expiration_date: f.expiration_date
+      }
 
     Repo.all(query)
   end
 
   def get_file_by_uuid(uuid) do
     query = from f in File,
-      select: f,
-      where: f.uuid == ^uuid
+      where: f.uuid == ^uuid,
+      join: r in assoc(f, :rooms),
+      join: u in assoc(f, :users),
+      select: f
 
     Repo.one(query)
   end
@@ -72,11 +85,11 @@ defmodule Qtfile.Files do
     |> Repo.insert()
   end
 
-  def add_file(uuid, filename, room_id, hash, size, uploader, ip_address, file_ttl) do
-    result = create_file(%{uuid: uuid, filename: filename, extension: Path.extname(filename), room_id: room_id, hash: hash, size: size, uploader: uploader, ip_address: ip_address, file_ttl: file_ttl})
+  def add_file(uuid, filename, room, hash, size, uploader, ip_address, expiration_date, mime_type) do
+    result = create_file(%{uuid: uuid, filename: filename, mime_type: mime_type, room: room, hash: hash, size: size, uploader: uploader, ip_address: ip_address, expiration_date: expiration_date})
     case result do
       {:ok, _} ->
-        QtfileWeb.RoomChannel.broadcast_new_files([%{filename: filename, hash: hash, room_id: room_id, uuid: uuid, size: size, uploader: uploader, file_ttl: file_ttl}], room_id)
+        QtfileWeb.RoomChannel.broadcast_new_files([%{filename: filename, hash: hash, uuid: uuid, size: size, uploader: uploader.name, expiration_date: expiration_date}], room.room_id)
         :ok
       {:error, changeset} ->
         Logger.error("failed to add file to db")
