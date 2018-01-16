@@ -1,6 +1,7 @@
 defmodule QtfileWeb.FileController do
   use QtfileWeb, :controller
   @image_extensions ~w(.jpg .jpeg .png)
+  @nice_mime_types ~w(text audio video image)
 
   def upload(conn, %{"file" => file} = params) when not is_list(file) do
     upload(conn, %{params | "file" => [file]})
@@ -50,7 +51,28 @@ defmodule QtfileWeb.FileController do
     if file != nil do
       absolute_path = get_absolute_path(file)
 
-      send_file(conn, 200, absolute_path)
+      mime_type = file.mime_type
+
+      nice_file =
+        case mime_type do
+          nil -> false
+          _ ->
+            case String.split(mime_type, "/") do
+              [type, _] -> Enum.member?(@nice_mime_types, type)
+              _ -> false
+            end
+        end
+
+      if nice_file do
+        conn
+        |> put_resp_content_type(mime_type)
+        |> send_file(200, absolute_path)
+      else
+        conn
+        |> put_resp_content_type("application/octet-stream")
+        |> send_download({:file, absolute_path})
+      end
+
     else
       conn
       |> put_status(404)
