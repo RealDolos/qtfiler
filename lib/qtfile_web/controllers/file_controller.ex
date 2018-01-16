@@ -50,7 +50,22 @@ defmodule QtfileWeb.FileController do
     if file != nil do
       absolute_path = get_absolute_path(file)
 
-      send_file(conn, 200, absolute_path)
+      nice_file =
+        case String.split(file.mime_type, "/") do
+          [type, _] -> Enum.member?(["audio", "video", "image"], type)
+          _ -> false
+        end
+
+      if nice_file do
+        conn
+        |> put_resp_content_type(file.mime_type)
+        |> send_file(200, absolute_path)
+      else
+        conn
+        |> put_resp_content_type("application/octet-stream")
+        |> send_download(200, absolute_path)
+      end
+
     else
       conn
       |> put_status(404)
