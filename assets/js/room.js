@@ -50,7 +50,7 @@ const uploader = new qq.FineUploaderBasic({
         onSubmit: function(id, name) {
             this.setParams({
                 "room_id": window.config.room_id,
-                "mime_type": uploader.getFile(id).fileType
+                "mime_type": uploader.getFile(id).type
             });
         }
     },
