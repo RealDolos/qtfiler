@@ -57,8 +57,10 @@ defmodule QtfileWeb.FileController do
         case mime_type do
           nil -> false
           _ ->
-            [type, _] = String.split(mime_type, "/")
-            Enum.member?(@nice_mime_types, type)
+            case String.split(mime_type, "/") do
+              [type, _] -> Enum.member?(@nice_mime_types, type)
+              _ -> false
+            end
         end
 
       if nice_file do
