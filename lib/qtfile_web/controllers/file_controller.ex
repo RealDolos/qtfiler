@@ -25,16 +25,15 @@ defmodule QtfileWeb.FileController do
         room = Qtfile.Rooms.get_room_by_room_id!(room_id)
         uuid = Ecto.UUID.generate()
         scope = %{room_id: room_id, uuid: uuid}
-        date = DateTime.utc_now()
 
         cond do
           check_extension(filename, @image_extensions) == true ->
             Qtfile.ImageFile.store({file, scope})
-            |> store_in_db(conn, uuid, room, date, mime_type, Qtfile.ImageFile.storage_dir(:original, {file, room}))
+            |> store_in_db(conn, uuid, room, mime_type, Qtfile.ImageFile.storage_dir(:original, {file, room}))
 
           true ->
             Qtfile.GenericFile.store({file, scope})
-            |> store_in_db(conn, uuid, room, date, mime_type, Qtfile.GenericFile.storage_dir(:original, {file, room}))
+            |> store_in_db(conn, uuid, room, mime_type, Qtfile.GenericFile.storage_dir(:original, {file, room}))
         end
       end) |> hd()
 
@@ -68,7 +67,7 @@ defmodule QtfileWeb.FileController do
     Enum.member?(extensions, file_extension)
   end
 
-  defp store_in_db({:ok, filename}, conn, uuid, room, upload_date, mime_type, path) do
+  defp store_in_db({:ok, filename}, conn, uuid, room, mime_type, path) do
     file_path = Path.absname(path <> "/" <> uuid <> "-original" <> Path.extname(filename))
     file_size =
       case File.stat(file_path) do
@@ -82,9 +81,10 @@ defmodule QtfileWeb.FileController do
     uploader = Qtfile.Accounts.get_user!(uploader_id)
     ip_address = Qtfile.Util.get_ip_address(conn)
     %{file_ttl: file_ttl} = room
+    expiration_date = DateTime.from_unix!(DateTime.to_unix(DateTime.utc_now()) + file_ttl)
 
     hash = Qtfile.Util.hash(:sha, file_path)
-    Qtfile.Files.add_file(uuid, filename, room, hash, file_size, uploader, ip_address, file_ttl, upload_date, mime_type)
+    Qtfile.Files.add_file(uuid, filename, room, hash, file_size, uploader, ip_address, expiration_date, mime_type)
 
     %{success: true}
   end

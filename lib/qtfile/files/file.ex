@@ -13,8 +13,7 @@ defmodule Qtfile.Files.File do
     field :size, :integer
     belongs_to :users, Qtfile.Accounts.User
     field :ip_address, :string
-    field :file_ttl, :integer # seconds
-    field :upload_date, :utc_datetime
+    field :expiration_date, :utc_datetime
 
     timestamps()
   end
@@ -22,10 +21,10 @@ defmodule Qtfile.Files.File do
   @doc false
   def changeset(%File{} = file, attrs) do
     file
-    |> cast(attrs, [:uuid, :filename, :mime_type, :hash, :size, :ip_address, :file_ttl, :upload_date])
+    |> cast(attrs, [:uuid, :filename, :mime_type, :hash, :size, :ip_address, :expiration_date])
     |> put_assoc(:users, attrs.uploader)
     |> put_assoc(:rooms, attrs.room)
-    |> validate_required([:uuid, :filename, :mime_type, :hash, :size, :ip_address, :file_ttl, :upload_date])
+    |> validate_required([:uuid, :filename, :hash, :size, :ip_address, :expiration_date])
     |> unique_constraint(:uuid)
   end
 end

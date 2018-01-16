@@ -11,12 +11,14 @@ defmodule Qtfile.Repo.Migrations.CreateFiles do
       add :size, :integer
       add :users_id, references(:users)
       add :ip_address, :string
-      add :file_ttl, :integer
-      add :upload_date, :utc_datetime
+      add :expiration_date, :utc_datetime
 
       timestamps()
     end
 
     create unique_index(:files, [:uuid])
+    create index(:files, [:expiration_date])
+    create index(:files, [:users_id])
+    create index(:files, [:rooms_id])
   end
 end
