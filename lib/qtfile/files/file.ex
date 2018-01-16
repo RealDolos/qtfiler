@@ -6,15 +6,15 @@ defmodule Qtfile.Files.File do
 
   schema "files" do
     field :filename, :string
-    field :extension, :string
+    field :mime_type, :string
     field :uuid, :string
-    field :room_id, :string
+    belongs_to :rooms, Qtfile.Rooms.Room
     field :hash, :string
     field :size, :integer
-    field :uploader, :string
+    belongs_to :users, Qtfile.Accounts.User
     field :ip_address, :string
     field :file_ttl, :integer # seconds
-    field :expiration_date, :utc_datetime
+    field :upload_date, :utc_datetime
 
     timestamps()
   end
@@ -22,8 +22,10 @@ defmodule Qtfile.Files.File do
   @doc false
   def changeset(%File{} = file, attrs) do
     file
-    |> cast(attrs, [:uuid, :filename, :extension, :room_id, :hash, :size, :uploader, :ip_address, :file_ttl, :expiration_date])
-    |> validate_required([:uuid, :filename, :extension, :room_id, :hash, :size, :uploader, :ip_address, :file_ttl, :expiration_date])
+    |> cast(attrs, [:uuid, :filename, :mime_type, :hash, :size, :ip_address, :file_ttl, :upload_date])
+    |> put_assoc(:users, attrs.uploader)
+    |> put_assoc(:rooms, attrs.room)
+    |> validate_required([:uuid, :filename, :mime_type, :hash, :size, :ip_address, :file_ttl, :upload_date])
     |> unique_constraint(:uuid)
   end
 end

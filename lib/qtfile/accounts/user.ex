@@ -17,6 +17,7 @@ defmodule Qtfile.Accounts.User do
     # mod - moderates the site
     # user - regular user, no special privs
     field :role, :string, default: "user"
+    has_many :files, Qtfile.Files.File, on_delete: :delete_all
 
     timestamps()
   end

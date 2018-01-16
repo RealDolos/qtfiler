@@ -27,7 +27,6 @@ channel.join()
 const uploader = new qq.FineUploaderBasic({
     request: {
         endpoint: "/api/upload",
-        params: {"room_id": window.config.room_id},
         inputName: "file"
     },
     retry: {
@@ -47,6 +46,12 @@ const uploader = new qq.FineUploaderBasic({
         onComplete: function(id, name, response, xhr) {
             fileList.completeUpload(id);
             fileList.render();
+        },
+        onSubmit: function(id, name) {
+            this.setParams({
+                "room_id": window.config.room_id,
+                "mime_type": uploader.getFile(id).fileType
+            });
         }
     },
     maxConnections: 1
