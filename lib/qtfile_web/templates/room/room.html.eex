@@ -5,12 +5,16 @@
   </div>
 
   <div id="room" v-cloak>    
-    <div class="form-group">
-      <label>delete files!</label>
-      <div v-on:click="deleteFiles" id="delete-button" class="button">Delete</div>
-    </div>
+    <template v-if="mod">
+      <div class="form-group">
+        <label>delete files!</label>
+        <div v-on:click="deleteFiles" id="delete-button" class="button">Delete</div>
+      </div>
+    </template>
 
-    <span is="file-list" :role="role" />
+    <div id="file-list-container">
+      <span is="file-list" :role="role" />
+    </div>
   </div>
 </div>
 

@@ -164,9 +164,11 @@ button, .button {
 	border-top: 2px solid #555555;
     margin-top: 10px;
     height: 100%;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
+    display: inline;
+}
+
+#file-list-container {
+    display: block;
 }
 
 #file-list {
@@ -226,7 +228,6 @@ button, .button {
     display: inherit;
 }
 
-
 .form-group {
-    display: inline-block;
+    display: inline;
 }
