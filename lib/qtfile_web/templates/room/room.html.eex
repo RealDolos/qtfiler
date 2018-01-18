@@ -39,7 +39,7 @@
   <div :id="domId" :class="['file-container', { 'file-odd': isOdd, 'file-even': isEven }]">
     <a target="_blank" :href="link" class="file-link" :data-hash-sha1="hash">{{ filename }}</a>
     <span class="file-uploader">{{ uploader }}</span>
-    <span class="file-expiration">{{ expiration_date }}</span>
+    <span class="file-expiration">{{ formattedExpirationDate }}</span>
     <template v-if="mod">
       <div class="delete button">
         <input type="checkbox" v-model="markedForDeletion">
