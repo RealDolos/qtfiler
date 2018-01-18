@@ -12,6 +12,7 @@ class Room {
         this.uploader = Room.createUploader(this.fileList, this.room_id);
         this.dnD = Room.createDnD(this.uploader);
         this.role = "user";
+        this.filter = "";
     }
 
     static createChannel(socket, fileList, room_id, self) {

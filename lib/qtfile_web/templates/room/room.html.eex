@@ -12,8 +12,12 @@
       </div>
     </template>
 
+    <div class="form-group">
+      <input v-model="filter" placeholder="filter files">
+    </div>
+
     <div id="file-list-container">
-      <span is="file-list" :role="role" />
+      <span is="file-list" :role="role" :filter="filter" />
     </div>
   </div>
 </div>
@@ -23,8 +27,15 @@
     <template v-for="(upload, index) in uploads">
       <span is="upload" :id="upload.id" :key="upload.id" :role="role" :index="index" />
     </template>
-    <template v-for="(file, index) in files">
-      <span is="file" :uuid="file.uuid" :key="file.uuid" :index="index" :role="role" />
+    <template v-if="filter == ''">
+      <template v-for="(file, index) in files">
+        <span is="file" :uuid="file.uuid" :key="file.uuid" :index="index" :role="role" />
+      </template>
+    </template>
+    <template v-else>
+      <template v-for="(file, index) in filteredFiles">
+        <span is="file" :uuid="file.uuid" :key="file.uuid" :index="index" :role="role" />
+      </template>
     </template>
   </div>
 </template>
