@@ -32,11 +32,14 @@ class FileList {
     }
 
     async deleteFiles() {
+        // this loop is retarded to deal with a race condition where the await finishes
+        // after the file entry has been spliced from the filelist, thus shifting all the
+        // files down, which means we need to check the current index again
         for (let i = 0; i < this.files.length;) {
             if (this.files[i].markedForDeletion) {
+                this.files[i].markedForDeletion = false;
                 const result = await this.files[i].delete();
                 if (result.success) {
-                    this.files.splice(i, 1);
                 } else {
                     console.log("failed to delete file: " + this.files[i].uuid + " with result: " + result);
                     i++;
@@ -57,6 +60,12 @@ class FileList {
     completeUpload(id) {
         this.searchUploads(id, (upload, i) => {
             this.uploads.splice(i, 1);
+        });
+    }
+
+    removeFile(uuid) {
+        this.searchFiles(uuid, (file, i) => {
+            this.files.splice(i, 1);
         });
     }
 

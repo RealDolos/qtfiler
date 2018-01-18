@@ -62,9 +62,12 @@ defmodule Qtfile.Files do
       where: f.uuid == ^uuid,
       join: r in assoc(f, :rooms),
       join: u in assoc(f, :users),
+      preload: :users,
+      preload: :rooms,
       select: f
 
-    Repo.one(query)
+    query
+    |> Repo.one
   end
 
   @doc """

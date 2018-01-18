@@ -121,6 +121,7 @@ defmodule QtfileWeb.FileController do
       absolute_path = get_absolute_path(file)
       Qtfile.Files.delete_file(file)
       File.rm(absolute_path)
+      QtfileWeb.RoomChannel.broadcast_deleted_file(file)
       conn
       |> put_status(200)
       |> json(%{success: true})
@@ -135,6 +136,6 @@ defmodule QtfileWeb.FileController do
 
   defp get_absolute_path(file) do
     path = Application.get_env(:arc, :storage_dir, "uploads/rooms")
-    path <> "/" <> Qtfile.Rooms.get_room!(file.rooms_id).room_id <> "/" <> file.uuid <> "-original" <> Path.extname(file.filename)
+    path <> "/" <> file.rooms.room_id <> "/" <> file.uuid <> "-original" <> Path.extname(file.filename)
   end
 end

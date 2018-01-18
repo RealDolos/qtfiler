@@ -38,6 +38,10 @@ defmodule QtfileWeb.RoomChannel do
     QtfileWeb.Endpoint.broadcast_from!(self(), "room:" <> room_id, "files", %{body: files})
   end
 
+  def broadcast_deleted_file(file) do
+    QtfileWeb.Endpoint.broadcast_from!(self(), "room:" <> file.rooms.room_id, "deleted", %{body: file.uuid})
+  end
+
   def increment(socket) do
     # number = Channelstest.Incrementer.increment()
     # IO.inspect number

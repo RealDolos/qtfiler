@@ -27,6 +27,10 @@ class Room {
         channel.on("role", payload => {
             self.role = payload.body;
         });
+
+        channel.on("deleted", payload => {
+            fileList.removeFile(payload.body);
+        });
         
         channel.join()
             .receive("ok", resp => { console.log("Joined successfully", resp); })
