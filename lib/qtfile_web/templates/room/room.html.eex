@@ -1,20 +1,55 @@
-<div class="form-group">
+<div id="room" v-cloak>
+  <div class="form-group">
     <label>upload a file!</label>
-      <br/>
-      <div id="upload-button" class="button">Upload</div>
-      <br/>
+    <div id="upload-button" class="button">Upload</div>
+  </div>
+
+  <div id="file-dropzone">
+    <span is="file-list" v-bind="fileList" v-on:markdelete="markDelete($event)" />
+  </div>
 </div>
 
-<div id="file-dropzone">
-    <div id="file-list"></div>
-</div>
+<template id="file-list-template">
+  <div id="file-list">
+    <template v-for="(upload, index) in uploads">
+      <span is="upload" :key="upload.id" v-bind="upload" :index="index" />
+    </template>
+    <template v-for="(file, index) in files">
+      <span is="file" v-on:markdelete="markDelete($event)" :key="file.uuid" v-bind="file" :index="index" :role="role" />
+    </template>
+  </div>
+</template>
+
+<template id="upload-template">
+  <div :id="domId" class="file-container">
+    {{ name }} - {{ progress }}%
+  </div>
+</template>
+
+<template id="file-template">
+  <div :id="domId" :class="['file-container', { 'file-odd': isOdd, 'file-even': isEven }]">
+    <a target="_blank" :href="link" class="file-link" :data-hash-sha1="hash">{{ filename }}</a>
+    <span class="file-uploader">{{ uploader }}</span>
+    <template v-if="mod">
+      <div class="delete button">
+        <input type="checkbox" :value="markedForDeletion" v-on:input="markDelete($event.target.value)">
+        <template v-if="markedForDeletion">
+          Unmark
+        </template>
+        <template v-else>
+          Delete
+        </template>
+      </div>
+    </template>
+  </div>
+</template>
 
 <script>
- window.config = {"room_id":"<%= @room_id %>"};
+  window.config = {"room_id":"<%= @room_id %>"};
 </script>
-
-<!-- <script src="<%= static_path(@conn, "/js/uploader.js") %>"></script>
-     <script>require("js/uploader.js")</script>
+<!--
+<script src="<%= static_path(@conn, "/js/uploader.js") %>"></script>
+<script>require("js/uploader.js")</script>
 -->
-<script src="<%= static_path(@conn, "/js/room.js") %>"></script>
-<script>require("js/room.js")</script>
+<script src="<%= static_path(@conn, "/js/room-view.js") %>"></script>
+<script>require("js/room-view.js")</script>

@@ -5,13 +5,17 @@ exports.config = {
       // joinTo: "js/app.js"
         joinTo: {
             // "js/uploader.js": "js/uploader.js",
-            "js/room.js": [
+            "js/room-view.js": [
                 "js/uploader.js",
                 "js/room.js",
                 "js/socket.js",
                 "js/file-list.js",
                 "js/upload.js",
-                "js/file.js"
+                "js/file.js",
+                "js/file-list-view.js",
+                "js/upload-view.js",
+                "js/file-view.js",
+                "js/room-view.js"
             ],
             "js/app.js": /(js\/app\.js|^(?!js))/
         }
@@ -65,6 +69,7 @@ exports.config = {
   },
 
   npm: {
-    enabled: true
+    enabled: true,
+    whitelist: ["phoenix", "phoenix_html", "vue", "fine-uploader"]
   }
 };
