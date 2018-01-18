@@ -5,54 +5,64 @@ const File  = require ("./file");
 
 class FileList {
     constructor(element) {
-        this.uploading = new Map();
-        this.uploaded = new Map();
-        this.files = new Map();
-        this.element = element;
-        this.odd = false;
-        this.role = "user";
+        this.uploads = [];
+        this.files = [];
     }
 
     addUpload(id, name) {
         const upload = new Upload(id, name);
-        this.uploading.set(id, upload);
-        this.element.prepend(upload.element);
-        upload.initialRender();
-        upload.render();
+        this.uploads.push(upload);
+    }
+
+    static search(idKey, items, id, cont) {
+        for (let i = 0; i < items.length; i++) {
+            if (items[i][idKey] == id) {
+                return cont(items[i], i);
+            }
+        }
+        return null;
+    }
+
+    searchUploads(id, cont) {
+        return FileList.search("id", this.uploads, id, cont);
+    }
+
+    searchFiles(id, cont) {
+        return FileList.search("uuid", this.files, id, cont);
+    }
+
+    async deleteFiles() {
+        for (let i = 0; i < this.files.length;) {
+            if (this.files[i].markedForDeletion) {
+                const result = await this.files[i].delete();
+                if (result.success) {
+                    this.files.splice(i, 1);
+                } else {
+                    console.log("failed to delete file: " + this.files[i].uuid + " with result: " + result);
+                    i++;
+                }
+            } else {
+                i++;
+            }
+        }
     }
 
     progressUpload(id, uploaded, total) {
-        const upload = this.uploading.get(id);
-        upload.uploaded = uploaded;
-        upload.total = total;
-        upload.render();
+        this.searchUploads(id, (upload, i) => {
+            upload.uploaded = uploaded;
+            upload.total = total;
+        });
     }
 
     completeUpload(id) {
-        const upload = this.uploading.get(id);
-        upload.kys();
-        this.uploading.delete(id);
+        this.searchUploads(id, (upload, i) => {
+            this.uploads.splice(i, 1);
+        });
     }
 
     addFile(data) {
         const file = File.create(data);
-        this.files.set(file.uuid, file);
-        this.element.prepend(file.element);
-        file.initialRender(this.odd);
-        file.render();
-        this.odd = !this.odd;
-        this.render();
-    }
-
-    render() {
-        const mods = document.getElementsByClassName("mod");
-        for (const mod of mods) {
-            if (!(this.role == "mod") || (this.role == "admin")) {
-                mod.classList.add("hidden");
-            } else {
-                mod.classList.remove("hidden");
-            }
-        }
+        this.files.unshift(file);
     }
 }
 
