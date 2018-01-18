@@ -7,7 +7,6 @@ class FileList {
     constructor(element) {
         this.uploads = [];
         this.files = [];
-        this.role = "user";
     }
 
     addUpload(id, name) {
@@ -15,10 +14,35 @@ class FileList {
         this.uploads.push(upload);
     }
 
+    static search(idKey, items, id, cont) {
+        for (let i = 0; i < items.length; i++) {
+            if (items[i][idKey] == id) {
+                return cont(items[i], i);
+            }
+        }
+        return null;
+    }
+
     searchUploads(id, cont) {
-        for (let i = 0; i < this.uploads.length; i++) {
-            if (this.uploads[i].id == id) {
-                cont(this.uploads[i], i);
+        return FileList.search("id", this.uploads, id, cont);
+    }
+
+    searchFiles(id, cont) {
+        return FileList.search("uuid", this.files, id, cont);
+    }
+
+    async deleteFiles() {
+        for (let i = 0; i < this.files.length;) {
+            if (this.files[i].markedForDeletion) {
+                const result = await this.files[i].delete();
+                if (result.success) {
+                    this.files.splice(i, 1);
+                } else {
+                    console.log("failed to delete file: " + this.files[i].uuid + " with result: " + result);
+                    i++;
+                }
+            } else {
+                i++;
             }
         }
     }

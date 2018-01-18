@@ -8,12 +8,13 @@ class Room {
         this.socket = socket;
         this.fileList = new FileList(document.getElementById("file-list"));
         this.room_id = window.config.room_id;
-        this.channel = Room.createChannel(this.socket, this.fileList, this.room_id);
+        this.channel = Room.createChannel(this.socket, this.fileList, this.room_id, this);
         this.uploader = Room.createUploader(this.fileList, this.room_id);
         this.dnD = Room.createDnD(this.uploader);
+        this.role = "user";
     }
 
-    static createChannel(socket, fileList, room_id) {
+    static createChannel(socket, fileList, room_id, self) {
         const channel = socket.channel("room:" + room_id, {});
 
         channel.on("files", payload => {
@@ -23,7 +24,7 @@ class Room {
         });
         
         channel.on("role", payload => {
-            fileList.role = payload.body;
+            self.role = payload.body;
         });
         
         channel.join()
@@ -76,7 +77,7 @@ class Room {
 
     static createDnD(uploader) {
         const dragAndDrop = new dnd.DragAndDrop({
-            dropZoneElements: [document.querySelector("#file-dropzone"), document.body],
+            dropZoneElements: [document.getElementById("file-dropzone")],
 
             callbacks: {
                 processingDroppedFiles: function() {

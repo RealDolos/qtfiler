@@ -159,12 +159,14 @@ button, .button {
 }
 
 #file-dropzone {
-    display: block;
     width: 100%;
     background-color: #2d2d2d;
 	border-top: 2px solid #555555;
     margin-top: 10px;
     height: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
 }
 
 #file-list {
@@ -212,16 +214,19 @@ button, .button {
 
 }
 
+.v-cloak {
+    visibility: hidden;
+}
+
 .hidden {
     visibility: hidden;
 }
 
 #room {
-    height: 100%;
+    display: inherit;
 }
 
+
 .form-group {
-    display: flex;
-    flex-direction: column;
-    flex-wrap: nowrap;
+    display: inline-block;
 }

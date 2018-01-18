@@ -17,8 +17,7 @@ class File {
             credentials: "include"
         });
         const data = await result.json();
-        console.log(data);
-        this.kys();
+        return data;
     }
 }
 

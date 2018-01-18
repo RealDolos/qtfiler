@@ -1,21 +1,26 @@
-<div id="room" v-cloak>
-  <div class="form-group">
+<div id="file-dropzone">
+  <div v-pre class="form-group">
     <label>upload a file!</label>
-    <div id="upload-button" class="button">Upload</div>
+    <div v-pre id="upload-button" class="button">Upload</div>
   </div>
 
-  <div id="file-dropzone">
-    <span is="file-list" v-bind="fileList" v-on:markdelete="markDelete($event)" />
+  <div id="room" v-cloak>    
+    <div class="form-group">
+      <label>delete files!</label>
+      <div v-on:click="deleteFiles" id="delete-button" class="button">Delete</div>
+    </div>
+
+    <span is="file-list" :role="role" />
   </div>
 </div>
 
 <template id="file-list-template">
   <div id="file-list">
     <template v-for="(upload, index) in uploads">
-      <span is="upload" :key="upload.id" v-bind="upload" :index="index" />
+      <span is="upload" :id="upload.id" :key="upload.id" :role="role" :index="index" />
     </template>
     <template v-for="(file, index) in files">
-      <span is="file" v-on:markdelete="markDelete($event)" :key="file.uuid" v-bind="file" :index="index" :role="role" />
+      <span is="file" :uuid="file.uuid" :key="file.uuid" :index="index" :role="role" />
     </template>
   </div>
 </template>
@@ -30,9 +35,10 @@
   <div :id="domId" :class="['file-container', { 'file-odd': isOdd, 'file-even': isEven }]">
     <a target="_blank" :href="link" class="file-link" :data-hash-sha1="hash">{{ filename }}</a>
     <span class="file-uploader">{{ uploader }}</span>
+    <span class="file-expiration">{{ expiration_date }}</span>
     <template v-if="mod">
       <div class="delete button">
-        <input type="checkbox" :value="markedForDeletion" v-on:input="markDelete($event.target.value)">
+        <input type="checkbox" v-model="markedForDeletion">
         <template v-if="markedForDeletion">
           Unmark
         </template>
