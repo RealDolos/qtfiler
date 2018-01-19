@@ -18,5 +18,10 @@ module.exports = new Vue({
         deleteFiles() {
             return room.fileList.deleteFiles();
         }
+    },
+    computed: {
+        mod() {
+            return this.role == "mod" || this.role == "admin";
+        }
     }
 });

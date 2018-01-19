@@ -26,6 +26,9 @@ module.exports = (room) => {
             },
             isEven() {
                 return (this.index + 1) % 2;
+            },
+            formattedExpirationDate() {
+                return (new Date(this.expiration_date)).toLocaleString();
             }
         },
         methods: {

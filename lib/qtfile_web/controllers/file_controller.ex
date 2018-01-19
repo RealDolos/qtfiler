@@ -49,7 +49,7 @@ defmodule QtfileWeb.FileController do
     path = Application.get_env(:arc, :storage_dir, "uploads/rooms")
 
     if file != nil do
-      absolute_path = get_absolute_path(file)
+      absolute_path = Qtfile.Files.get_absolute_path(file)
 
       mime_type = file.mime_type
 
@@ -118,9 +118,8 @@ defmodule QtfileWeb.FileController do
   def delete(conn, %{"uuid" => uuid}) do
     file = Qtfile.Files.get_file_by_uuid(uuid)
     if file != nil do
-      absolute_path = get_absolute_path(file)
       Qtfile.Files.delete_file(file)
-      File.rm(absolute_path)
+      QtfileWeb.RoomChannel.broadcast_deleted_file(file)
       conn
       |> put_status(200)
       |> json(%{success: true})
@@ -131,10 +130,5 @@ defmodule QtfileWeb.FileController do
       |> json(%{success: false})
       |> halt
     end
-  end
-
-  defp get_absolute_path(file) do
-    path = Application.get_env(:arc, :storage_dir, "uploads/rooms")
-    path <> "/" <> Qtfile.Rooms.get_room!(file.rooms_id).room_id <> "/" <> file.uuid <> "-original" <> Path.extname(file.filename)
   end
 end
