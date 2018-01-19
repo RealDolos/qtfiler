@@ -132,7 +132,9 @@ defmodule Qtfile.Files do
 
   """
   def delete_file(%File{} = file) do
+    absolute_path = get_absolute_path(file)
     Repo.delete(file)
+    Elixir.File.rm(absolute_path)
   end
 
   @doc """
@@ -146,5 +148,10 @@ defmodule Qtfile.Files do
   """
   def change_file(%File{} = file) do
     File.changeset(file, %{})
+  end
+
+  def get_absolute_path(file) do
+    path = Application.get_env(:arc, :storage_dir, "uploads/rooms")
+    path <> "/" <> file.rooms.room_id <> "/" <> file.uuid <> "-original" <> Path.extname(file.filename)
   end
 end
