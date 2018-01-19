@@ -184,6 +184,7 @@ button, .button {
     padding-top: 3px;
     padding-bottom: 4px;
     background-color: var(--lighter-dark-background);
+    display: inline-block;
 }
 
 .file-odd {
@@ -218,6 +219,7 @@ button, .button {
 
 .v-cloak {
     visibility: hidden;
+    display: inherit;
 }
 
 .hidden {
@@ -230,4 +232,22 @@ button, .button {
 
 .form-group {
     display: inline;
+}
+
+#dim-screen {
+    position: fixed;
+    padding: 0;
+    margin: 0;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.5);
+    display: flex;
+}
+
+#loading-message {
+    margin: auto;
+    font-size: 36px;
+    text-align: center;
 }

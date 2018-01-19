@@ -1,22 +1,24 @@
 <div id="file-dropzone">
-  <div v-pre class="form-group">
+  <div class="form-group">
     <label>upload a file!</label>
-    <div v-pre id="upload-button" class="button">Upload</div>
+    <div id="upload-button" class="button">Upload</div>
   </div>
 
-  <div id="room" v-cloak>    
-    <template v-if="mod">
+  <div id="room">
+    <div v-if="false" id="dim-screen"><div id="loading-message">Loading</div></div>
+
+    <template v-cloak v-if="mod">
       <div class="form-group">
         <label>delete files!</label>
         <div v-on:click="deleteFiles" id="delete-button" class="button">Delete</div>
       </div>
     </template>
 
-    <div class="form-group">
+    <div v-cloak class="form-group">
       <input v-model="filter" placeholder="filter files">
     </div>
 
-    <div id="file-list-container">
+    <div v-cloak id="file-list-container">
       <span is="file-list" :role="role" :filter="filter" />
     </div>
   </div>
