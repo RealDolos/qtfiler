@@ -52,16 +52,16 @@ defmodule Qtfile.Files do
         hash: f.hash,
         size: f.size,
         expiration_date: f.expiration_date
-      }
+      },
+      order_by: [asc: :expiration_date]
 
-    Repo.all(query)
+    query
+    |> Repo.all
   end
 
   def get_file_by_uuid(uuid) do
     query = from f in File,
       where: f.uuid == ^uuid,
-      join: r in assoc(f, :rooms),
-      join: u in assoc(f, :users),
       preload: :users,
       preload: :rooms,
       select: f
