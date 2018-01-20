@@ -17,6 +17,7 @@ defmodule Qtfile.Accounts.User do
     # mod - moderates the site
     # user - regular user, no special privs
     field :role, :string, default: "user"
+    field :secret, :binary
     has_many :files, Qtfile.Files.File, on_delete: :delete_all
 
     timestamps()
@@ -25,8 +26,9 @@ defmodule Qtfile.Accounts.User do
   @doc false
   def changeset(%User{} = user, attrs) do
     user
-    |> cast(attrs, [:name, :username, :password, :status, :role])
-    |> validate_required([:name, :username, :password, :status, :role])
+    |> cast(attrs, [:name, :username, :password, :status, :role, :secret])
+    |> validate_required([:name, :username, :password, :status, :role, :secret])
     |> unique_constraint(:username)
+    |> unique_constraint(:secret)
   end
 end
