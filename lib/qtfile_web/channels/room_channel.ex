@@ -24,7 +24,11 @@ defmodule QtfileWeb.RoomChannel do
 
   def handle_info({:after_join, room_id}, socket) do
     #:timer.apply_interval(300, __MODULE__, :increment, [socket])
-    files = Qtfile.Files.get_files_by_room_id(room_id)
+    user = socket.assigns[:user]
+    room = Qtfile.Rooms.get_room_by_room_id!(room_id)
+    files = Enum.map(Qtfile.Files.get_files_by_room_id(room_id), fn(file) ->
+      Qtfile.IPAddressObfuscation.ip_filter(user, room, file)
+    end)
     push(socket, "files", %{body: files})
     {:noreply, socket}
   end

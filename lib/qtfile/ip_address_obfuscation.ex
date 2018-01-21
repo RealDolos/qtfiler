@@ -1,28 +1,68 @@
 defmodule Qtfile.IPAddressObfuscation do
-
-  def encrypt_ip_address(ip_address, room, user, token) do
-    key = generate_encryption_key(room, user, token)
-    :crypto.block_encrypt(:aes_cbc, key, normalise_ip_address(ip_address))
+  def ip_filter(room, user, %{ip_address: ip_address} = data) do
+    case user.role do
+      "admin" -> %{data | ip_address: human_readable(
+                    denormalise_ip_address(Base.decode64!(data.ip_address)))}
+      "mod" -> %{data | ip_address: encrypt_ip_address(data.ip_address, user.secret)}
+      "user" -> Map.delete(data, :ip_address)
+    end
   end
 
-  def decrypt_ip_address(encrypted_ip_address, room, user, token) do
-    key = generate_encryption_key(room, user, token)
-    denormalise_ip_address(:crypto.block_decrypt(:aes_cbc, key, encrypted_ip_address))
+  def ban_filter(room, user, ip_address) do
+    case user.role do
+      "admin" -> {:ok, ip_address}
+      "mod" -> decrypt_ip_address(ip_address, user.secret)
+      "user" -> :error
+    end
   end
 
-  defp normalise_ip_address({a, b, c, d}) do
-    <<0::96, a::8, b::8, c::8, d::8>>
+  def human_readable(ip_address)
+
+  def human_readable({a, b, c, d}) do
+    "#{a}.#{b}.#{c}.#{d}"
   end
 
-  defp normalise_ip_address({a, b, c, d, e, f, g, h}) do
-    <<a::16, b::16, c::16, d::16, e::16, f::16, g::16, h::16>>
+  def human_readable({a, b, c, d, e, f, g, h}) do
+    [a, b, c, d, e, f, g, h] = Enum.map([a, b, c, d, e, f, g, h], fn(chunk) ->
+      Base.encode16(chunk)
+    end)
+    "#{a}:#{b}:#{c}:#{d}:#{e}:#{f}:#{g}:#{h}"
   end
 
-  defp denormalise_ip_address(<<0::96, a::8, b::8, c::8, d::8>>) do
+  defp encrypt_ip_address(ip_address, iv) do
+    pt = Base.decode64(ip_address)
+    key = get_secret_key_base()
+    {ct, mac} = :crypto.block_encrypt(:chacha20_poly1305, key, iv, {iv, pt})
+    result = <<ct::128, mac::128>>
+    Base.url_encode64(result)
+  end
+
+  defp decrypt_ip_address(encrypted_ip_address, iv) do
+    key = get_secret_key_base()
+    <<ct::128, mac::128>> = Base.url_decode64!(encrypted_ip_address)
+    case block_decrypt(:chacha20_poly1305, key, iv, {iv, ct, mac}) do
+      :error -> :error
+      pt -> {:ok, Base.encode64(pt)}
+    end
+  end
+
+  def normalise_ip_address(ip_address)
+
+  def normalise_ip_address({a, b, c, d}) do
+    <<d::8, c::8, b::8, a::8, 0::96>>
+  end
+
+  def normalise_ip_address({a, b, c, d, e, f, g, h}) do
+    <<h::16, g::16, f::16, e::16, d::16, c::16, b::16, a::16>>
+  end
+
+  def denormalise_ip_address(ip_address)
+
+  def denormalise_ip_address(<<d::8, c::8, b::8, a::8, 0::96>>) do
     {a, b, c, d}
   end
 
-  defp denormalise_ip_address(<<a::16, b::16, c::16, d::16, e::16, f::16, g::16, h::16>>) do
+  def denormalise_ip_address(<<h::16, g::16, f::16, e::16, d::16, c::16, b::16, a::16>>) do
     {a, b, c, d, e, f, g, h}
   end
 
@@ -30,19 +70,8 @@ defmodule Qtfile.IPAddressObfuscation do
     :crypto.hmac(:sha256, get_secret_key_base(), <<room.id::64, user.id::64, token::128>>)
   end
 
-  def generate_token() do
-    :crypto.strong_rand_bytes(16)
-  end
-
   defp get_secret_key_base() do
-    Application.get_env(:qtfile, :token_secret_key_base) 
-  end
-
-  defp get_salt() do
-    "ip_address_obfuscation_salt"
-  end
-
-  defp max_age() do
-    86400
+    <<x::256, _>> = Base.decode64!(Application.get_env(:qtfile, :token_secret_key_base))
+    x
   end
 end
