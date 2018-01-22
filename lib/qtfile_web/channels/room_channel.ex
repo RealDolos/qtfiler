@@ -34,6 +34,20 @@ defmodule QtfileWeb.RoomChannel do
     {:noreply, socket}
   end
 
+  def handle_in("delete", %{"files" => files}, socket) do
+    result = Enum.map(files, fn(uuid) ->
+      file = Qtfile.Files.get_file_by_uuid(uuid)
+      if file != nil do
+        Qtfile.Files.delete_file(file)
+        QtfileWeb.RoomChannel.broadcast_deleted_file(file)
+        :ok
+      else
+        :error
+      end
+    end)
+    {:reply, {:ok, result}, socket}
+  end
+
   def broadcast_new_files(files, room_id) do
     QtfileWeb.Endpoint.broadcast_from!(self(), "room:" <> room_id, "files", %{body: files})
   end

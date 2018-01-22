@@ -4,7 +4,7 @@ const Upload  = require("./upload");
 const File  = require ("./file");
 
 class FileList {
-    constructor(element) {
+    constructor() {
         this.uploads = [];
         this.files = [];
     }
@@ -31,23 +31,14 @@ class FileList {
         return FileList.search("uuid", this.files, id, cont);
     }
 
-    async deleteFiles() {
-        // this loop is retarded to deal with a race condition where the await finishes
-        // after the file entry has been spliced from the filelist, thus shifting all the
-        // files down, which means we need to check the current index again
-        for (let i = 0; i < this.files.length;) {
-            if (this.files[i].markedForDeletion) {
-                this.files[i].markedForDeletion = false;
-                const result = await this.files[i].delete();
-                if (result.success) {
-                } else {
-                    console.log("failed to delete file: " + this.files[i].uuid + " with result: " + result);
-                    i++;
-                }
-            } else {
-                i++;
+    getDeletedFiles() {
+        const result = [];
+        for (let file of this.files) {
+            if (file.markedForDeletion) {
+                result.push(file.uuid);
             }
         }
+        return result;
     }
 
     progressUpload(id, uploaded, total) {

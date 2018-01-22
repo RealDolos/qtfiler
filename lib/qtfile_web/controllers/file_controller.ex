@@ -114,21 +114,4 @@ defmodule QtfileWeb.FileController do
   defp store_in_db(_ok_filename_tuple, _conn, _uuid, _room, _upload_date, _mime_type, _path) do
     %{success: false, error: "failed to upload file", preventRetry: true}
   end
-
-  def delete(conn, %{"uuid" => uuid}) do
-    file = Qtfile.Files.get_file_by_uuid(uuid)
-    if file != nil do
-      Qtfile.Files.delete_file(file)
-      QtfileWeb.RoomChannel.broadcast_deleted_file(file)
-      conn
-      |> put_status(200)
-      |> json(%{success: true})
-      |> halt
-    else
-      conn
-      |> put_status(404)
-      |> json(%{success: false})
-      |> halt
-    end
-  end
 end
