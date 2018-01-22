@@ -36,6 +36,7 @@ defmodule QtfileWeb.RoomChannel do
 
   def handle_info({:deleted, room_id, file_uuid}, socket) do
     QtfileWeb.Endpoint.broadcast_from!(self(), "room:" <> room_id, "deleted", %{body: file_uuid})
+    {:noreply, socket}
   end
 
   def handle_in("delete", %{"files" => files}, socket) do

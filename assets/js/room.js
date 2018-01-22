@@ -20,12 +20,9 @@ class Room {
     push(method, data) {
         return new Promise((resolve, reject) => {
             this.channel.push(method, data)
-                .receive("ok", (msgId, msgData) => {
-                    resolve(msgData);
-                })
-                .receive("error", (msgId, msgData) => {
-                    reject(msgData);
-                });
+                .receive("ok", resolve)
+                .receive("error", reject)
+            ;
         });
     }
 
@@ -51,7 +48,8 @@ class Room {
                 .receive("ok", resp => {
                     resolve(channel);
                 })
-                .receive("error", reject);
+                .receive("error", reject)
+            ;
         });
     }
 

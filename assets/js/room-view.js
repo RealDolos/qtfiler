@@ -16,10 +16,14 @@ module.exports = new Vue({
     },
     methods: {
         async deleteFiles() {
-            const files = room.fileList.getDeletedFiles();
-            const results = await room.push("delete", {files: files})
-            // todo: handle result
-            console.log("files deleted: " + results)
+            try {
+                const files = room.fileList.getDeletedFiles();
+                const results = await room.push("delete", {files: files})
+                // todo: handle result
+                console.log("files deleted: " + results.results)
+            } catch (e) {
+                console.log("failed to delete files: " + e)
+            }
         }
     },
     computed: {
