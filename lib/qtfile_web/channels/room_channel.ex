@@ -1,6 +1,5 @@
 defmodule QtfileWeb.RoomChannel do
   use Phoenix.Channel
-  require Logger
 
   def join("room:" <> room_id, message, socket) do
     if Qtfile.Rooms.room_exists?(room_id) do
@@ -36,9 +35,7 @@ defmodule QtfileWeb.RoomChannel do
   end
 
   def handle_info({:deleted, room_id, file_uuid}, socket) do
-    Logger.info("sending deleted message")
     QtfileWeb.Endpoint.broadcast_from!(self(), "room:" <> room_id, "deleted", %{body: file_uuid})
-    Logger.info("sending deleted message 2")
     {:noreply, socket}
   end
 

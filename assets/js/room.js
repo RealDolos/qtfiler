@@ -41,7 +41,6 @@ class Room {
             });
             
             channel.on("deleted", payload => {
-                console.log("receieve deleted message");
                 self.fileList.removeFile(payload.body);
             });
         
