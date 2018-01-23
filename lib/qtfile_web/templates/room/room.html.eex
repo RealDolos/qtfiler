@@ -54,14 +54,16 @@
     <span class="file-uploader">{{ uploader }}</span>
     <span class="file-expiration">{{ formattedExpirationDate }}</span>
     <template v-if="mod">
-      <div v-on:click="deleteMe" class="delete button">
+      <div class="delete button">
         <input type="checkbox" v-model="markedForDeletion">
-        <template v-if="markedForDeletion">
-          Unmark
-        </template>
-        <template v-else>
-          Delete
-        </template>
+        <div v-on:click="deleteMe" class="delete button">
+          <template v-if="markedForDeletion">
+            Unmark
+          </template>
+          <template v-else>
+            Delete
+          </template>
+        </div>
       </div>
     </template>
   </div>
