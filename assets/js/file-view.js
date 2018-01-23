@@ -30,6 +30,17 @@ module.exports = (room) => {
             formattedExpirationDate() {
                 return (new Date(this.expiration_date)).toLocaleString();
             }
+        },
+        methods: {
+            async deleteMe() {
+                try {
+                    const results = await room.push("delete", {files: [this.uuid]})
+                    // todo: handle result
+                    console.log("files deleted: " + results.results)
+                } catch (e) {
+                    console.log("failed to delete files: " + e)
+                }
+            }
         }
     };
 };

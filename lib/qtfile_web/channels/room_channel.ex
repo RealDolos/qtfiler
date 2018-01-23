@@ -35,7 +35,7 @@ defmodule QtfileWeb.RoomChannel do
   end
 
   def handle_info({:deleted, room_id, file_uuid}, socket) do
-    QtfileWeb.Endpoint.broadcast_from!(self(), "room:" <> room_id, "deleted", %{body: file_uuid})
+    QtfileWeb.Endpoint.broadcast!("room:" <> room_id, "deleted", %{body: file_uuid})
     {:noreply, socket}
   end
 
@@ -54,7 +54,7 @@ defmodule QtfileWeb.RoomChannel do
   end
 
   def broadcast_new_files(files, room_id) do
-    QtfileWeb.Endpoint.broadcast_from!(self(), "room:" <> room_id, "files", %{body: files})
+    QtfileWeb.Endpoint.broadcast!("room:" <> room_id, "files", %{body: files})
   end
 
   def broadcast_deleted_file(file) do
