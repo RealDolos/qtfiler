@@ -7,7 +7,7 @@
     --red-text: #FF0000;
     --qtstream: #f1d98d;
     --dark-background: #202127;
-    /* --lighter-dark-background: #32353e; */
+    --lighter-dark-background: #32353e;
     --dark-background2:#1A1B20;
     --l-bg:#54555B;
     --lighter-dark-background2: #292b32;
@@ -39,11 +39,10 @@ html {
 body {
     font-family: Open Sans;
     font-size: 16px;
-    background-color: hotpink;
     color: white;
     height: 100%;
     overflow: hidden;
-    /* background: var(--lighter-dark-background); */
+    background: var(--lighter-dark-background2);
 }
 
 .container {
@@ -68,7 +67,7 @@ main {
     width: 100%;
     border-color: var(--lighter-dark-background);
     border-bottom: 2px solid #555555;
-    background-color: hotpink;
+    background-color: var(--lighter-dark-background);
 }
 
 .navigation {
