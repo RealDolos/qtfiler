@@ -34,12 +34,31 @@ defmodule QtfileWeb.RoomChannel do
     {:noreply, socket}
   end
 
+  def handle_info({:deleted, room_id, file_uuid}, socket) do
+    QtfileWeb.Endpoint.broadcast_from!(self(), "room:" <> room_id, "deleted", %{body: file_uuid})
+    {:noreply, socket}
+  end
+
+  def handle_in("delete", %{"files" => files}, socket) do
+    results = Enum.map(files, fn(uuid) ->
+      file = Qtfile.Files.get_file_by_uuid(uuid)
+      if file != nil do
+        Qtfile.Files.delete_file(file)
+        broadcast_deleted_file(file)
+        :ok
+      else
+        :error
+      end
+    end)
+    {:reply, {:ok, %{results: results}}, socket}
+  end
+
   def broadcast_new_files(files, room_id) do
     QtfileWeb.Endpoint.broadcast_from!(self(), "room:" <> room_id, "files", %{body: files})
   end
 
   def broadcast_deleted_file(file) do
-    QtfileWeb.Endpoint.broadcast_from!(self(), "room:" <> file.rooms.room_id, "deleted", %{body: file.uuid})
+    send(self(), {:deleted, file.rooms.room_id, file.uuid})
   end
 
   def increment(socket) do

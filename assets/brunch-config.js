@@ -36,7 +36,7 @@ exports.config = {
       // }
     },
     stylesheets: {
-        joinTo: "js/app.css"
+        joinTo: "css/app.css"
             /*
             "css/app.css": [
                 "css/app.css",

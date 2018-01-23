@@ -30,11 +30,6 @@ module.exports = (room) => {
             formattedExpirationDate() {
                 return (new Date(this.expiration_date)).toLocaleString();
             }
-        },
-        methods: {
-            markDelete(v) {
-                this.$emit("markdelete", {uuid: this.uuid, value: v});
-            }
         }
     };
 };
