@@ -5,38 +5,52 @@ const dnd = require("fine-uploader/lib/dnd");
 
 class Room {
     constructor(socket) {
-        this.socket = socket;
-        this.fileList = new FileList(document.getElementById("file-list"));
         this.room_id = window.config.room_id;
-        this.channel = Room.createChannel(this.socket, this.fileList, this.room_id, this);
+        this.fileList = new FileList();
+        const self = this;
+        Room.createChannel(socket, this.room_id, this).then(channel => {
+            self.channel = channel;
+        });
         this.uploader = Room.createUploader(this.fileList, this.room_id);
         this.dnD = Room.createDnD(this.uploader);
         this.role = "user";
         this.filter = "";
     }
 
-    static createChannel(socket, fileList, room_id, self) {
-        const channel = socket.channel("room:" + room_id, {});
+    push(method, data) {
+        return new Promise((resolve, reject) => {
+            this.channel.push(method, data)
+                .receive("ok", resolve)
+                .receive("error", reject)
+            ;
+        });
+    }
 
-        channel.on("files", payload => {
-            payload.body.forEach(file => {
-                fileList.addFile(file);
+    static createChannel(socket, room_id, self) {
+        return new Promise((resolve, reject) => {
+            const channel = socket.channel("room:" + room_id, {});
+
+            channel.on("files", payload => {
+                payload.body.forEach(file => {
+                    self.fileList.addFile(file);
+                });
             });
-        });
         
-        channel.on("role", payload => {
-            self.role = payload.body;
-        });
-
-        channel.on("deleted", payload => {
-            fileList.removeFile(payload.body);
-        });
+            channel.on("role", payload => {
+                self.role = payload.body;
+            });
+            
+            channel.on("deleted", payload => {
+                self.fileList.removeFile(payload.body);
+            });
         
-        channel.join()
-            .receive("ok", resp => { console.log("Joined successfully", resp); })
-            .receive("error", resp => { console.log("Unable to join", resp); });
-
-        return channel;
+            channel.join()
+                .receive("ok", resp => {
+                    resolve(channel);
+                })
+                .receive("error", reject)
+            ;
+        });
     }
 
     static createUploader(fileList, room_id) {

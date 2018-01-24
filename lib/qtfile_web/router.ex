@@ -54,8 +54,6 @@ defmodule QtfileWeb.Router do
 
     scope "/mod" do
       pipe_through [:logged_in?, :is_mod?]
-
-      post "/delete", FileController, :delete
     end
   end
 
