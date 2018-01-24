@@ -1,7 +1,9 @@
 defmodule QtfileWeb.RoomChannel do
   use Phoenix.Channel
+  require Logger
+  intercept ["files"]
 
-  def join("room:" <> room_id, message, socket) do
+  def join("room:" <> room_id, _message, socket) do
     if Qtfile.Rooms.room_exists?(room_id) do
       send(self(), {:role, socket.assigns[:user].role})
       send(self(), {:after_join, room_id})
@@ -11,7 +13,7 @@ defmodule QtfileWeb.RoomChannel do
     end
   end
 
-  def join(_topic, _message, socket) do
+  def join(_topic, _message, _socket) do
     {:error, %{reason: "Unavailable"}}
   end
 
@@ -22,13 +24,26 @@ defmodule QtfileWeb.RoomChannel do
   #   {:noreply, socket}
   # end
 
+  def handle_out(_, _, s) do
+    Logger.info "aaaaaaa"
+  end
+
+  def handle_out("files", %{body: files}, socket) do
+    Logger.info "handle_out called"
+    user = socket.assigns[:user]
+    "room:" <> room_id = socket.topic
+    room = Qtfile.Rooms.get_room_by_room_id!(room_id)
+    new_files = Enum.map(files, fn(file) ->
+      Qtfile.IPAddressObfuscation.ip_filter(room, user, file)
+    end)
+    push(socket, files, %{body: new_files})
+    {:noreply, socket}
+  end
+
   def handle_info({:after_join, room_id}, socket) do
     #:timer.apply_interval(300, __MODULE__, :increment, [socket])
-    user = socket.assigns[:user]
-    room = Qtfile.Rooms.get_room_by_room_id!(room_id)
-    files = Enum.map(Qtfile.Files.get_files_by_room_id(room_id), fn(file) ->
-      Qtfile.IPAddressObfuscation.ip_filter(user, room, file)
-    end)
+    files = Enum.map(Qtfile.Files.get_files_by_room_id(room_id),
+      &(Qtfile.Files.process_for_browser/1))
     push(socket, "files", %{body: files})
     {:noreply, socket}
   end
@@ -58,6 +73,7 @@ defmodule QtfileWeb.RoomChannel do
   end
 
   def broadcast_new_files(files, room_id) do
+    files = Enum.map(files, &(Qtfile.Files.process_for_browser/1))
     QtfileWeb.Endpoint.broadcast!("room:" <> room_id, "files", %{body: files})
   end
 

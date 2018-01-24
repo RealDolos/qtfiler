@@ -42,11 +42,25 @@ defmodule Qtfile.Files do
     query = from f in File,
       join: r in assoc(f, :rooms),
       where: r.room_id == ^room_id,
+      preload: :users,
+      preload: :rooms,
       select: f,
       order_by: [asc: :expiration_date]
 
     query
     |> Repo.all
+  end
+
+  def process_for_browser(%Qtfile.Files.File{} = file) do
+    process_for_browser(Map.from_struct(file))
+  end
+
+  def process_for_browser(%{rooms: room, users: user} = file) do
+    file = Map.delete(Map.delete(file, :rooms_id), :users_id)
+    file = Map.delete(Map.delete(file, :rooms), :users)
+    file = Map.delete(file, :__meta__)
+    file = Map.put(Map.put(file, :room_id, room.room_id), :uploader, user.username)
+    file
   end
 
   def get_file_by_uuid(uuid) do
@@ -83,18 +97,17 @@ defmodule Qtfile.Files do
       uuid: uuid,
       filename: filename,
       mime_type: mime_type,
-      room: room,
+      rooms: room,
       hash: hash,
       size: size,
-      uploader: uploader,
+      users: uploader,
       ip_address: ip_address,
       expiration_date: expiration_date
     }
     result = create_file(data)
     case result do
       {:ok, _} ->
-        QtfileWeb.RoomChannel.broadcast_new_files(
-          [Qtfile.IPAddressObfuscation.ip_filter(room, user, data)], room.room_id)
+        QtfileWeb.RoomChannel.broadcast_new_files([data], room.room_id)
         :ok
       {:error, changeset} ->
         Logger.error("failed to add file to db")

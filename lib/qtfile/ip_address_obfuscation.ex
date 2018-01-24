@@ -1,4 +1,6 @@
 defmodule Qtfile.IPAddressObfuscation do
+  require Logger
+
   def ip_filter(room, user, %{ip_address: ip_address} = data) do
     case user.role do
       "admin" -> %{data | ip_address: human_readable(
@@ -30,9 +32,15 @@ defmodule Qtfile.IPAddressObfuscation do
   end
 
   defp encrypt_ip_address(ip_address, iv) do
+    Logger.info ip_address
+    Logger.info iv
     pt = Base.decode64(ip_address)
+    Logger.info pt
     key = get_secret_key_base()
+    Logger.info key
     {ct, mac} = :crypto.block_encrypt(:chacha20_poly1305, key, iv, {iv, pt})
+    Logger.info ct
+    Logger.info mac
     result = <<ct::128, mac::128>>
     Base.url_encode64(result)
   end
@@ -40,7 +48,7 @@ defmodule Qtfile.IPAddressObfuscation do
   defp decrypt_ip_address(encrypted_ip_address, iv) do
     key = get_secret_key_base()
     <<ct::128, mac::128>> = Base.url_decode64!(encrypted_ip_address)
-    case block_decrypt(:chacha20_poly1305, key, iv, {iv, ct, mac}) do
+    case :crypto.block_decrypt(:chacha20_poly1305, key, iv, {iv, ct, mac}) do
       :error -> :error
       pt -> {:ok, Base.encode64(pt)}
     end
