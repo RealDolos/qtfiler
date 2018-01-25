@@ -9,9 +9,10 @@ defmodule Qtfile.Rooms.Room do
     # Seconds
     # 259200 is 72 hours
     field :file_ttl, :integer, default: 259200
-    has_many :files, Qtfile.Files.File, on_delete: :delete_all
+    has_many :files, Qtfile.Files.File,
+      on_delete: :delete_all, foreign_key: :location, on_replace: :delete
     field :motd, :string
-    field :owner, :string
+    belongs_to :users, Qtfile.Accounts.User, foreign_key: :owner, on_replace: :update
     field :room_id, :string
     field :room_name, :string, default: "New Room"
     field :secret, :binary
@@ -30,8 +31,9 @@ defmodule Qtfile.Rooms.Room do
   @doc false
   def changeset(%Room{} = room, attrs) do
     room
-    |> cast(attrs, [:room_id, :room_name, :owner, :motd, :disabled, :file_ttl, :secret])
-    |> validate_required([:room_id, :room_name, :owner, :disabled, :file_ttl, :secret])
+    |> cast(attrs, [:room_id, :room_name, :motd, :disabled, :file_ttl, :secret])
+    |> put_assoc(:users, attrs["users"])
+    |> validate_required([:room_id, :room_name, :disabled, :file_ttl, :secret])
     |> unique_constraint(:room_id)
     |> unique_constraint(:secret)
   end
