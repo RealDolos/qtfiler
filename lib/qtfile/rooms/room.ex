@@ -14,6 +14,7 @@ defmodule Qtfile.Rooms.Room do
     field :owner, :string
     field :room_id, :string
     field :room_name, :string, default: "New Room"
+    field :secret, :binary
 
     timestamps()
   end
@@ -29,8 +30,9 @@ defmodule Qtfile.Rooms.Room do
   @doc false
   def changeset(%Room{} = room, attrs) do
     room
-    |> cast(attrs, [:room_id, :room_name, :owner, :motd, :disabled, :file_ttl])
-    |> validate_required([:room_id, :room_name, :owner, :disabled, :file_ttl])
+    |> cast(attrs, [:room_id, :room_name, :owner, :motd, :disabled, :file_ttl, :secret])
+    |> validate_required([:room_id, :room_name, :owner, :disabled, :file_ttl, :secret])
     |> unique_constraint(:room_id)
+    |> unique_constraint(:secret)
   end
 end

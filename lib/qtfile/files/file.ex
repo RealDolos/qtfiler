@@ -22,8 +22,8 @@ defmodule Qtfile.Files.File do
   def changeset(%File{} = file, attrs) do
     file
     |> cast(attrs, [:uuid, :filename, :mime_type, :hash, :size, :ip_address, :expiration_date])
-    |> put_assoc(:users, attrs.uploader)
-    |> put_assoc(:rooms, attrs.room)
+    |> put_assoc(:users, attrs.users)
+    |> put_assoc(:rooms, attrs.rooms)
     |> validate_required([:uuid, :filename, :hash, :size, :ip_address, :expiration_date])
     |> unique_constraint(:uuid)
   end

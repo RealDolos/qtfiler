@@ -89,6 +89,7 @@ defmodule Qtfile.Rooms do
         "file_ttl" => Room.default_file_ttl(),
         "files" => Room.default_files(),
         "motd" => Room.default_motd(),
+        "secret" => :crypto.strong_rand_bytes(16),
       }
     )
   end

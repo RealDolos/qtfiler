@@ -8,7 +8,7 @@ defmodule Qtfile.Util do
     |> Base.encode16(case: :lower)
   end
 
-  def get_ip_address(%{remote_ip: {one, two, three, four}}) do
-    "#{one}.#{two}.#{three}.#{four}"
+  def get_ip_address(%{remote_ip: ip}) do
+    Base.encode64(Qtfile.IPAddressObfuscation.normalise_ip_address(ip))
   end
 end

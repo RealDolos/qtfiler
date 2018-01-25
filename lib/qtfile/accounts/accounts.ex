@@ -63,22 +63,20 @@ defmodule Qtfile.Accounts do
     case SingleToken.verify_token(Map.get(attrs, "token", "")) do
       true ->
         # attrs = Map.put(attrs, "password", Bcrypt.hash_pwd_salt(Map.get(attrs, "password")))
-        attrs =
-        if Mix.env == :prod do
+        attrs = if Mix.env == :prod do
           Map.put(attrs, "password", Bcrypt.hash_pwd_salt(Map.get(attrs, "password")))
         else
           Map.put(attrs, "password", Map.get(attrs, "password"))
         end
+        |> Map.put("role", "user")
+        |> Map.put("status", "active")
+        |> Map.put("secret", :crypto.strong_rand_bytes(16))
 
-        attrs = Map.put(attrs, "role", "user")
-        attrs = Map.put(attrs, "status", "active")
-
-        changeset = %User{}
+        %User{}
         |> User.changeset(attrs)
         # |> Ecto.Changeset.cast_assoc(:credential, with: &Credential.changeset/2)
         # |> Ecto.Changeset.cast_assoc(:token, with: &TokenHash.changeset/2)
-
-        Repo.insert(changeset)
+        |> Repo.insert()
       false ->
         {:error, :invalid_token}
     end
