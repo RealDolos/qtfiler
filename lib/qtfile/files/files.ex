@@ -56,11 +56,14 @@ defmodule Qtfile.Files do
   end
 
   def process_for_browser(%{rooms: room, users: user} = file) do
-    file = Map.delete(Map.delete(file, :rooms_id), :users_id)
-    file = Map.delete(Map.delete(file, :rooms), :users)
-    file = Map.delete(file, :__meta__)
-    file = Map.put(Map.put(file, :room_id, room.room_id), :uploader, user.username)
-    file
+    Enum.reduce(
+      [:rooms_id, :users_id, :rooms, :users, :__meta__, :secret], file,
+      fn (n, c) ->
+        Map.delete(c, n)
+      end
+    )
+    |> Map.put(:room_id, room.room_id)
+    |> Map.put(:uploader, user.username)
   end
 
   def get_file_by_uuid(uuid) do
