@@ -153,11 +153,10 @@ hr {
     margin-bottom: 5px;
 }
 
-button, .delete.button {
+button {
     color: red;
     font-size: 14px;
     display: inline-block;
-    background-color: #3c3c3c;
     border: 2px solid #5e5e5e;
     border-radius: 2px;
     padding: 5px;
@@ -170,7 +169,6 @@ button, .delete.button {
 #file-dropzone {
     width: 100%;
     background-color: #2d2d2d;
-    border-top: 2px solid #555555;
     margin-top: 10px;
     height: 100%;
     display: inline;
@@ -190,25 +188,29 @@ button, .delete.button {
 
 .file-container {
     width: 100%;
-    padding-top: 3px;
-    padding-bottom: 4px;
+    vertical-align: middle;
+    padding-top: 8px;
+    padding-bottom: 8px;
     background-color: var(--lighter-dark-background);
     display: inline-block;
 }
 
-.file-odd {
-    background-color: var(--dark-background);
+.file-container * {
+    display: inline-block;
+    vertical-align: middle;
 }
 
 .file-link {
     margin-left: 7px;
     text-decoration: none;
-    vertical-align: middle;
+    vertical-align: baseline;
     height: 100%;
+    color: #d2d5e0;
+    font-weight: 500;
 }
 
 .file-uploader {
-    background: #232126;
+    background: #273049;
     border-style: solid;
     border-color: #58525b;
     border-width: 1px;
@@ -300,6 +302,18 @@ button, .delete.button {
     transition: ease-in-out 0.2s;
 }
 
+.login-form {
+    margin: auto;
+    background: var(--lighter-dark-background);
+    border: 1px solid rgb(20,20,20);
+    border-radius: 5px;
+    width: 30%;
+}
+
+.login-form button {
+    margin-left: 0px;
+}
+
 .form-group button {
     margin-left: 10%;
 }
@@ -308,10 +322,10 @@ button, .delete.button {
     padding-left: 10px;
 }
 
-button, .delete.button, .button {
+.button {
     position: relative;
-    background: #202531;
-    border-radius: 5px;
+    background: #2b3246;
+    border-radius: 3px;
     border: 1px solid #0e1320;
     display: inline-block;
     cursor: pointer;
@@ -323,25 +337,39 @@ button, .delete.button, .button {
     text-decoration: none;
     transition: ease-in-out 0.1s;
 }
-button:hover {
+.button:hover {
     background-color: #222834;
     transition: ease-in-out 0.1s;
+}
+
+.delete.button {
+    background: transparent;
+    border-style: none;
+}
+
+#upload-button, #delete-button {
+    vertical-align: middle
+}
+
+#delete-button {
+    background: #462b2d;
 }
 
 .delete.button {
     padding: 0px;
 }
 
-.file-container.file-even {
+.file-even {
     background: var(--lighter-dark-background);
 }
 
-.file-container.file-odd {
-    background: #202227
+.file-odd {
+    background: #3e424c;
 }
 
 .file-expiration {
     font-size: 10px;
+    color: #b1b5c4;
 }
 
 .nav-text {
@@ -355,3 +383,23 @@ button:hover {
 .header-icon, .red {
     background: var(--lighter-dark-background);
 }
+
+#file-dropzone input {
+    background: #404552;
+    border-style: solid;
+    border-radius: 3px;
+    border-color: #404552;
+}
+
+/*#file-dropzone input {
+    background: #2b2e36;
+    border-top-style: none;
+    border-bottom-style: none;
+    border-width: 1px;
+    border-color: rgb(100,100,100);
+    border-left-style: solid;
+    border-right-style: solid;
+    padding-left: 5px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+}*/
