@@ -8,7 +8,8 @@ use Mix.Config
 # General application configuration
 config :qtfile,
   ecto_repos: [Qtfile.Repo],
-  token_secret_key_base: "REPLACE THIS"
+  token_secret_key_base: "REPLACE THIS",
+  secret_key_ip: "REPLACE THIS"
 
 # Configures the endpoint
 config :qtfile, QtfileWeb.Endpoint,
