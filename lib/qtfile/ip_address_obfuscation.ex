@@ -1,10 +1,18 @@
 defmodule Qtfile.IPAddressObfuscation do
+  import Bitwise
+
   def ip_filter(room, user, %{ip_address: ip_address} = data) do
     case user.role do
       "admin" -> %{data | ip_address: human_readable(
-                    denormalise_ip_address(data.ip_address))}
-      "mod" -> %{data | ip_address: encrypt_ip_address(data.ip_address, user.secret)}
-      "user" -> Map.delete(data, :ip_address)
+                    denormalise_ip_address(ip_address))}
+      "mod" -> %{data | ip_address: encrypt_ip_address(ip_address, user.secret)}
+      "user" -> if room.owner == user.id do
+        %{data | ip_address:
+          encrypt_ip_address(ip_address, :crypto.exor(user.secret, room.secret))
+        }
+      else
+          Map.delete(data, :ip_address)
+      end
     end
   end
 
@@ -12,7 +20,11 @@ defmodule Qtfile.IPAddressObfuscation do
     case user.role do
       "admin" -> {:ok, ip_address}
       "mod" -> decrypt_ip_address(ip_address, user.secret)
-      "user" -> :error
+      "user" -> if room.owner == user.id do
+        decrypt_ip_address(ip_address, :crypto.exor(user.secret, room.secret))
+      else
+        :error
+      end
     end
   end
 
