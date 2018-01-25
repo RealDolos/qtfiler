@@ -2,7 +2,7 @@ defmodule Qtfile.IPAddressObfuscation do
   def ip_filter(room, user, %{ip_address: ip_address} = data) do
     case user.role do
       "admin" -> %{data | ip_address: human_readable(
-                    denormalise_ip_address(Base.decode64!(data.ip_address)))}
+                    denormalise_ip_address(data.ip_address))}
       "mod" -> %{data | ip_address: encrypt_ip_address(data.ip_address, user.secret)}
       "user" -> Map.delete(data, :ip_address)
     end
@@ -30,7 +30,7 @@ defmodule Qtfile.IPAddressObfuscation do
   end
 
   defp encrypt_ip_address(ip_address, iv) do
-    pt = Base.decode64!(ip_address)
+    pt = ip_address
     key = get_secret_key_base()
     {ct, mac} = :crypto.block_encrypt(:aes_gcm, key, iv, {iv, pt, 16})
     result = ct <> mac
@@ -42,7 +42,7 @@ defmodule Qtfile.IPAddressObfuscation do
     <<ct::128, mac::128>> = Base.url_decode64!(encrypted_ip_address)
     case :crypto.block_decrypt(:aes_gcm, key, iv, {iv, ct, mac}) do
       :error -> :error
-      pt -> {:ok, Base.encode64(pt)}
+      pt -> {:ok, pt}
     end
   end
 

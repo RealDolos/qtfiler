@@ -12,7 +12,7 @@ defmodule Qtfile.Files.File do
     field :hash, :string
     field :size, :integer
     belongs_to :users, Qtfile.Accounts.User
-    field :ip_address, :string
+    field :ip_address, :binary
     field :expiration_date, :utc_datetime
 
     timestamps()
