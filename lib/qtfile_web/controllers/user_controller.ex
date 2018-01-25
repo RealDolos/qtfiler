@@ -21,13 +21,11 @@ defmodule QtfileWeb.UserController do
   def register(conn, %{"user" => user_params}) do
     case Accounts.create_user(user_params) do
       {:error, :invalid_token} ->
-        IO.inspect "FIRST ERROR"
         conn
         |> put_flash(:error, "Invalid registration token")
         |> redirect(to: user_path(conn, :register_page))
         |> halt()
       {:error, %Ecto.Changeset{} = changeset} ->
-        IO.inspect changeset, label: "SECOND ERROR"
         conn
         |> put_flash(:error, "failed to register an account")
         |> redirect(to: "/")
