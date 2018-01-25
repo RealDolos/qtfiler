@@ -9,7 +9,7 @@ defmodule Qtfile.Rooms.Room do
     # Seconds
     # 259200 is 72 hours
     field :file_ttl, :integer, default: 259200
-    has_many :files, Qtfile.Files.File, on_delete: :delete_all
+    has_many :files, Qtfile.Files.File, on_delete: :delete_all, foreign_key: :location
     field :motd, :string
     field :owner, :string
     field :room_id, :string
