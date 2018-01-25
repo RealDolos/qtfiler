@@ -52,17 +52,24 @@ defmodule QtfileWeb.RoomChannel do
   end
 
   def handle_in("delete", %{"files" => files}, socket) do
-    results = Enum.map(files, fn(uuid) ->
-      file = Qtfile.Files.get_file_by_uuid(uuid)
-      if file != nil do
-        Qtfile.Files.delete_file(file)
-        broadcast_deleted_file(file)
-        :ok
-      else
-        :error
-      end
-    end)
-    {:reply, {:ok, %{results: results}}, socket}
+    user = socket.assigns[:user]
+    "room:" <> room_id = socket.topic
+    room = Qtfile.Rooms.get_room_by_room_id!(room_id)
+    if Qtfile.Accounts.has_mod_authority(user, room) do
+      results = Enum.map(files, fn(uuid) ->
+        file = Qtfile.Files.get_file_by_uuid(uuid)
+        if file != nil and file.location == room.id do
+          Qtfile.Files.delete_file(file)
+          broadcast_deleted_file(file)
+          :ok
+        else
+          :error
+        end
+      end)
+      {:reply, {:ok, %{results: results}}, socket}
+    else
+      {:reply, :error, socket}
+    end
   end
 
   def broadcast_new_files(files, room_id) do

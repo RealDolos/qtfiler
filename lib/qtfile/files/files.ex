@@ -42,8 +42,8 @@ defmodule Qtfile.Files do
     query = from f in File,
       join: r in assoc(f, :rooms),
       where: r.room_id == ^room_id,
+      preload: [rooms: r],
       preload: :users,
-      preload: :rooms,
       select: f,
       order_by: [asc: :expiration_date]
 
@@ -57,7 +57,7 @@ defmodule Qtfile.Files do
 
   def process_for_browser(%{rooms: room, users: user} = file) do
     Enum.reduce(
-      [:rooms_id, :users_id, :rooms, :users, :__meta__, :secret], file,
+      [:location, :uploader, :rooms, :users, :__meta__, :secret], file,
       fn (n, c) ->
         Map.delete(c, n)
       end

@@ -15,7 +15,7 @@ defmodule QtfileWeb.RoomController do
     user = Qtfile.Accounts.get_user!(get_session(conn, :user_id))
     room_id = Qtfile.Rooms.generate_room_id()
 
-    Qtfile.Rooms.create_room(room_id, user.name)
+    Qtfile.Rooms.create_room(room_id, user)
 
     redirect(conn, to: room_path(conn, :index, room_id))
   end
