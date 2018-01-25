@@ -42,21 +42,25 @@ defmodule Qtfile.Files do
     query = from f in File,
       join: r in assoc(f, :rooms),
       where: r.room_id == ^room_id,
-      join: u in assoc(f, :users),
-      select: %{
-        uploader: u.name,
-        room_id: r.room_id,
-        filename: f.filename,
-        mime_type: f.mime_type,
-        uuid: f.uuid,
-        hash: f.hash,
-        size: f.size,
-        expiration_date: f.expiration_date
-      },
+      preload: :users,
+      preload: :rooms,
+      select: f,
       order_by: [asc: :expiration_date]
 
     query
     |> Repo.all
+  end
+
+  def process_for_browser(%Qtfile.Files.File{} = file) do
+    process_for_browser(Map.from_struct(file))
+  end
+
+  def process_for_browser(%{rooms: room, users: user} = file) do
+    file = Map.delete(Map.delete(file, :rooms_id), :users_id)
+    file = Map.delete(Map.delete(file, :rooms), :users)
+    file = Map.delete(file, :__meta__)
+    file = Map.put(Map.put(file, :room_id, room.room_id), :uploader, user.username)
+    file
   end
 
   def get_file_by_uuid(uuid) do
@@ -89,10 +93,21 @@ defmodule Qtfile.Files do
   end
 
   def add_file(uuid, filename, room, hash, size, uploader, ip_address, expiration_date, mime_type) do
-    result = create_file(%{uuid: uuid, filename: filename, mime_type: mime_type, room: room, hash: hash, size: size, uploader: uploader, ip_address: ip_address, expiration_date: expiration_date})
+    data = %{
+      uuid: uuid,
+      filename: filename,
+      mime_type: mime_type,
+      rooms: room,
+      hash: hash,
+      size: size,
+      users: uploader,
+      ip_address: ip_address,
+      expiration_date: expiration_date
+    }
+    result = create_file(data)
     case result do
       {:ok, _} ->
-        QtfileWeb.RoomChannel.broadcast_new_files([%{filename: filename, hash: hash, uuid: uuid, size: size, uploader: uploader.name, expiration_date: expiration_date}], room.room_id)
+        QtfileWeb.RoomChannel.broadcast_new_files([data], room.room_id)
         :ok
       {:error, changeset} ->
         Logger.error("failed to add file to db")
