@@ -8,10 +8,10 @@ defmodule Qtfile.Files.File do
     field :filename, :string
     field :mime_type, :string
     field :uuid, :string
-    belongs_to :rooms, Qtfile.Rooms.Room, foreign_key: :location, on_replace: :update
+    belongs_to :rooms, Qtfile.Rooms.Room, foreign_key: :location
     field :hash, :string
     field :size, :integer
-    belongs_to :users, Qtfile.Accounts.User, foreign_key: :uploader, on_replace: :update
+    belongs_to :users, Qtfile.Accounts.User, foreign_key: :uploader
     field :ip_address, :binary
     field :expiration_date, :utc_datetime
 
