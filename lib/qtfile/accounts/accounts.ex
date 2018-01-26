@@ -146,6 +146,10 @@ defmodule Qtfile.Accounts do
     end
   end
 
+  def has_mod_authority(user, room) do
+    user.role == "mod" or user.role == "admin" or user.id == room.owner
+  end
+
   defp authenticate_by_username_password_helper(%{hashed_password: hashed_password, user: user}, password) do
     if Mix.env == :prod do
       cond do

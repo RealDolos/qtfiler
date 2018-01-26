@@ -9,6 +9,6 @@ defmodule Qtfile.Util do
   end
 
   def get_ip_address(%{remote_ip: ip}) do
-    Base.encode64(Qtfile.IPAddressObfuscation.normalise_ip_address(ip))
+    Qtfile.IPAddressObfuscation.normalise_ip_address(ip)
   end
 end

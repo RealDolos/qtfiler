@@ -18,7 +18,8 @@ defmodule Qtfile.Accounts.User do
     # user - regular user, no special privs
     field :role, :string, default: "user"
     field :secret, :binary
-    has_many :files, Qtfile.Files.File, on_delete: :delete_all
+    has_many :files, Qtfile.Files.File, foreign_key: :uploader
+    has_many :rooms, Qtfile.Rooms.Room, foreign_key: :owner
 
     timestamps()
   end
