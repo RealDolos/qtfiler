@@ -21,9 +21,11 @@ defmodule QtfileWeb.UserSocket do
   # performing token verification on connect.
   def connect(%{"token" => token}, socket) do
     case Phoenix.Token.verify(socket, Application.get_env(:qtfile, :token_secret_key_base), token, max_age: 31557600) do
-      {:ok, user_id} ->
-        socket = assign(socket, :user, Qtfile.Accounts.get_user!(user_id))
-        {:ok, socket}
+      {:ok, {user_id, ip_address}} ->
+        socket
+        |> assign(:user_id, user_id)
+        |> assign(:ip_address, ip_address)
+        |> (&{:ok, &1}).()
       {:error, _} ->
         :error
     end

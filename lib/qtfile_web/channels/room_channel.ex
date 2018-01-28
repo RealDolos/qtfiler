@@ -1,11 +1,11 @@
 defmodule QtfileWeb.RoomChannel do
   use Phoenix.Channel
-  intercept ["files"]
+  alias QtfileWeb.Presence
+  intercept ["files", "presence_diff"]
 
   def join("room:" <> room_id, _message, socket) do
     if Qtfile.Rooms.room_exists?(room_id) do
-      send(self(), {:role, socket.assigns[:user].role})
-      send(self(), {:after_join, room_id})
+      send(self(), :after_join)
       {:ok, socket}
     else
       {:error, %{reason: "Room does not exist"}}
@@ -23,10 +23,16 @@ defmodule QtfileWeb.RoomChannel do
   #   {:noreply, socket}
   # end
 
-  def handle_out("files", %{body: files}, socket) do
-    user = socket.assigns[:user]
+  defp get_user_and_room(socket) do
+    user_id = socket.assigns[:user_id]
     "room:" <> room_id = socket.topic
     room = Qtfile.Rooms.get_room_by_room_id!(room_id)
+    user = Qtfile.Accounts.get_user!(user_id)
+    {user, room}
+  end
+
+  def handle_out("files", %{body: files}, socket) do
+    {user, room} = get_user_and_room(socket)
     new_files = Enum.map(files, fn(file) ->
       Qtfile.IPAddressObfuscation.ip_filter(room, user, file)
     end)
@@ -34,16 +40,41 @@ defmodule QtfileWeb.RoomChannel do
     {:noreply, socket}
   end
 
-  def handle_info({:after_join, room_id}, socket) do
-    #:timer.apply_interval(300, __MODULE__, :increment, [socket])
-    files = Enum.map(Qtfile.Files.get_files_by_room_id(room_id),
-      &(Qtfile.Files.process_for_browser/1))
-    handle_out("files", %{body: files}, socket)
+  def handle_out("presence_diff", diff, socket) do
+    push(socket, "presence_diff", presence_filter_ips(diff, socket))
+    {:noreply, socket}
   end
 
-  def handle_info({:role, role}, socket) do
-    push(socket, "role", %{body: role})
-    {:noreply, socket}
+  defp presence_filter_ips(presence_info, socket) do
+    {user, room} = get_user_and_room(socket)
+    presence_info
+    |> Enum.map(fn({operation_id, values}) ->
+      values
+      |> Enum.map(fn({user_id, %{metas: metas} = data}) ->
+        new_metas = Enum.map(metas,
+        &(Qtfile.IPAddressObfuscation.ip_filter(room, user, &1))
+      )
+        {user_id, %{data | metas: new_metas}}
+      end)
+      |> Enum.into(%{})
+      |> (&{operation_id, &1}).()
+    end)
+    |> Enum.into(%{})
+  end
+
+  def handle_info(:after_join, socket) do
+    {user, room} = get_user_and_room(socket)
+    #:timer.apply_interval(300, __MODULE__, :increment, [socket])
+    files = Enum.map(Qtfile.Files.get_files_by_room_id(room.room_id),
+      &(Qtfile.Files.process_for_browser/1))
+    push(socket, "presence_state", presence_filter_ips(Presence.list(socket), socket))
+    {:ok, _} = Presence.track(socket, user.id,
+      %{
+        online_at: inspect(System.system_time(:seconds)),
+        ip_address: socket.assigns.ip_address,
+      }
+    )
+    handle_out("files", %{body: files}, socket)
   end
 
   def handle_info({:deleted, room_id, file_uuid}, socket) do
@@ -52,9 +83,7 @@ defmodule QtfileWeb.RoomChannel do
   end
 
   def handle_in("delete", %{"files" => files}, socket) do
-    user = socket.assigns[:user]
-    "room:" <> room_id = socket.topic
-    room = Qtfile.Rooms.get_room_by_room_id!(room_id)
+    {user, room} = get_user_and_room(socket)
     if Qtfile.Accounts.has_mod_authority(user, room) do
       results = Enum.map(files, fn(uuid) ->
         file = Qtfile.Files.get_file_by_uuid(uuid)

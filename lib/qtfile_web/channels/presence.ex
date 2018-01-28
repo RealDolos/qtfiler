@@ -70,4 +70,20 @@ defmodule QtfileWeb.Presence do
   """
   use Phoenix.Presence, otp_app: :qtfile,
                         pubsub_server: Qtfile.PubSub
+  alias Qtfile.Accounts.User
+  import Ecto.Query
+  alias Qtfile.Repo
+
+  def fetch(_topic, entries) do
+    query =
+      from u in User,
+      where: u.id in ^Map.keys(entries),
+      select: {u.id, {u.role, u.name, u.status}}
+
+    users = query |> Repo.all |> Enum.into(%{})
+
+    for {key, %{metas: metas}} <- entries, into: %{} do
+      {key, %{metas: metas, user: users[key]}}
+    end
+  end
 end
