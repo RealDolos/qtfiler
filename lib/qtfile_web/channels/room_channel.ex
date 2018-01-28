@@ -74,6 +74,7 @@ defmodule QtfileWeb.RoomChannel do
         ip_address: socket.assigns.ip_address,
       }
     )
+    push(socket, "role", %{body: user.role})
     handle_out("files", %{body: files}, socket)
   end
 
