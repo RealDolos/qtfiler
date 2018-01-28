@@ -57,13 +57,6 @@ defmodule Qtfile.Rooms do
     Repo.one(query)
   end
 
-  def get_files(room_id) do
-    query = from r in Room,
-      where: r.room_id == ^room_id,
-      preload: [:files]
-    Repo.one(query).files
-  end
-
   @doc """
   Creates a room.
 
@@ -82,14 +75,14 @@ defmodule Qtfile.Rooms do
 
     create_room(
       %{
-        "room_id" => room_id,
-        "users" => owner,
-        "room_name" => Room.default_room_name(),
-        "disabled" => Room.default_disabled(),
-        "file_ttl" => Room.default_file_ttl(),
-        "files" => Room.default_files(),
-        "motd" => Room.default_motd(),
-        "secret" => :crypto.strong_rand_bytes(16),
+        room_id: room_id,
+        owner: owner,
+        room_name: Room.default_room_name(),
+        disabled: Room.default_disabled(),
+        file_ttl: Room.default_file_ttl(),
+        files: Room.default_files(),
+        motd: Room.default_motd(),
+        secret: :crypto.strong_rand_bytes(16),
       }
     )
   end

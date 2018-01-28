@@ -58,7 +58,7 @@ defmodule QtfileWeb.RoomChannel do
     if Qtfile.Accounts.has_mod_authority(user, room) do
       results = Enum.map(files, fn(uuid) ->
         file = Qtfile.Files.get_file_by_uuid(uuid)
-        if file != nil and file.location == room.id do
+        if file != nil and file.location_id == room.id do
           Qtfile.Files.delete_file(file)
           broadcast_deleted_file(file)
           :ok
@@ -78,7 +78,7 @@ defmodule QtfileWeb.RoomChannel do
   end
 
   def broadcast_deleted_file(file) do
-    send(self(), {:deleted, file.rooms.room_id, file.uuid})
+    send(self(), {:deleted, file.location.room_id, file.uuid})
   end
 
   def increment(socket) do

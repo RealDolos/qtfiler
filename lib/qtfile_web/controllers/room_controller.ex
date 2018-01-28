@@ -1,5 +1,6 @@
 defmodule QtfileWeb.RoomController do
   use QtfileWeb, :controller
+  require Logger
 
   def index(conn, %{"room_id" => room_id}) do
     if Qtfile.Rooms.room_exists?(room_id) do
@@ -15,9 +16,15 @@ defmodule QtfileWeb.RoomController do
     user = Qtfile.Accounts.get_user!(get_session(conn, :user_id))
     room_id = Qtfile.Rooms.generate_room_id()
 
-    Qtfile.Rooms.create_room(room_id, user)
+    case Qtfile.Rooms.create_room(room_id, user) do
+      {:ok, _} -> redirect(conn, to: room_path(conn, :index, room_id))
+      {:error, e} ->
+        Logger.error("failed to create room:")
+        Logger.error(inspect(e))
+        redirect(conn, to: "/")
 
-    redirect(conn, to: room_path(conn, :index, room_id))
+    end
+
   end
 
   def not_found(conn, params) do
