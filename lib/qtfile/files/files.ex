@@ -38,6 +38,18 @@ defmodule Qtfile.Files do
   """
   def get_file!(id), do: Repo.get!(File, id)
 
+  def get_files_by_room_id(room_id) do
+    query = from f in File,
+      join: r in assoc(f, :location),
+      where: r.room_id == ^room_id,
+      order_by: [asc: :expiration_date],
+      join: o in assoc(r, :owner),
+      join: u in assoc(f, :uploader),
+      preload: [location: {r, owner: o}, uploader: u],
+      select: f
+    Repo.all(query)
+  end
+
   def process_for_browser(%Qtfile.Files.File{} = file) do
     process_for_browser(Map.from_struct(file))
   end

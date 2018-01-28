@@ -24,11 +24,7 @@ defmodule Qtfile.Files.File do
     |> cast(
       attrs, [:uuid, :filename, :mime_type, :hash, :size, :ip_address, :expiration_date]
     )
-    |> put_assoc(:uploader, attrs.uploader)
-    |> put_assoc(:location, attrs.location)
     |> validate_required([
-      :location_id,
-      :uploader_id,
       :uuid,
       :filename,
       :hash,
@@ -36,6 +32,8 @@ defmodule Qtfile.Files.File do
       :ip_address,
       :expiration_date
     ])
+    |> put_assoc(:uploader, attrs.uploader)
+    |> put_assoc(:location, attrs.location)
     |> unique_constraint(:uuid)
   end
 end

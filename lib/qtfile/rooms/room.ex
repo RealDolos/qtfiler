@@ -31,8 +31,8 @@ defmodule Qtfile.Rooms.Room do
   def changeset(%Room{} = room, attrs) do
     room
     |> cast(attrs, [:room_id, :room_name, :motd, :disabled, :file_ttl, :secret])
-    |> put_assoc(:owner, attrs["owner"])
-    |> validate_required([:owner_id, :room_id, :room_name, :disabled, :file_ttl, :secret])
+    |> validate_required([:room_id, :room_name, :disabled, :file_ttl, :secret])
+    |> put_assoc(:owner, attrs.owner)
     |> unique_constraint(:room_id)
     |> unique_constraint(:secret)
   end
