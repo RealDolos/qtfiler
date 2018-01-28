@@ -8,10 +8,10 @@ defmodule Qtfile.Files.File do
     field :filename, :string
     field :mime_type, :string
     field :uuid, :string
-    belongs_to :rooms, Qtfile.Rooms.Room, foreign_key: :location
+    belongs_to :location, Qtfile.Rooms.Room, foreign_key: :location_id
     field :hash, :string
     field :size, :integer
-    belongs_to :users, Qtfile.Accounts.User, foreign_key: :uploader
+    belongs_to :uploader, Qtfile.Accounts.User, foreign_key: :uploader_id
     field :ip_address, :binary
     field :expiration_date, :utc_datetime
 
@@ -21,10 +21,19 @@ defmodule Qtfile.Files.File do
   @doc false
   def changeset(%File{} = file, attrs) do
     file
-    |> cast(attrs, [:uuid, :filename, :mime_type, :hash, :size, :ip_address, :expiration_date])
-    |> put_assoc(:users, attrs.users)
-    |> put_assoc(:rooms, attrs.rooms)
-    |> validate_required([:uuid, :filename, :hash, :size, :ip_address, :expiration_date])
+    |> cast(
+      attrs, [:uuid, :filename, :mime_type, :hash, :size, :ip_address, :expiration_date]
+    )
+    |> validate_required([
+      :uuid,
+      :filename,
+      :hash,
+      :size,
+      :ip_address,
+      :expiration_date
+    ])
+    |> put_assoc(:uploader, attrs.uploader)
+    |> put_assoc(:location, attrs.location)
     |> unique_constraint(:uuid)
   end
 end

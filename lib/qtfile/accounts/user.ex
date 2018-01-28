@@ -18,8 +18,8 @@ defmodule Qtfile.Accounts.User do
     # user - regular user, no special privs
     field :role, :string, default: "user"
     field :secret, :binary
-    has_many :files, Qtfile.Files.File, foreign_key: :uploader
-    has_many :rooms, Qtfile.Rooms.Room, foreign_key: :owner
+    has_many :files, Qtfile.Files.File, foreign_key: :uploader_id
+    has_many :rooms, Qtfile.Rooms.Room, foreign_key: :owner_id
 
     timestamps()
   end
@@ -29,6 +29,8 @@ defmodule Qtfile.Accounts.User do
     user
     |> cast(attrs, [:name, :username, :password, :status, :role, :secret])
     |> validate_required([:name, :username, :password, :status, :role, :secret])
+    |> validate_inclusion(:role, ["admin", "mod", "user"])
+    |> validate_inclusion(:status, ["active", "banned"])
     |> unique_constraint(:username)
     |> unique_constraint(:secret)
   end

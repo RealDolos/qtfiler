@@ -40,37 +40,35 @@ defmodule Qtfile.Files do
 
   def get_files_by_room_id(room_id) do
     query = from f in File,
-      join: r in assoc(f, :rooms),
+      join: r in assoc(f, :location),
       where: r.room_id == ^room_id,
-      preload: [rooms: r],
-      preload: :users,
-      select: f,
-      order_by: [asc: :expiration_date]
-
-    query
-    |> Repo.all
+      order_by: [asc: :expiration_date],
+      join: o in assoc(r, :owner),
+      join: u in assoc(f, :uploader),
+      preload: [location: {r, owner: o}, uploader: u],
+      select: f
+    Repo.all(query)
   end
 
   def process_for_browser(%Qtfile.Files.File{} = file) do
     process_for_browser(Map.from_struct(file))
   end
 
-  def process_for_browser(%{rooms: room, users: user} = file) do
+  def process_for_browser(%{location: location, uploader: uploader} = file) do
     Enum.reduce(
-      [:location, :uploader, :rooms, :users, :__meta__, :secret], file,
+      [:location_id, :uploader_id, :location, :uploader, :__meta__, :secret], file,
       fn (n, c) ->
         Map.delete(c, n)
       end
     )
-    |> Map.put(:room_id, room.room_id)
-    |> Map.put(:uploader, user.username)
+    |> Map.put(:room_id, location.room_id)
+    |> Map.put(:uploader, uploader.username)
   end
 
   def get_file_by_uuid(uuid) do
     query = from f in File,
       where: f.uuid == ^uuid,
-      preload: :users,
-      preload: :rooms,
+      preload: [:uploader, location: [:owner]],
       select: f
 
     query
@@ -100,10 +98,10 @@ defmodule Qtfile.Files do
       uuid: uuid,
       filename: filename,
       mime_type: mime_type,
-      rooms: room,
+      location: room,
       hash: hash,
       size: size,
-      users: uploader,
+      uploader: uploader,
       ip_address: ip_address,
       expiration_date: expiration_date
     }
@@ -170,6 +168,6 @@ defmodule Qtfile.Files do
 
   def get_absolute_path(file) do
     path = Application.get_env(:arc, :storage_dir, "uploads/rooms")
-    path <> "/" <> file.rooms.room_id <> "/" <> file.uuid <> "-original" <> Path.extname(file.filename)
+    path <> "/" <> file.location.room_id <> "/" <> file.uuid <> "-original" <> Path.extname(file.filename)
   end
 end
