@@ -41,22 +41,27 @@ defmodule QtfileWeb.RoomChannel do
   end
 
   def handle_out("presence_diff", diff, socket) do
-    push(socket, "presence_diff", presence_filter_ips(diff, socket))
+    push(socket, "presence_diff", presence_filter_ips_diff(diff, socket))
     {:noreply, socket}
   end
 
-  defp presence_filter_ips(presence_info, socket) do
+  defp presence_filter_ips(presence_diff, socket) do
     {user, room} = get_user_and_room(socket)
+    presence_diff
+    |> Enum.map(fn({user_id, %{metas: metas} = data}) ->
+      new_metas = Enum.map(metas,
+      &(Qtfile.IPAddressObfuscation.ip_filter(room, user, &1))
+    )
+      {user_id, %{data | metas: new_metas}}
+    end)
+    |> Enum.into(%{})
+  end
+
+  defp presence_filter_ips_diff(presence_info, socket) do
     presence_info
     |> Enum.map(fn({operation_id, values}) ->
       values
-      |> Enum.map(fn({user_id, %{metas: metas} = data}) ->
-        new_metas = Enum.map(metas,
-        &(Qtfile.IPAddressObfuscation.ip_filter(room, user, &1))
-      )
-        {user_id, %{data | metas: new_metas}}
-      end)
-      |> Enum.into(%{})
+      |> presence_filter_ips(socket)
       |> (&{operation_id, &1}).()
     end)
     |> Enum.into(%{})
@@ -70,7 +75,7 @@ defmodule QtfileWeb.RoomChannel do
     push(socket, "presence_state", presence_filter_ips(Presence.list(socket), socket))
     {:ok, _} = Presence.track(socket, user.id,
       %{
-        online_at: inspect(System.system_time(:seconds)),
+        online_at: DateTime.utc_now(),
         ip_address: socket.assigns.ip_address,
       }
     )

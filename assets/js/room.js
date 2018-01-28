@@ -2,11 +2,13 @@
 const FileList = require("./file-list");
 const qq = require("fine-uploader/lib/core");
 const dnd = require("fine-uploader/lib/dnd");
+const Presence = require("./presence");
 
 class Room {
     constructor(socket) {
         this.room_id = window.config.room_id;
         this.fileList = new FileList();
+        this.presence = new Presence();
         const self = this;
         Room.createChannel(socket, this.room_id, this).then(channel => {
             self.channel = channel;
@@ -42,6 +44,14 @@ class Room {
             
             channel.on("deleted", payload => {
                 self.fileList.removeFile(payload.body);
+            });
+
+            channel.on("presence_state", payload => {
+                self.presence.syncState(payload);
+            });
+
+            channel.on("presence_diff", payload => {
+                self.presence.diffState(payload);
             });
         
             channel.join()
