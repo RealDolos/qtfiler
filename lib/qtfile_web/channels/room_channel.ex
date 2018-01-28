@@ -36,7 +36,7 @@ defmodule QtfileWeb.RoomChannel do
 
   def handle_info({:after_join, room_id}, socket) do
     #:timer.apply_interval(300, __MODULE__, :increment, [socket])
-    files = Enum.map(Qtfile.Files.get_files_by_room_id(room_id),
+    files = Enum.map(Qtfile.Rooms.get_files(room_id),
       &(Qtfile.Files.process_for_browser/1))
     handle_out("files", %{body: files}, socket)
   end
