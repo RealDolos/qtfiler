@@ -8,6 +8,10 @@
     <div v-if="false" id="dim-screen"><div id="loading-message">Loading</div></div>
 
     <template v-cloak v-if="mod">
+      <span is="presence" :role="role" />
+    </template>
+
+    <template v-cloak v-if="mod">
       <div class="form-group">
         <label>delete files!</label>
         <div v-on:click="deleteFiles" id="delete-button" class="button">Delete</div>
@@ -58,6 +62,27 @@
       <input type="checkbox" v-model="markedForDeletion">
       <div v-on:click="deleteMe" class="delete button">🗑</div>
     </template>
+  </div>
+</template>
+
+<template id="presence-template">
+  <div>
+    Presences
+    <div>
+      <template v-for="(user, id) in presences">
+        <div>
+          {{ user.user.name }}/{{ user.user.role }}:
+          <div>
+            <template v-for="meta in user.metas">
+              <div>
+                <span class="file-uploader">{{ meta.ip_address }}</span>
+                <span class="file-uploader">{{ meta.online_at }}</span>
+              </div>
+            </template>
+          </div>
+        </div>
+      </template>
+    </div>
   </div>
 </template>
 
