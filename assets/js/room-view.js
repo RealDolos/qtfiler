@@ -4,6 +4,7 @@ const socket = require("./socket");
 const Room = require("./room");
 const Vue = require("vue/dist/vue.common.js");
 const fileListView = require("./file-list-view");
+const presenceView = require("./presence-view");
 const room = new Room(socket);
 
 // A room with a vue
@@ -12,7 +13,8 @@ module.exports = new Vue({
     data: room,
     el: "#room",
     components: {
-        fileList: fileListView(room)
+        fileList: fileListView(room),
+        presence: presenceView(room)
     },
     methods: {
         async deleteFiles() {
