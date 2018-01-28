@@ -29,6 +29,8 @@ defmodule Qtfile.Accounts.User do
     user
     |> cast(attrs, [:name, :username, :password, :status, :role, :secret])
     |> validate_required([:name, :username, :password, :status, :role, :secret])
+    |> validate_inclusion(:role, ["admin", "mod", "user"])
+    |> validate_inclusion(:status, ["active", "banned"])
     |> unique_constraint(:username)
     |> unique_constraint(:secret)
   end
