@@ -16,6 +16,9 @@ module.exports = new Vue({
         fileList: fileListView(room),
         presence: presenceView(room)
     },
+    mounted() {
+        room.initialiseUploader();
+    },
     methods: {
         async deleteFiles() {
             try {
