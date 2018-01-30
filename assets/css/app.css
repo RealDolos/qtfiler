@@ -49,8 +49,6 @@ body {
 }
 
 .nav-container {
-    flex: 0 0 0;
-    display: flex;
     width: 100%;
     border-color: var(--lighter-dark-background);
     border-bottom: 2px solid #555555;
@@ -58,7 +56,6 @@ body {
 }
 
 .navigation {
-    flex: 1;
     width: 100%;
     position: relative;
     font-size: 25px;
@@ -160,6 +157,7 @@ button {
 #file-list-container {
     padding: 10px;
     box-sizing: border-box;
+    min-height: 50%;
 }
 
 .column, body, .container {
@@ -168,7 +166,30 @@ button {
     flex-wrap: nowrap;
     justify-content: flex-start;
     align-items: stretch;
-    align-content: space-between;
+    align-content: stretch;
+    max-width: 100%;
+}
+
+.column-wrap {
+    flex-wrap: wrap;
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: baseline;
+    align-content: flex-start;
+    max-height: 100%;
+}
+
+.row-right {
+    justify-content: flex-end;
+}
+
+.row-spaced {
+    justify-content: space-between;
 }
 
 .wrapped, html, body {
@@ -182,8 +203,28 @@ button {
     flex: 1 0 0;
 }
 
-.no-grow {
-    flex: 0 0 0;
+.grow-double {
+    flex: 2 0 0;
+}
+
+.grow-double-shrink {
+    flex: 2 1 0;
+}
+
+.grow-shrink-double {
+    flex: 1 2 0;
+}
+
+.grow-shrink {
+    flex: 1 1 0;
+}
+
+.shrink {
+    flex: 0 1 0;
+}
+
+.shrink-double {
+    flex: 0 2 0;
 }
 
 .scroll-container {
@@ -191,31 +232,24 @@ button {
 }
 
 .scroll-content {
-    min-height: 100%
+    min-height: 100%;
+    min-width: 100%;
 }
 
 .file-container {
-    vertical-align: middle;
     padding-top: 8px;
     padding-bottom: 8px;
     padding-left: 4px;
     padding-right: 3px;
     background-color: var(--lighter-dark-background);
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: baseline;
-    align-content: space-between;
 }
 
 .file-link {
     margin-left: 7px;
     text-decoration: none;
-    vertical-align: baseline;
-    height: 100%;
     color: #d2d5e0;
     font-weight: 500;
+    display: block;
 }
 
 .file-uploader {
@@ -228,36 +262,8 @@ button {
     padding-right: 2px;
     font-size: 11px;
     top: 50%;
-    margin-left:5px;
-    vertical-align: middle;
-}
-
-.file-component {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: baseline;
-}
-
-.file-sub-component {
-    flex: 0 0 0;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: no-wrap;
-    align-items: baseline;
-}
-
-
-.file-component-left {
-    flex: 2 0 0;
-    align-content: flex-start;
-    justify-content: space-between;
-}
-
-.file-component-right {
-    flex: 1 0 0;
-    align-content: flex-end;
-    justify-content: flex-end;
+    margin-left: 5px;
+    display: block;
 }
 
 .v-cloak {
@@ -269,18 +275,8 @@ button {
     visibility: hidden;
 }
 
-.control-bar {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    align-items: baseline;
-    align-content: flex-start;
-}
-
 .form-group {
     margin: 10px;
-    display: inline;
 }
 
 #dim-screen {
@@ -388,7 +384,7 @@ button {
 }
 
 #upload-button, #delete-button {
-    vertical-align: middle
+    vertical-align: middle;
 }
 
 #delete-button {
@@ -396,8 +392,14 @@ button {
 }
 
 .small.delete.button, .mark{
-    margin: 1px 5px 1px 5px;
+    margin: 1px 3px 1px 3px;
     padding: 0;
+    vertical-align: middle;
+    display: block;
+}
+
+.row-centre {
+    align-content: center;
 }
 
 .file-even {
@@ -411,6 +413,8 @@ button {
 .file-expiration {
     font-size: 10px;
     color: #b1b5c4;
+    margin: auto 6px auto 6px;
+    display: block;
 }
 
 .nav-text {
