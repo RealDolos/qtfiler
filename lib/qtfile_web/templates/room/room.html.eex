@@ -59,7 +59,7 @@
 
 <template id="file-template">
   <div :id="domId" :class="['file-container', 'row', 'row-spaced', { 'file-odd': isOdd, 'file-even': isEven }]">
-    <div class="row row-spaced grow-double-shrink">
+    <div class="row grow-double-shrink">
       <a target="_blank" :href="link" class="file-link" :data-hash-sha1="hash">{{ filename }}</a>
       <div class="row row-right">
         <span class="file-uploader">{{ uploader }}</span>
