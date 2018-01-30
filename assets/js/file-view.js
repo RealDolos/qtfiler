@@ -10,7 +10,7 @@ module.exports = (room) => {
         },
         name: "file",
         template: "#file-template",
-        props: ["role", "uuid", "index"],
+        props: ["role", "uuid", "index", "filesLength"],
         computed: {
             domId() {
                 return "file-" + this.uuid;
@@ -22,13 +22,16 @@ module.exports = (room) => {
                 return this.role == "mod" || this.role == "admin";
             },
             isOdd() {
-                return this.index % 2;
+                return (this.index + this.filesLength) % 2;
             },
             isEven() {
-                return (this.index + 1) % 2;
+                return (this.index + this.filesLength + 1) % 2;
             },
             formattedExpirationDate() {
                 return (new Date(this.expiration_date)).toLocaleString();
+            },
+            shrunken_ip() {
+                return this.ip_address.substring(0, 22);
             }
         },
         methods: {

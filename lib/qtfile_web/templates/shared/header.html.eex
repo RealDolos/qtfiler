@@ -1,15 +1,16 @@
-<div class="nav-container">
-    <div class="header-icon">
-        <a href="/"><img id="header-image" src="/images/favicon.png" alt="this is the website logo"/></a> <span class="qtstream">qtfile</span>
-        <%= for %{text: text, url: url, condition: condition} <- @header_elements do %>
-            <%= if condition.() do %>
-                | <a class="nav-text" href="<%= url %>"><%= text %></a>
-            <% end %>
-        <%= end %>
-    </div>
-
-    <%= if Mix.env == :dev do %>
-        <div class="red">THIS IS A DEV VERSION OF THE SITE. PLEASE DO NOT USE. PASSWORDS ARE SAVED IN PLAINTEXT IN DEV ENVIRONMENT</div>
+<div class="nav-container row">
+  <div class="header-icon row grow-shrink">
+    <a href="/"><img id="header-image" src="/images/favicon.png" alt="this is the website logo"/></a>
+    <span class="qtstream">qtfile</span>
+    <%= for %{text: text, url: url, condition: condition} <- @header_elements do %>
+      <%= if condition.() do %>
+        | <a class="nav-text" href="<%= url %>"><%= text %></a>
+      <% end %>
     <%= end %>
+  </div>
+
+  <%= if Mix.env == :dev do %>
+    <div class="red grow-double-shrink">THIS IS A DEV VERSION OF THE SITE. PLEASE DO NOT USE. PASSWORDS ARE SAVED IN PLAINTEXT IN DEV ENVIRONMENT</div>
+  <%= end %>
 </div>
 
