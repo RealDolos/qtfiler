@@ -5,7 +5,7 @@ defmodule QtfileWeb.RoomsView do
     rooms = Qtfile.Rooms.list_rooms()
 
     for %{room_id: room_id, room_name: room_name, owner: owner} <- rooms do
-      render(__MODULE__, "room_line.html", room_id: room_id, room_name: room_name, room_owner: owner)
+      render(__MODULE__, "room_line.html", room_id: room_id, room_name: room_name, room_owner: owner.name)
     end
   end
 end
