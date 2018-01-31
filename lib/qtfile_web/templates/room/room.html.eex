@@ -1,46 +1,51 @@
-<div id="file-dropzone">
-  <div class="form-group">
-    <label>upload a file!</label>
-    <div id="upload-button" class="button">Upload</div>
-  </div>
+<div id="file-dropzone" class="wrapped column">
+  <div id="room" class="grow column column-wrap">
 
-  <div id="room">
-    <div v-if="false" id="dim-screen"><div id="loading-message">Loading</div></div>
+    <div class="row shrink-double">
+      <div v-if="false" id="dim-screen"><div id="loading-message">Loading</div></div>
 
-    <template v-cloak v-if="mod">
-      <span is="presence" :role="role" />
-    </template>
-
-    <template v-cloak v-if="mod">
-      <div class="form-group">
-        <label>delete files!</label>
-        <div v-on:click="deleteFiles" id="delete-button" class="button">Delete</div>
+      <div v-cloak class="form-group shrink-double">
+        <div id="upload-button" class="button">Upload</div>
       </div>
-    </template>
 
-    <div v-cloak class="form-group">
-      <input v-model="filter" placeholder="filter files">
+      <template v-cloak v-if="mod">
+        <div class="form-group shrink-double">
+          <div v-on:click="deleteFiles" id="delete-button" class="button">Delete</div>
+        </div>
+      </template>
+
+      <div v-cloak class="form-group shrink-double">
+        <input v-model="filter" placeholder="Filter">
+      </div>
+
+      <template v-cloak v-if="mod">
+        <div class="form-group grow-shrink scroll-container">
+          <div class="scroll-content">
+            <span is="presence" :role="role" />
+          </div>
+        </div>
+      </template>
     </div>
 
-    <div v-cloak id="file-list-container">
+    <div v-cloak id="file-list-container" class="grow-shrink scroll-container">
       <span is="file-list" :role="role" :filter="filter" />
     </div>
   </div>
 </div>
 
 <template id="file-list-template">
-  <div id="file-list">
+  <div id="file-list" class="scroll-content column">
     <template v-for="(upload, index) in uploads">
       <span is="upload" :id="upload.id" :key="upload.id" :role="role" :index="index" />
     </template>
     <template v-if="filter == ''">
       <template v-for="(file, index) in files">
-        <span is="file" :uuid="file.uuid" :key="file.uuid" :index="index" :role="role" />
+        <span is="file" :files-length="filesLength" :uuid="file.uuid" :key="file.uuid" :index="index" :role="role" />
       </template>
     </template>
     <template v-else>
       <template v-for="(file, index) in filteredFiles">
-        <span is="file" :uuid="file.uuid" :key="file.uuid" :index="index" :role="role" />
+        <span is="file" :files-length="filteredFilesLength" :uuid="file.uuid" :key="file.uuid" :index="index" :role="role" />
       </template>
     </template>
   </div>
@@ -53,30 +58,38 @@
 </template>
 
 <template id="file-template">
-  <div :id="domId" :class="['file-container', { 'file-odd': isOdd, 'file-even': isEven }]">
-    <a target="_blank" :href="link" class="file-link" :data-hash-sha1="hash">{{ filename }}</a>
-    <span class="file-uploader">{{ uploader }}</span>
-    <span class="file-expiration">{{ formattedExpirationDate }}</span>
-    <template v-if="mod">
-      <span class="file-uploader">{{ ip_address }}</span>
-      <input type="checkbox" v-model="markedForDeletion">
-      <div v-on:click="deleteMe" class="delete button">🗑</div>
-    </template>
+  <div :id="domId" :class="['file-container', 'row', 'row-spaced', { 'file-odd': isOdd, 'file-even': isEven }]">
+    <div class="row grow-double-shrink">
+      <a target="_blank" :href="link" class="file-link" :data-hash-sha1="hash">{{ filename }}</a>
+      <div class="row row-right">
+        <span class="file-uploader">{{ uploader }}</span>
+        <template v-if="mod"><span class="file-uploader">{{ shrunken_ip }}</span></template>
+      </div>
+    </div>
+    <div class="row row-right grow-shrink-double">
+      <span class="file-expiration">{{ formattedExpirationDate }}</span>
+      <template v-if="mod">
+        <div class="row row-centre">
+          <input class="mark" type="checkbox" v-model="markedForDeletion">
+          <div v-on:click="deleteMe" class="small delete button">🗑</div>
+        </div>
+      </template>
+    </div>
   </div>
 </template>
 
 <template id="presence-template">
-  <div>
+  <div class="presence">
     Presences
-    <div>
+    <div class="column">
       <template v-for="(user, id) in presences">
         <div>
           {{ user.user.name }}/{{ user.user.role }}:
-          <div>
+          <div class="column">
             <template v-for="meta in user.metas">
-              <div>
-                <span class="file-uploader">{{ meta.ip_address }}</span>
-                <span class="file-uploader">{{ meta.online_at }}</span>
+              <div class="row">
+                <span class="file-uploader shrink">{{ meta.ip_address }}</span>
+                <span class="file-uploader shrink">{{ meta.online_at }}</span>
               </div>
             </template>
           </div>

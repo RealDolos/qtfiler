@@ -20,6 +20,12 @@ module.exports = (room) => {
                 return this.files.filter((f) => {
                     return f.filename.search(this.filter) >= 0;
                 });
+            },
+            filesLength() {
+                return this.files.length;
+            },
+            filteredFilesLength() {
+                return this.filteredFiles.length;
             }
         }
     };

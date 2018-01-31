@@ -26,7 +26,11 @@ defmodule Qtfile.Rooms do
 
   """
   def list_rooms do
-    Repo.all(Room)
+    query = from r in Room,
+      join: o in assoc(r, :owner),
+      preload: [owner: o],
+      select: r
+    Repo.all(query)
   end
 
   def room_exists?(room_id) do

@@ -13,8 +13,6 @@ class Room {
         Room.createChannel(socket, this.room_id, this).then(channel => {
             self.channel = channel;
         });
-        this.uploader = Room.createUploader(this.fileList, this.room_id);
-        this.dnD = Room.createDnD(this.uploader);
         this.role = "user";
         this.filter = "";
     }
@@ -26,6 +24,11 @@ class Room {
                 .receive("error", reject)
             ;
         });
+    }
+
+    initialiseUploader() {
+        this.uploader = Room.createUploader(this.fileList, this.room_id);
+        this.dnD = Room.createDnD(this.uploader);
     }
 
     static createChannel(socket, room_id, self) {
