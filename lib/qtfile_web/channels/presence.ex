@@ -78,7 +78,7 @@ defmodule QtfileWeb.Presence do
     query =
       from u in User,
       where: u.id in ^Map.keys(entries),
-      select: {u.id, %{role: u.role, name: u.name, status: u.status}}
+      select: {u.id, %{role: u.role, name: u.name}}
 
     users = query |> Repo.all |> Enum.map(fn({id, data}) ->
       {Integer.to_string(id), data}
