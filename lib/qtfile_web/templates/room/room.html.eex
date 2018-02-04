@@ -70,8 +70,11 @@
       <span class="file-expiration">{{ formattedExpirationDate }}</span>
       <template v-if="mod">
         <div class="row row-centre">
-          <input class="mark" type="checkbox" v-model="markedForDeletion">
-          <div v-on:click="deleteMe" class="small delete button">🗑</div>
+          <input class="mark" type="checkbox" v-model="marked">
+          <div v-show="deleteStatus == 'ready'" v-on:click="deleteMe" class="small delete button">🗑</div>
+          <div v-show="deleteStatus == 'waiting'" class="small delete button">⌛</div>
+          <div v-show="deleteStatus == 'succeeded'" class="small delete button">✓</div>
+          <div v-show="deleteStatus == 'failed'" class="small delete button">❌</div>
         </div>
       </template>
     </div>

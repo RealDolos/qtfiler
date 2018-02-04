@@ -26,6 +26,17 @@ class Room {
         });
     }
 
+    async deleteFiles(files) {
+        try {
+            const results = await this.push("delete", {files: files})
+            this.fileList.setFileDeletionResults(files, results.results);
+            console.log("files deleted: " + results.results);
+        } catch (e) {
+            this.fileList.setFileDeletionFailed(files);
+            console.log("failed to delete files: " + e);
+        }
+   }
+
     initialiseUploader() {
         this.uploader = Room.createUploader(this.fileList, this.room_id);
         this.dnD = Room.createDnD(this.uploader);

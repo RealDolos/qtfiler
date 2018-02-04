@@ -36,13 +36,9 @@ module.exports = (room) => {
         },
         methods: {
             async deleteMe() {
-                try {
-                    const results = await room.push("delete", {files: [this.uuid]})
-                    // todo: handle result
-                    console.log("files deleted: " + results.results)
-                } catch (e) {
-                    console.log("failed to delete files: " + e)
-                }
+                this.deleteStatus = "waiting";
+                const files = [this.uuid];
+                await room.deleteFiles(files);
             }
         }
     };

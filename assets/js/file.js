@@ -7,7 +7,8 @@ class File {
     }
 
     constructor() {
-        this.markedForDeletion = false;
+        this.marked = false;
+        this.deleteStatus = "ready";
     }
 }
 
