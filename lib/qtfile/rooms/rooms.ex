@@ -37,6 +37,13 @@ defmodule Qtfile.Rooms do
     not (get_room_by_room_id!(room_id) == nil)
   end
 
+  def uploadable_room(room_id) do
+    case get_room_by_room_id!(room_id) do
+      %{disabled: false} = room -> {:ok, room}
+      _ -> :error
+    end
+  end
+
   @doc """
   Gets a single room.
 
