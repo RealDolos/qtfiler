@@ -8,10 +8,6 @@ defmodule Qtfile.Accounts.User do
     field :name, :string
     field :password, :string
     field :username, :string
-    # Available statuses:
-    # active - not banned
-    # banned - banned
-    field :status, :string, default: "active"
     # Available roles:
     # admin - runs the site
     # mod - moderates the site
@@ -27,10 +23,9 @@ defmodule Qtfile.Accounts.User do
   @doc false
   def changeset(%User{} = user, attrs) do
     user
-    |> cast(attrs, [:name, :username, :password, :status, :role, :secret])
-    |> validate_required([:name, :username, :password, :status, :role, :secret])
+    |> cast(attrs, [:name, :username, :password, :role, :secret])
+    |> validate_required([:name, :username, :password, :role, :secret])
     |> validate_inclusion(:role, ["admin", "mod", "user"])
-    |> validate_inclusion(:status, ["active", "banned"])
     |> unique_constraint(:username)
     |> unique_constraint(:secret)
   end

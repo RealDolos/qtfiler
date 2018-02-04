@@ -69,7 +69,6 @@ defmodule Qtfile.Accounts do
           Map.put(attrs, "password", Map.get(attrs, "password"))
         end
         |> Map.put("role", "user")
-        |> Map.put("status", "active")
         |> Map.put("secret", :crypto.strong_rand_bytes(16))
 
         %User{}

@@ -8,8 +8,11 @@ defmodule QtfileWeb.FileController do
   end
 
   def upload(conn, %{"room_id" => room_id, "file" => files} = params) do
-    if Qtfile.Rooms.room_exists?(room_id) do
-      upload_room_exists(conn, params)
+    uploader_id = get_session(conn, :user_id)
+    ip_address = Qtfile.Util.get_ip_address(conn)
+
+    if validate_upload(room_id, uploader_id, ip_address) do
+      upload_validated(conn, params)
     else
       json conn, %{success: false, error: "room does not exist", preventRetry: true}
     end
@@ -19,7 +22,18 @@ defmodule QtfileWeb.FileController do
     json conn, %{success: false, error: "failed to provide room id in request", preventRetry: true}
   end
 
-  defp upload_room_exists(conn, %{"mime_type" => mime_type, "room_id" => room_id, "file" => files}) do
+  defp validate_upload(room_id, user_id, ip_address) do
+    case Qtfile.Rooms.uploadable_room(room_id) do
+      {:ok, room} ->
+        case Qtfile.Bans.get_bans_for([Qtfile.Accounts.get_user!(user_id), ip_address], room) do
+          [] -> true
+          _ -> false
+        end
+      :error -> false
+    end
+  end
+
+  defp upload_validated(conn, %{"mime_type" => mime_type, "room_id" => room_id, "file" => files}) do
     response =
       Enum.map(files, fn(file) ->
         %{filename: filename} = file

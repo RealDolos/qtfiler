@@ -7,6 +7,12 @@ defmodule Qtfile.Bans do
   alias Qtfile.Repo
 
   alias Qtfile.Bans.Ban
+  alias Qtfile.Bans.UserBan
+  alias Qtfile.Bans.IPBan
+  alias Qtfile.Bans.FileBan
+  alias Qtfile.Accounts.User
+  alias Qtfile.Rooms.Room
+  alias Qtfile.Files.File
 
   @doc """
   Returns the list of bans.
@@ -100,5 +106,42 @@ defmodule Qtfile.Bans do
   """
   def change_ban(%Ban{} = ban) do
     Ban.changeset(ban, %{})
+  end
+
+  def get_bans_for(%User{} = user, %Room{} = room) do
+    query = from user_ban in UserBan,
+      where: user_ban.bannee_id == ^user.id,
+      join: ban in assoc(user_ban, :ban),
+      preload: [ban: ban],
+      where: is_nil(ban.room_id) or ban.room_id == ^room.id,
+      select: user_ban
+    Repo.all(query)
+  end
+
+  def get_bans_for(%File{} = file, %Room{} = room) do
+    query = from file_ban in FileBan,
+      where: file_ban.hash == ^file.hash,
+      join: ban in assoc(file_ban, :ban),
+      preload: [ban: ban],
+      where: is_nil(ban.room_id) or ban.room_id == ^room.id,
+      select: file_ban
+    Repo.all(query)
+  end
+
+  def get_bans_for(ip_address, %Room{} = room)
+  when is_binary(ip_address) do
+    query = from ip_ban in IPBan,
+      where: ip_ban.ip_address == ^ip_address,
+      join: user_ban in assoc(ip_ban, :user_ban),
+      join: ban in assoc(user_ban, :ban),
+      preload: [user_ban: {user_ban, ban: ban}],
+      where: is_nil(ban.room_id) or ban.room_id == ^room.id,
+      select: ip_ban
+    Repo.all(query)
+  end
+
+  def get_bans_for(stuff, %Room{} = room)
+  when is_list(stuff) do
+    Enum.flat_map(stuff, &get_bans_for(&1, room))
   end
 end
