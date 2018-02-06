@@ -9,6 +9,7 @@ class File {
     constructor() {
         this.marked = false;
         this.deleteStatus = "ready";
+        this.banStatus = "ready";
     }
 }
 

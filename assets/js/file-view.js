@@ -39,6 +39,9 @@ module.exports = (room) => {
                 this.deleteStatus = "waiting";
                 const files = [this.uuid];
                 await room.deleteFiles(files);
+            },
+            async banMe() {
+                console.log("banned ;^)");
             }
         }
     };

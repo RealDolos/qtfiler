@@ -75,6 +75,10 @@
           <div v-show="deleteStatus == 'waiting'" class="small delete button">⌛</div>
           <div v-show="deleteStatus == 'succeeded'" class="small delete button">✓</div>
           <div v-show="deleteStatus == 'failed'" class="small delete button">❌</div>
+          <div v-show="banStatus == 'ready'" v-on:click="banMe" class="small delete button">🚫</div>
+          <div v-show="banStatus == 'waiting'" class="small delete button">⌛</div>
+          <div v-show="banStatus == 'succeeded'" class="small delete button">✓</div>
+          <div v-show="banStatus == 'failed'" class="small delete button">❌</div>
         </div>
       </template>
     </div>
