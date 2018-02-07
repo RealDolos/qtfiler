@@ -1,13 +1,11 @@
 //import "js/uploader.js";
 const FileList = require("./file-list");
-const qq = require("fine-uploader/lib/core");
-const dnd = require("fine-uploader/lib/dnd");
 const Presence = require("./presence");
 
 class Room {
     constructor(socket) {
         this.room_id = window.config.room_id;
-        this.fileList = new FileList();
+        this.fileList = new FileList(this.room_id);
         this.presence = new Presence();
         const self = this;
         Room.createChannel(socket, this.room_id, this).then(channel => {
@@ -15,6 +13,7 @@ class Room {
         });
         this.role = "user";
         this.filter = "";
+        this.topid = 0;
     }
 
     push(method, data) {
@@ -27,8 +26,16 @@ class Room {
     }
 
     initialiseUploader() {
-        this.uploader = Room.createUploader(this.fileList, this.room_id);
-        this.dnD = Room.createDnD(this.uploader);
+        const uploadButton = document.getElementById("upload-button");
+        uploadButton.addEventListener("change", handleFiles, false);
+        const self = this;
+        function handleFiles() {
+            const files = this.files;
+            for (const file of files) {
+                self.fileList.addUpload(self.topid, file);
+                self.topid += 1;
+            }
+        }
     }
 
     static createChannel(socket, room_id, self) {
@@ -64,66 +71,6 @@ class Room {
                 .receive("error", reject)
             ;
         });
-    }
-
-    static createUploader(fileList, room_id) {
-        const uploader = new qq.FineUploaderBasic({
-            request: {
-                endpoint: "/api/upload",
-                inputName: "file"
-            },
-
-            retry: {
-                enableAuto: true
-            },
-
-            button: document.getElementById("upload-button"),
-
-            callbacks: {
-                onSubmitted: function(id, name) {
-                    fileList.addUpload(id, name);
-                    return true;
-                },
-
-                onProgress: function(id, name, uploaded, total) {
-                    fileList.progressUpload(id, uploaded, total);
-                },
-
-                onComplete: function(id, name, response, xhr) {
-                    fileList.completeUpload(id);
-                },
-
-                onSubmit: function(id, name) {
-                    this.setParams({
-                        "room_id": room_id,
-                        "mime_type": uploader.getFile(id).type
-                    });
-                }
-            },
-
-            maxConnections: 1
-        });
-
-        return uploader;
-    }
-
-    static createDnD(uploader) {
-        const dragAndDrop = new dnd.DragAndDrop({
-            dropZoneElements: [document.getElementById("file-dropzone")],
-
-            callbacks: {
-                processingDroppedFiles: function() {
-                    //TODO: display some sort of a "processing" or spinner graphic
-                },
-                processingDroppedFilesComplete: function(files, dropTarget) {
-                    //TODO: hide spinner/processing graphic
-
-                    uploader.addFiles(files); //this submits the dropped files to Fine Uploader
-                }
-            }
-        });
-
-        return dragAndDrop;
     }
 }
 

@@ -5,7 +5,7 @@
       <div v-if="false" id="dim-screen"><div id="loading-message">Loading</div></div>
 
       <div v-cloak class="form-group shrink-double">
-        <div id="upload-button" class="button">Upload</div>
+        <input type="file" id="upload-button" class="button">Upload</input>
       </div>
 
       <template v-cloak v-if="mod">
@@ -53,7 +53,7 @@
 
 <template id="upload-template">
   <div :id="domId" class="file-container">
-    {{ name }} - {{ progress }}%
+    {{ file.name }} - {{ progress }}%
   </div>
 </template>
 

@@ -3,11 +3,7 @@ defmodule QtfileWeb.FileController do
   @image_extensions ~w(.jpg .jpeg .png)
   @nice_mime_types ~w(text audio video image)
 
-  def upload(conn, %{"file" => file} = params) when not is_list(file) do
-    upload(conn, %{params | "file" => [file]})
-  end
-
-  def upload(conn, %{"room_id" => room_id, "file" => files} = params) do
+  def upload(conn, %{"room_id" => room_id} = params) do
     uploader_id = get_session(conn, :user_id)
     ip_address = Qtfile.Util.get_ip_address(conn)
 
@@ -33,24 +29,74 @@ defmodule QtfileWeb.FileController do
     end
   end
 
-  defp upload_validated(conn, %{"mime_type" => mime_type, "room_id" => room_id, "file" => files}) do
-    response =
-      Enum.map(files, fn(file) ->
-        %{filename: filename} = file
-        room = Qtfile.Rooms.get_room_by_room_id!(room_id)
-        uuid = Ecto.UUID.generate()
-        scope = %{room_id: room_id, uuid: uuid}
+  defp save_file(conn, size) do
+    hash = :crypto.hash_init(:sha)
+    path = "uploads-temp/" <> Ecto.UUID.generate()
+    {:ok, file} = :file.open(path, [:write, :binary])
+    {:ok, _} = :file.position(file, size)
+    :ok = :file.truncate(file)
+    {:ok, _} = :file.position(file, 0)
+    result = save_file_loop(conn, file, size, hash)
+    case result do
+      {:error, _} = e -> e
+      {:ok, hash} -> {:ok, path, hash}
+    end
+  end
 
-        cond do
-          check_extension(filename, @image_extensions) == true ->
-            Qtfile.ImageFile.store({file, scope})
-            |> store_in_db(conn, uuid, room, mime_type, Qtfile.ImageFile.storage_dir(:original, {file, room}))
+  defp save_file_loop(_conn, _file, 0, _hash) do
+    {:error, :file_too_big}
+  end
 
-          true ->
-            Qtfile.GenericFile.store({file, scope})
-            |> store_in_db(conn, uuid, room, mime_type, Qtfile.GenericFile.storage_dir(:original, {file, room}))
+  defp save_file_loop(conn, file, size, hash) do
+    result = read_body(conn,
+      length: 4 * 1024 * 1024 * 1024,
+      read_length: 64 * 1024,
+      read_timeout: 1024
+    )
+    case result do
+      {:error, _} = e -> e
+      {status, data, conn} ->
+        len = :erlang.byte_size(data)
+        :ok = :file.write(file, data)
+        hash = :crypto.hash_update(hash, data)
+        case status do
+          :ok ->
+            :file.sync(file)
+            :file.close(file)
+            {:ok, Base.encode16(:crypto.hash_final(hash), case: :lower)}
+          :more -> save_file_loop(conn, file, size - len, hash)
         end
-      end) |> hd()
+    end
+  end
+
+  defp upload_validated(conn, params) do
+    %{
+      "room_id" => room_id,
+      "filename" => filename,
+      "content_type" => content_type
+    } = params
+    size = :erlang.binary_to_integer(hd(get_req_header(conn, "content-length")))
+    response =
+      case save_file(conn, size) do
+        {:ok, path, hash} ->
+          file = %Plug.Upload{path: path, content_type: content_type, filename: filename}
+          room = Qtfile.Rooms.get_room_by_room_id!(room_id)
+          uuid = Ecto.UUID.generate()
+          scope = %{room_id: room_id, uuid: uuid}
+
+          cond do
+            check_extension(filename, @image_extensions) == true ->
+              Qtfile.ImageFile.store({file, scope})
+              |> store_in_db(conn, uuid, room, content_type, hash,
+                Qtfile.ImageFile.storage_dir(:original, {file, room}))
+
+            true ->
+              Qtfile.GenericFile.store({file, scope})
+              |> store_in_db(conn, uuid, room, content_type, hash,
+                Qtfile.GenericFile.storage_dir(:original, {file, room}))
+          end
+        {:error, e} -> e
+      end
 
     # conn
     # |> redirect(to: room_path(conn, :index, room_id))
@@ -103,7 +149,7 @@ defmodule QtfileWeb.FileController do
     Enum.member?(extensions, file_extension)
   end
 
-  defp store_in_db({:ok, filename}, conn, uuid, room, mime_type, path) do
+  defp store_in_db({:ok, filename}, conn, uuid, room, mime_type, hash, path) do
     file_path = Path.absname(path <> "/" <> uuid <> "-original" <> Path.extname(filename))
     file_size =
       case File.stat(file_path) do
@@ -112,14 +158,12 @@ defmodule QtfileWeb.FileController do
         _ ->
           0
       end
-
     uploader_id = get_session(conn, :user_id)
     uploader = Qtfile.Accounts.get_user!(uploader_id)
     ip_address = Qtfile.Util.get_ip_address(conn)
     %{file_ttl: file_ttl} = room
     expiration_date = DateTime.from_unix!(DateTime.to_unix(DateTime.utc_now()) + file_ttl)
 
-    hash = Qtfile.Util.hash(:sha, file_path)
     Qtfile.Files.add_file(uuid, filename, room, hash, file_size, uploader, ip_address, expiration_date, mime_type)
 
     %{success: true}
