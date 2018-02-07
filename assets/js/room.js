@@ -27,15 +27,26 @@ class Room {
 
     initialiseUploader() {
         const uploadButton = document.getElementById("upload-button");
-        uploadButton.addEventListener("change", handleFiles, false);
         const self = this;
-        function handleFiles() {
+        uploadButton.addEventListener("change", function() {
             const files = this.files;
             for (const file of files) {
                 self.fileList.addUpload(self.topid, file);
                 self.topid += 1;
             }
-        }
+            this.value = "";
+        }, false);
+
+        const dropzone = document.getElementById("file-dropzone");
+        dropzone.addEventListener("ondrop", (ev) => {
+            const dt = ev.dataTransfer;
+            for (item of dt.items) {
+                if (item.kind == "file") {
+                    this.fileList.addUpload(this.topid, item.getAsFile);
+                    this.topid += 1;
+                }
+            }
+        }, false);
     }
 
     static createChannel(socket, room_id, self) {

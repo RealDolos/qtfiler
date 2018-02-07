@@ -28,11 +28,12 @@ class FileList {
         req.setRequestHeader("Content-Type", "application/octet-stream");
         req.upload.onprogress = (ev) => {
             if (ev.lengthComputable) {
-                upload.uploaded += ev.loaded;
+                upload.uploaded = ev.loaded;
             }
         };
         req.onload = (ev) => {
             this.completeUpload(upload.id);
+            this.status = "ready";
             this.checkForUploads();
         };
         req.send(upload.file);
