@@ -143,9 +143,13 @@ defmodule QtfileWeb.FileController do
         |> put_resp_content_type(mime_type)
         |> send_file(200, absolute_path)
       else
+        download_params = [filename: file.filename] ++ if file.mime_type == nil do
+          []
+        else
+          [content_type: file.mime_type]
+        end
         conn
-        |> put_resp_content_type("application/octet-stream")
-        |> send_download({:file, absolute_path})
+        |> send_download({:file, absolute_path}, download_params)
       end
 
     else
