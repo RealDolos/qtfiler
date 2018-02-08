@@ -56,7 +56,7 @@ class Room {
             const dt = ev.dataTransfer;
             for (let item of dt.items) {
                 if (item.kind == "file") {
-                    this.fileList.addUpload(this.topid, item.getAsFile);
+                    this.fileList.addUpload(this.topid, item.getAsFile());
                     this.topid += 1;
                 }
             }
