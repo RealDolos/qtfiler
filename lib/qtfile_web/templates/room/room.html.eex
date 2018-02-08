@@ -5,7 +5,10 @@
       <div v-if="false" id="dim-screen"><div id="loading-message">Loading</div></div>
 
       <div v-cloak class="form-group shrink-double">
-        <input multiple type="file" id="upload-button" class="button">Upload</input>
+        <label for="upload-button" class="custom-file-upload">
+          <i class="fa fa-cloud-upload"></i>Upload
+        </label>
+        <input multiple type="file" id="upload-button" class="button"/>
       </div>
 
       <template v-cloak v-if="mod">
