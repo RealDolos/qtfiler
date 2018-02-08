@@ -35,18 +35,33 @@ class Room {
                 self.topid += 1;
             }
             this.value = "";
-        }, false);
+        });
+
+        window.addEventListener("drop", (ev) => {
+            ev.preventDefault();
+            ev.stopPropagation();
+            return false;
+        });
+
+        window.addEventListener("dragover", (ev) => {
+            ev.preventDefault();
+            ev.stopPropagation();
+            return false;
+        });
 
         const dropzone = document.getElementById("file-dropzone");
-        dropzone.addEventListener("ondrop", (ev) => {
+        dropzone.addEventListener("drop", (ev) => {
+            ev.preventDefault();
+            ev.stopPropagation();
             const dt = ev.dataTransfer;
-            for (item of dt.items) {
+            for (let item of dt.items) {
                 if (item.kind == "file") {
                     this.fileList.addUpload(this.topid, item.getAsFile);
                     this.topid += 1;
                 }
             }
-        });
+            return false;
+        }, true);
     }
 
     static createChannel(socket, room_id, self) {
