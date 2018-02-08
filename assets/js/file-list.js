@@ -7,42 +7,60 @@ class FileList {
     constructor(room_id) {
         this.uploads = [];
         this.files = [];
-        this.status = "ready";
+        this.status = 0;
         this.room_id = room_id;
     }
 
-    checkForUploads() {
-        if (this.status == "ready" && this.uploads.length) {
-            this.startUpload(this.uploads[0]);
+    async wakeUploader() {
+        if (this.status) {
+            return;
+        }
+
+        this.status += 1;
+
+        try {
+            await this.performUploads();
+        } finally {
+            // todo: catch
+            this.status -= 1;
         }
     }
 
-    startUpload(upload) {
-        this.status = "uploading";
-        const req = new XMLHttpRequest();
-        var query = "room_id=" + this.room_id + "&filename=" + upload.file.name;
-        if (upload.file.type) {
-            query += "&content_type=" + upload.file.type;
+    async performUploads() {
+        while (this.uploads.length) {
+            await this.upload(this.uploads[0]);
+            this.uploads.shift();
         }
-        req.open("POST", "/api/upload?" + query, true);
-        req.setRequestHeader("Content-Type", "application/octet-stream");
-        req.upload.onprogress = (ev) => {
-            if (ev.lengthComputable) {
-                upload.uploaded = ev.loaded;
+    }
+
+    upload(upload) {
+        return new Promise((resolve, reject) => {
+            const req = new XMLHttpRequest();
+            var query = "room_id=" + this.room_id + "&filename=" + upload.file.name;
+
+            if (upload.file.type) {
+                query += "&content_type=" + upload.file.type;
             }
-        };
-        req.onload = (ev) => {
-            this.completeUpload(upload.id);
-            this.status = "ready";
-            this.checkForUploads();
-        };
-        req.send(upload.file);
+
+            req.open("POST", "/api/upload?" + query, true);
+            req.setRequestHeader("Content-Type", "application/octet-stream");
+
+            req.upload.onprogress = (ev) => {
+                if (ev.lengthComputable) {
+                    upload.uploaded = ev.loaded;
+                }
+            };
+
+            req.onload = resolve;
+            req.error = reject;
+            req.send(upload.file);
+        });
     }
 
-    addUpload(id, name) {
+    async addUpload(id, name) {
         const upload = new Upload(id, name);
         this.uploads.push(upload);
-        this.checkForUploads();
+        await this.wakeUploader();
     }
 
     static search(idKey, items, id, cont) {

@@ -5,7 +5,7 @@
       <div v-if="false" id="dim-screen"><div id="loading-message">Loading</div></div>
 
       <div v-cloak class="form-group shrink-double">
-        <input type="file" id="upload-button" class="button">Upload</input>
+        <input multiple type="file" id="upload-button" class="button">Upload</input>
       </div>
 
       <template v-cloak v-if="mod">

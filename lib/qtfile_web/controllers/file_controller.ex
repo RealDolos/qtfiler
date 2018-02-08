@@ -36,15 +36,17 @@ defmodule QtfileWeb.FileController do
     {:ok, _} = :file.position(file, size)
     :ok = :file.truncate(file)
     {:ok, _} = :file.position(file, 0)
-    result = save_file_loop(conn, file, size, hash)
-    case result do
-      {:error, _} = e -> e
-      {:ok, hash} -> {:ok, path, hash}
-    end
+    {conn, result} = save_file_loop(conn, file, size, hash)
+    result =
+      case result do
+        {:ok, hash} -> {:ok, path, hash}
+        x -> x
+      end
+    {conn, result}
   end
 
-  defp save_file_loop(_conn, _file, 0, _hash) do
-    {:error, :file_too_big}
+  defp save_file_loop(conn, _file, 0, _hash) do
+    {conn, {:error, :file_too_big}}
   end
 
   defp save_file_loop(conn, file, size, hash) do
@@ -54,7 +56,7 @@ defmodule QtfileWeb.FileController do
       read_timeout: 1024
     )
     case result do
-      {:error, _} = e -> e
+      {:error, e} -> {conn, {:error, e}}
       {status, data, conn} ->
         len = :erlang.byte_size(data)
         :ok = :file.write(file, data)
@@ -63,21 +65,22 @@ defmodule QtfileWeb.FileController do
           :ok ->
             :file.sync(file)
             :file.close(file)
-            {:ok, Base.encode16(:crypto.hash_final(hash), case: :lower)}
+            {conn, {:ok, Base.encode16(:crypto.hash_final(hash), case: :lower)}}
           :more -> save_file_loop(conn, file, size - len, hash)
         end
     end
   end
 
-  defp upload_validated(conn, params) do
+  defp upload_validated(conn,
     %{
       "room_id" => room_id,
       "filename" => filename,
       "content_type" => content_type
-    } = params
+    }) do
     size = :erlang.binary_to_integer(hd(get_req_header(conn, "content-length")))
+    {conn, save_result} = save_file(conn, size)
     response =
-      case save_file(conn, size) do
+      case save_result do
         {:ok, path, hash} ->
           file = %Plug.Upload{path: path, content_type: content_type, filename: filename}
           room = Qtfile.Rooms.get_room_by_room_id!(room_id)
@@ -95,13 +98,25 @@ defmodule QtfileWeb.FileController do
               |> store_in_db(conn, uuid, room, content_type, hash,
                 Qtfile.GenericFile.storage_dir(:original, {file, room}))
           end
-        {:error, e} -> e
+        {:error, e} -> %{success: false, error: e}
       end
 
     # conn
     # |> redirect(to: room_path(conn, :index, room_id))
     # json conn, %{success: true}
     json conn, response
+  end
+
+  defp upload_validated(conn,
+    %{
+      "room_id" => room_id,
+      "filename" => filename,
+    }) do
+    upload_validated(conn, %{
+      "room_id" => room_id,
+      "filename" => filename,
+      "content_type" => nil
+    })
   end
 
   def download(conn, %{"uuid" => uuid, "realfilename" => _realfilename}) do
