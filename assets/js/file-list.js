@@ -45,14 +45,24 @@ class FileList {
             req.open("POST", "/api/upload?" + query, true);
             req.setRequestHeader("Content-Type", "application/octet-stream");
 
-            req.upload.onprogress = (ev) => {
+            req.upload.addEventListener("progress", (ev) => {
                 if (ev.lengthComputable) {
                     upload.uploaded = ev.loaded;
                 }
-            };
+            });
 
-            req.onload = resolve;
-            req.error = reject;
+            req.addEventListener("load", (ev) => {
+                resolve(req.response);
+            });
+
+            req.addEventListener("error", (ev) => {
+                reject(req.response);
+            });
+
+            req.addEventListener("abort", (ev) => {
+                resolve("aborted xhr");
+            });
+
             req.send(upload.file);
         });
     }

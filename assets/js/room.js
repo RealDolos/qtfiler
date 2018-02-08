@@ -46,7 +46,7 @@ class Room {
                     this.topid += 1;
                 }
             }
-        }, false);
+        });
     }
 
     static createChannel(socket, room_id, self) {
