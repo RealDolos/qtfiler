@@ -4,12 +4,14 @@
     <div class="row shrink-double">
       <div v-if="false" id="dim-screen"><div id="loading-message">Loading</div></div>
 
-      <div v-cloak class="form-group shrink-double">
-        <label for="upload-button" class="custom-file-upload">
-          <i class="fa fa-cloud-upload"></i>Upload
-        </label>
-        <input multiple type="file" id="upload-button" class="button"/>
-      </div>
+      <template v-cloak>
+        <div class="form-group shrink-double">
+          <label for="upload-button" class="custom-file-upload">
+            <i class="fa fa-cloud-upload"></i>Upload
+          </label>
+          <input multiple type="file" id="upload-button" class="button"/>
+        </div>
+      </template>
 
       <template v-cloak v-if="mod">
         <div class="form-group shrink-double">
@@ -17,9 +19,11 @@
         </div>
       </template>
 
-      <div v-cloak class="form-group shrink-double">
-        <input v-model="filter" placeholder="Filter">
-      </div>
+      <template v-cloak>
+        <div class="form-group shrink-double">
+          <input v-model="filter" placeholder="Filter">
+        </div>
+      </template>
 
       <template v-cloak v-if="mod">
         <div class="form-group grow-shrink scroll-container">
@@ -28,6 +32,7 @@
           </div>
         </div>
       </template>
+
     </div>
 
     <div v-cloak id="file-list-container" class="grow-shrink scroll-container">
