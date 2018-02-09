@@ -36,7 +36,7 @@ body {
     font-family: Open Sans;
     font-size: 16px;
     color: white;
-    background: var(--lighter-dark-background2);
+    background: var(--lighter-dark-background);
 }
 
 .body-smaller {
@@ -51,7 +51,7 @@ body {
 .nav-container {
     width: 100%;
     border-color: var(--lighter-dark-background);
-    border-bottom: 2px solid #555555;
+    border-bottom: 2px solid #4f5c6d;
     background-color: var(--lighter-dark-background);
 }
 
@@ -60,6 +60,10 @@ body {
     position: relative;
     font-size: 25px;
     line-height: 100px;
+}
+
+#room {
+    background: var(--lighter-dark-background);
 }
 
 .header-icon {
@@ -163,7 +167,7 @@ button {
 .column, body, .container {
     display: flex;
     flex-direction: column;
-    flex-wrap: nowrap;
+    flex-wrap: nonowrap;
     justify-content: flex-start;
     align-items: stretch;
     align-content: stretch;
@@ -171,13 +175,13 @@ button {
 }
 
 .column-wrap {
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
 }
 
 .row {
     display: flex;
     flex-direction: row;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     justify-content: flex-start;
     align-items: baseline;
     align-content: flex-start;
