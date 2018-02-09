@@ -167,7 +167,7 @@ button {
 .column, body, .container {
     display: flex;
     flex-direction: column;
-    flex-wrap: nonowrap;
+    flex-wrap: nowrap;
     justify-content: flex-start;
     align-items: stretch;
     align-content: stretch;
@@ -175,13 +175,13 @@ button {
 }
 
 .column-wrap {
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
 }
 
 .row {
     display: flex;
     flex-direction: row;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     justify-content: flex-start;
     align-items: baseline;
     align-content: flex-start;
