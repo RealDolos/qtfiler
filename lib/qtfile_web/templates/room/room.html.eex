@@ -85,6 +85,18 @@
   </div>
 </template>
 
+
+<template id="async-button-template">
+  <div>
+    <div v-show="status == 'ready'" v-on:click="action" class="small delete button">
+      {{ standardIcon }}
+    </div>
+    <div v-show="status == 'waiting'" class="small delete button">⌛</div>
+    <div v-show="status == 'succeeded'" class="small delete button">✓</div>
+    <div v-show="status == 'failed'" class="small delete button">❌</div>
+  </div>
+</template>
+
 <template id="presence-template">
   <div class="presence">
     Presences
