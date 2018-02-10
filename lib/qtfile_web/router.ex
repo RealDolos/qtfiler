@@ -2,6 +2,10 @@ defmodule QtfileWeb.Router do
   use QtfileWeb, :router
 
   pipeline :browser do
+    plug Plug.Parsers,
+      parsers: [:urlencoded, :multipart, :json],
+      pass: ["*/*"],
+      json_decoder: Poison
     plug :accepts, ["html"]
     plug :fetch_session
     plug :fetch_flash
@@ -10,10 +14,22 @@ defmodule QtfileWeb.Router do
   end
 
   pipeline :api do
+    plug Plug.Parsers,
+      parsers: [:urlencoded, :multipart, :json],
+      pass: ["*/*"],
+      json_decoder: Poison
     plug :accepts, ["json"]
     plug :fetch_session
     plug :fetch_flash
   end
+
+  pipeline :upload do
+    plug Plug.Parsers,
+      parsers: [:urlencoded],
+      pass: ["*/*"]
+    plug :fetch_session
+    plug :fetch_flash
+  end    
 
   scope "/", QtfileWeb do
     pipe_through :browser # Use the default browser stack
@@ -40,17 +56,19 @@ defmodule QtfileWeb.Router do
   end
 
   scope "/api", QtfileWeb do
+    scope "/" do
+      pipe_through :upload
+      pipe_through :logged_in?
+
+      post "/upload", FileController, :upload
+    end
+
     pipe_through :api
 
     post "/login", UserController, :login
     post "/register", UserController, :register
     get "/logout", UserController, :logout
 
-    scope "/" do
-      pipe_through :logged_in?
-
-      post "/upload", FileController, :upload
-    end
 
     scope "/mod" do
       pipe_through [:logged_in?, :is_mod?]

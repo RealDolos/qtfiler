@@ -31,3 +31,4 @@ npm-debug.log
 /config/prod.secret.exs
 /config/test.exs
 /uploads
+/uploads-temp

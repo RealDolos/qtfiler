@@ -12,7 +12,7 @@ module.exports = (room) => {
         },
         computed: {
             progress() {
-                return Math.round((this.uploaded / this.total) * 100);
+                return Math.round((this.uploaded / this.file.size) * 100);
             },
             domId() {
                 return "upload-" + this.id;
