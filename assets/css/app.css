@@ -36,7 +36,7 @@ body {
     font-family: Open Sans;
     font-size: 16px;
     color: white;
-    background: var(--lighter-dark-background);
+    background: var(--dark-background);
 }
 
 .body-smaller {
@@ -63,7 +63,7 @@ body {
 }
 
 #room {
-    background: var(--lighter-dark-background);
+    background: var(--dark-background);
 }
 
 .header-icon {
@@ -139,19 +139,6 @@ hr {
     border-top: 1px solid #626262;
     margin-top: 10px;
     margin-bottom: 5px;
-}
-
-button {
-    color: red;
-    font-size: 14px;
-    display: inline-block;
-    border: 2px solid #5e5e5e;
-    border-radius: 2px;
-    padding: 5px;
-    margin-top: 10px;
-    margin-right: 10px;
-    width: -moz-fit-content;
-    width: -webkit-fit-content;
 }
 
 #file-dropzone {
@@ -363,7 +350,11 @@ button {
     padding-left: 10px;
 }
 
-.button, .custom-file-upload {
+h1, .register-field > span, .red {
+    color: #c9c9c9;
+}
+
+.button, .custom-file-upload, .form-group > button {
     position: relative;
     background: #2b3246;
     border-radius: 3px;
@@ -376,12 +367,12 @@ button {
     font-weight: bold;
     padding: 11px 23px;
     text-decoration: none;
-    transition: ease-in-out 0.1s;
+    transition: 0.1s;
 }
 
-.button:hover {
-    background-color: #222834;
-    transition: ease-in-out 0.1s;
+.button:hover, .custom-file-upload:hover, .form-group > button:hover {
+    filter: brightness(120%);
+    transition: 0.1s;
 }
 
 .delete.button {
