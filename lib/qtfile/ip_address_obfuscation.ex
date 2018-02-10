@@ -36,7 +36,7 @@ defmodule Qtfile.IPAddressObfuscation do
 
   def human_readable({a, b, c, d, e, f, g, h}) do
     [a, b, c, d, e, f, g, h] = Enum.map([a, b, c, d, e, f, g, h], fn(chunk) ->
-      Base.encode16(chunk)
+      Base.encode16(<<chunk::16>>)
     end)
     "#{a}:#{b}:#{c}:#{d}:#{e}:#{f}:#{g}:#{h}"
   end
