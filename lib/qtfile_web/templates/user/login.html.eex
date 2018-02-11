@@ -2,11 +2,11 @@
 <div class="login-form">
     <div class="login-field">
         <div class="login-field">
-            <%= text_input f, :username, placeholder: "username" %>
+            <%= text_input f, :username, placeholder: "Username" %>
         </div>
 
         <div class="login-field">
-            <%= password_input f, :password, placeholder: "password" %>
+            <%= password_input f, :password, placeholder: "Password" %>
         </div>
     </div>
 </div>

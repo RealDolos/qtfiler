@@ -307,7 +307,7 @@ hr {
     margin-right: 30%;
     margin-top: 1%;
     padding-bottom: 15px;
-    padding-top: 8px;
+    padding-top: 5px;
     border: 1px solid rgb(20,20,20);
     border-radius: 5px;
     text-align: center;
@@ -357,6 +357,58 @@ hr {
 
 .register-form h1 {
     padding-left: 10px;
+}
+
+.container > main {
+    text-align: center;
+}
+
+.room-list  * {
+    display: inline-block;
+    text-align: center;
+}
+
+.room-list {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    font-size: 18px;
+}
+
+.room-list > span:nth-child(1) {
+    width: 10%;
+    min-width: 100px;
+}
+
+.room-list > span:nth-child(2) {
+    width: 50%;
+}
+
+.room-list > span:nth-child(3) {
+    width: 15%;
+}
+
+.room * {
+    text-align: center;
+    display: inline-block;
+}
+
+.room > span:nth-child(1) {
+    width: 10%;
+    min-width: 100px;
+}
+
+.room > span:nth-child(2) {
+    width: 50%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.room > span:nth-child(3) {
+    width: 15%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 h1, .register-field > span, .red, .presence {
