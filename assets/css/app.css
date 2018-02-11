@@ -359,7 +359,7 @@ hr {
     padding-left: 10px;
 }
 
-.container > main {
+main .room, main .room-list {
     text-align: center;
 }
 
