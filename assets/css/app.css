@@ -294,21 +294,29 @@ hr {
     background: var(--lighter-dark-background);
     margin-left: 10%;
     margin-right: 10%;
-    margin-top: 5%;
+    margin-top: 2%;
     padding-bottom: 15px;
     padding-top: 8px;
     border: 1px solid rgb(20,20,20);
     border-radius: 5px;
 }
 
+.login-form {
+    background: var(--lighter-dark-background);
+    margin-left: 30%;
+    margin-right: 30%;
+    margin-top: 1%;
+    padding-bottom: 15px;
+    padding-top: 8px;
+    border: 1px solid rgb(20,20,20);
+    border-radius: 5px;
+    text-align: center;
+}
+
 .register-field input, .login-field input, span.info {
     position: relative;
     padding-top: 15px;
     padding-left: 10px;
-}
-
-.login-field input {
-    margin-left: -8px;
 }
 
 .register-field input, .login-field input {
@@ -323,6 +331,11 @@ hr {
     font-size: 18px;
 }
 
+.login-field input {
+    width: 90%;
+    max-width: 800px;
+}
+
 .register-field input:focus, .login-field input:focus {
     border-color: #4e588d;
     background: #373743;
@@ -330,31 +343,27 @@ hr {
     transition: ease-in-out 0.2s;
 }
 
-.login-form {
-    margin: auto;
-    background: var(--lighter-dark-background);
-    border: 1px solid rgb(20,20,20);
-    border-radius: 5px;
-    width: 30%;
+.login button {
+    margin-left: 30%;
 }
 
-.login-form button {
-    margin-left: 0px;
-}
-
-.form-group button {
+.register button {
     margin-left: 10%;
+}
+
+.login button, .register button {
+    margin-top: 1%;
 }
 
 .register-form h1 {
     padding-left: 10px;
 }
 
-h1, .register-field > span, .red {
+h1, .register-field > span, .red, .presence {
     color: #c9c9c9;
 }
 
-.button, .custom-file-upload, .form-group > button {
+.button, .custom-file-upload, button {
     position: relative;
     background: #2b3246;
     border-radius: 3px;
@@ -370,7 +379,7 @@ h1, .register-field > span, .red {
     transition: 0.1s;
 }
 
-.button:hover, .custom-file-upload:hover, .form-group > button:hover {
+button:hover, .custom-file-upload:hover, #delete-button:hover {
     filter: brightness(120%);
     transition: 0.1s;
 }

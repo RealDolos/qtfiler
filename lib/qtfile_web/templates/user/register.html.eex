@@ -2,28 +2,28 @@
 <div class="register-form">
     <h1>register now</h1>
     <div class="register-field">
-        <%= text_input f, :name, id: "user_name", placeholder: "name" %> <span>this is your display name</span>
+        <%= text_input f, :name, id: "user_name", placeholder: "Name" %> <span>this is your display name</span>
     </div>
     <br>
 
     <div class="register-field">
-        <%= text_input f, :username, id: "user_username", placeholder: "username" %> <span>this is what you use to login. other people do not see this</span>
+        <%= text_input f, :username, id: "user_username", placeholder: "Username" %> <span>this is what you use to login. other people do not see this</span>
     </div>
     <br>
 
     <div class="register-field">
-        <%= password_input f, :password, id: "user_password", placeholder: "password" %> <span>use a secure password or get bent</span>
+        <%= password_input f, :password, id: "user_password", placeholder: "Password" %> <span>use a secure password or get bent</span>
     </div>
     <br>
 
     <div class="register-field">
-        <%= password_input f, :token, id: "user_token", placeholder: "token" %> <span>get a registration token from the site administrator</span>
+        <%= password_input f, :token, id: "user_token", placeholder: "Token" %> <span>get a registration token from the site administrator</span>
     </div>
     <br>
 </div>
 
-<div class="form-group">
-    <%= submit "register" %>
+<div class="register">
+    <%= submit "Register" %>
 </div>
 <% end %>
 
