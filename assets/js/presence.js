@@ -1,6 +1,6 @@
 "use strict";
 
-import {PPresence} from "phoenix";
+import {Presence as PhoenixPresence} from "phoenix";
 
 export default class Presence {
     constructor() {
@@ -8,10 +8,10 @@ export default class Presence {
     }
 
     syncState(state) {
-        this.presences = PPresence.syncState(this.presences, state);
+        this.presences = PhoenixPresence.syncState(this.presences, state);
     }
 
     diffState(diff) {
-        this.presences = PPresence.syncDiff(this.presences, diff);
+        this.presences = PhoenixPresence.syncDiff(this.presences, diff);
     }
 }

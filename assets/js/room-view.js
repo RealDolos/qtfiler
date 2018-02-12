@@ -2,7 +2,7 @@
 
 import socket from "./socket";
 import Room from "./room";
-import vue from "vue/dist/vue.common.js";
+import Vue from "vue/dist/vue.common.js";
 import fileListView from "./file-list-view";
 import presenceView from "./presence-view";
 const room = new Room(socket);
