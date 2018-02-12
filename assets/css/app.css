@@ -220,12 +220,11 @@ hr {
 }
 
 .scroll-container {
-    overflow: auto;
+    overflow-y: auto;
 }
 
 .scroll-content {
     min-height: 100%;
-    min-width: 100%;
 }
 
 .file-container {
