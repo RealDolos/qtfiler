@@ -18,7 +18,7 @@ module.exports = (room) => {
         computed: {
             filteredFiles() {
                 return this.files.filter((f) => {
-                    return f.filename.search(this.filter) >= 0;
+                    return f.filename.toUpperCase().search(this.filter.toUpperCase()) >= 0;
                 });
             },
             filesLength() {
