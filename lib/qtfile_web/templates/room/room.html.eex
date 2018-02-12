@@ -26,13 +26,10 @@
       </template>
 
       <template v-cloak v-if="mod">
-        <div class="form-group grow-shrink scroll-container">
-          <div class="scroll-content">
-            <span is="presence" :role="role" />
-          </div>
+        <div class="presence-container form-group grow auto-basis scroll-container">
+          <span is="presence" :role="role" />
         </div>
       </template>
-
     </div>
 
     <div v-cloak id="file-list-container" class="grow-shrink scroll-container">
@@ -87,7 +84,7 @@
 </template>
 
 <template id="presence-template">
-  <div class="presence">
+  <div class="scroll-content presence">
     Presences
     <div class="column">
       <template v-for="(user, id) in presences">
