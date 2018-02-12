@@ -1,6 +1,6 @@
 "use strict";
 
-module.exports = (room) => {
+export default function(room) {
     return {
         data() {
             const x = room.fileList.searchFiles(this.uuid, (file, i) => {

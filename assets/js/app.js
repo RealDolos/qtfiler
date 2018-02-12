@@ -11,7 +11,7 @@
 //
 // If you no longer want to use a dependency, remember
 // to also remove its path from "config.paths.watched".
-require("phoenix_html");
+import * as phoenix from "phoenix_html";
 
 // Import local files
 //

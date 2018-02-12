@@ -1,6 +1,6 @@
 "use strict";
 
-module.exports = (room) => {
+export default function(room) {
     return {
         name: "presence",
         template: "#presence-template",

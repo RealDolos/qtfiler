@@ -1,6 +1,6 @@
 "use strict";
 
-module.exports = (room) => {
+export default function(room) {
     return {
         name: "upload",
         template: "#upload-template",

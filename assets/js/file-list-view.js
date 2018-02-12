@@ -1,9 +1,9 @@
 "use strict";
 
-const file = require("./file-view");
-const upload = require("./upload-view");
+import file from "./file-view";
+import upload from "./upload-view";
 
-module.exports = (room) => {
+export default function(room) {
     return {
         name: "fileList",
         template: "#file-list-template",

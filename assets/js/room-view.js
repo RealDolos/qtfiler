@@ -1,14 +1,14 @@
 "use strict";
 
-const socket = require("./socket");
-const Room = require("./room");
-const Vue = require("vue/dist/vue.common.js");
-const fileListView = require("./file-list-view");
-const presenceView = require("./presence-view");
+import socket from "./socket";
+import Room from "./room";
+import vue from "vue/dist/vue.common.js";
+import fileListView from "./file-list-view";
+import presenceView from "./presence-view";
 const room = new Room(socket);
 
 // A room with a vue
-module.exports = new Vue({
+export default new Vue({
     name: "room",
     data: room,
     el: "#room",
