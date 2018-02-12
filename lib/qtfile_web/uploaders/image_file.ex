@@ -22,7 +22,7 @@ defmodule Qtfile.ImageFile do
     {os, _} = :os.type()
 
     if os === :unix do
-      {:convert, "-strip -limit area 10MB -limit disk 100MB -limit width 3840 -limit height 2160 -thumbnail 250x250^ -gravity center -extent 250x250 -format png", :png}
+      {:convert, "-strip -limit area 10MB -limit disk 100MB -thumbnail 250x250^ -gravity center -extent 250x250 -format png", :png}
     else
       :noaction
     end

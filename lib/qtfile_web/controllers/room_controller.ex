@@ -8,7 +8,7 @@ defmodule QtfileWeb.RoomController do
       |> assign(:room_id, room_id)
       |> render "room.html"
     else
-      text conn, "FAILED TO FUIND ROM FUCK OF"
+      text conn, "FAILED TO FIND ROM FUCK OF"
     end
   end
 

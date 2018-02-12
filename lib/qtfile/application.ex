@@ -5,6 +5,8 @@ defmodule Qtfile.Application do
   # for more information on OTP Applications
   def start(_type, _args) do
     import Supervisor.Spec
+    
+    PhoenixCowboyLogging.enable_for(:qtfile, QtfileWeb.Endpoint)
 
     # Define workers and child supervisors to be supervised
     children = [

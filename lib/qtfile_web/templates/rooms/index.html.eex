@@ -1,3 +1,8 @@
+<div class="room-list">
+    <span>id</span>
+    <span>Room</span>
+    <span>Owner</span>
+</div>
 <div id="room-container">
     <%= print_all_rooms() %>
 </div>

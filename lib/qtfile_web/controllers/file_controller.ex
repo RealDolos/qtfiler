@@ -3,11 +3,7 @@ defmodule QtfileWeb.FileController do
   @image_extensions ~w(.jpg .jpeg .png)
   @nice_mime_types ~w(text audio video image)
 
-  def upload(conn, %{"file" => file} = params) when not is_list(file) do
-    upload(conn, %{params | "file" => [file]})
-  end
-
-  def upload(conn, %{"room_id" => room_id, "file" => files} = params) do
+  def upload(conn, %{"room_id" => room_id} = params) do
     uploader_id = get_session(conn, :user_id)
     ip_address = Qtfile.Util.get_ip_address(conn)
 
@@ -33,29 +29,94 @@ defmodule QtfileWeb.FileController do
     end
   end
 
-  defp upload_validated(conn, %{"mime_type" => mime_type, "room_id" => room_id, "file" => files}) do
-    response =
-      Enum.map(files, fn(file) ->
-        %{filename: filename} = file
-        room = Qtfile.Rooms.get_room_by_room_id!(room_id)
-        uuid = Ecto.UUID.generate()
-        scope = %{room_id: room_id, uuid: uuid}
+  defp save_file(conn, size) do
+    hash = :crypto.hash_init(:sha)
+    path = "uploads-temp/" <> Ecto.UUID.generate()
+    {:ok, file} = :file.open(path, [:write, :binary])
+    {:ok, _} = :file.position(file, size)
+    :ok = :file.truncate(file)
+    {:ok, _} = :file.position(file, 0)
+    {conn, result} = save_file_loop(conn, file, size, hash)
+    result =
+      case result do
+        {:ok, hash} -> {:ok, path, hash}
+        x -> x
+      end
+    {conn, result}
+  end
 
-        cond do
-          check_extension(filename, @image_extensions) == true ->
-            Qtfile.ImageFile.store({file, scope})
-            |> store_in_db(conn, uuid, room, mime_type, Qtfile.ImageFile.storage_dir(:original, {file, room}))
+  defp save_file_loop(conn, _file, 0, _hash) do
+    {conn, {:error, :file_too_big}}
+  end
 
-          true ->
-            Qtfile.GenericFile.store({file, scope})
-            |> store_in_db(conn, uuid, room, mime_type, Qtfile.GenericFile.storage_dir(:original, {file, room}))
+  defp save_file_loop(conn, file, size, hash) do
+    result = read_body(conn,
+      length: 4 * 1024 * 1024 * 1024,
+      read_length: 64 * 1024,
+      read_timeout: 1024
+    )
+    case result do
+      {:error, e} -> {conn, {:error, e}}
+      {status, data, conn} ->
+        len = :erlang.byte_size(data)
+        :ok = :file.write(file, data)
+        hash = :crypto.hash_update(hash, data)
+        case status do
+          :ok ->
+            :file.sync(file)
+            :file.close(file)
+            {conn, {:ok, Base.encode16(:crypto.hash_final(hash), case: :lower)}}
+          :more -> save_file_loop(conn, file, size - len, hash)
         end
-      end) |> hd()
+    end
+  end
+
+  defp upload_validated(conn,
+    %{
+      "room_id" => room_id,
+      "filename" => filename,
+      "content_type" => content_type
+    }) do
+    size = :erlang.binary_to_integer(hd(get_req_header(conn, "content-length")))
+    {conn, save_result} = save_file(conn, size)
+    response =
+      case save_result do
+        {:ok, path, hash} ->
+          file = %Plug.Upload{path: path, content_type: content_type, filename: filename}
+          room = Qtfile.Rooms.get_room_by_room_id!(room_id)
+          uuid = Ecto.UUID.generate()
+          scope = %{room_id: room_id, uuid: uuid}
+
+          cond do
+            check_extension(filename, @image_extensions) == true ->
+              Qtfile.ImageFile.store({file, scope})
+              |> store_in_db(conn, uuid, room, content_type, hash,
+                Qtfile.ImageFile.storage_dir(:original, {file, room}))
+
+            true ->
+              Qtfile.GenericFile.store({file, scope})
+              |> store_in_db(conn, uuid, room, content_type, hash,
+                Qtfile.GenericFile.storage_dir(:original, {file, room}))
+          end
+        {:error, e} -> %{success: false, error: e}
+      end
 
     # conn
     # |> redirect(to: room_path(conn, :index, room_id))
     # json conn, %{success: true}
     json conn, response
+  end
+
+  defp upload_validated(conn,
+    %{
+      "room_id" => room_id,
+      "filename" => filename,
+    }) do
+    upload_validated(conn, %{
+      "room_id" => room_id,
+      "filename" => filename,
+      "content_type" => nil
+    })
   end
 
   def download(conn, %{"uuid" => uuid, "realfilename" => _realfilename}) do
@@ -82,9 +143,13 @@ defmodule QtfileWeb.FileController do
         |> put_resp_content_type(mime_type)
         |> send_file(200, absolute_path)
       else
+        download_params = [filename: file.filename] ++ if file.mime_type == nil do
+          []
+        else
+          [content_type: file.mime_type]
+        end
         conn
-        |> put_resp_content_type("application/octet-stream")
-        |> send_download({:file, absolute_path})
+        |> send_download({:file, absolute_path}, download_params)
       end
 
     else
@@ -103,7 +168,7 @@ defmodule QtfileWeb.FileController do
     Enum.member?(extensions, file_extension)
   end
 
-  defp store_in_db({:ok, filename}, conn, uuid, room, mime_type, path) do
+  defp store_in_db({:ok, filename}, conn, uuid, room, mime_type, hash, path) do
     file_path = Path.absname(path <> "/" <> uuid <> "-original" <> Path.extname(filename))
     file_size =
       case File.stat(file_path) do
@@ -112,14 +177,12 @@ defmodule QtfileWeb.FileController do
         _ ->
           0
       end
-
     uploader_id = get_session(conn, :user_id)
     uploader = Qtfile.Accounts.get_user!(uploader_id)
     ip_address = Qtfile.Util.get_ip_address(conn)
     %{file_ttl: file_ttl} = room
     expiration_date = DateTime.from_unix!(DateTime.to_unix(DateTime.utc_now()) + file_ttl)
 
-    hash = Qtfile.Util.hash(:sha, file_path)
     Qtfile.Files.add_file(uuid, filename, room, hash, file_size, uploader, ip_address, expiration_date, mime_type)
 
     %{success: true}
