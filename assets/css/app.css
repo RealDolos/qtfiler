@@ -148,8 +148,6 @@ hr {
 #file-list-container {
     padding: 10px;
     box-sizing: border-box;
-    min-height: 50%;
-    
 }
 
 .column, body, .container {
@@ -220,12 +218,16 @@ hr {
 }
 
 .scroll-container {
-    overflow: auto;
+    overflow-y: auto;
 }
 
 .scroll-content {
     min-height: 100%;
-    min-width: 100%;
+    width: 100%;
+}
+
+.auto-basis {
+    flex-basis: auto;
 }
 
 .file-container {
@@ -413,6 +415,10 @@ main .room, main .room-list {
 
 h1, .register-field > span, .red, .presence {
     color: #c9c9c9;
+}
+
+.presence-container {
+    max-height: 20vh;
 }
 
 .button, .custom-file-upload, button {

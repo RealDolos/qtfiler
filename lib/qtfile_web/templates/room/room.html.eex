@@ -1,5 +1,5 @@
 <div id="file-dropzone" class="wrapped column">
-  <div id="room" class="grow column column-wrap">
+  <div id="room" class="grow column">
 
     <div class="row shrink-double">
       <div v-if="false" id="dim-screen"><div id="loading-message">Loading</div></div>
@@ -26,13 +26,10 @@
       </template>
 
       <template v-cloak v-if="mod">
-        <div class="form-group grow-shrink scroll-container">
-          <div class="scroll-content">
-            <span is="presence" :role="role" />
-          </div>
+        <div class="presence-container form-group grow auto-basis scroll-container">
+          <span is="presence" :role="role" />
         </div>
       </template>
-
     </div>
 
     <div v-cloak id="file-list-container" class="grow-shrink scroll-container">
@@ -71,10 +68,10 @@
       <a target="_blank" :href="link" class="file-link" :data-hash-sha1="hash">{{ filename }}</a>
       <div class="row row-right">
         <span class="file-uploader">{{ uploader }}</span>
-        <template v-if="mod"><span class="file-uploader">{{ shrunken_ip }}</span></template>
+        <template v-if="mod"><span class="file-uploader">{{ ip_address }}</span></template>
       </div>
     </div>
-    <div class="row row-right grow-shrink-double">
+    <div class="row row-right grow-shrink">
       <span class="file-expiration">{{ formattedExpirationDate }}</span>
       <template v-if="mod">
         <div class="row row-centre">
@@ -87,7 +84,7 @@
 </template>
 
 <template id="presence-template">
-  <div class="presence">
+  <div class="scroll-content presence">
     Presences
     <div class="column">
       <template v-for="(user, id) in presences">
