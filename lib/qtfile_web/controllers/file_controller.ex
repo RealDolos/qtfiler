@@ -51,7 +51,7 @@ defmodule QtfileWeb.FileController do
 
   defp save_file_loop(conn, file, size, hash) do
     result = read_body(conn,
-      length: 4 * 1024 * 1024 * 1024,
+      length: Application.get_env(:qtfile, QtfileWeb.Endpoint, :max_file_length),
       read_length: 64 * 1024,
       read_timeout: 1024
     )

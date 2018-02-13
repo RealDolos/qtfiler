@@ -46,7 +46,7 @@ defmodule Qtfile.Mixfile do
       {:uuid, "~> 1.1"},
       {:comeonin, "~> 4.0", only: :prod},
       {:bcrypt_elixir, "~> 1.0", only: :prod},
-      {:phoenix_cowboy_logging, "~> 1.0"},
+      {:phoenix_cowboy_logging, "~> 1.0", only: :dev},
     ]
   end
 
