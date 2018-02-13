@@ -146,7 +146,8 @@ hr {
 }
 
 #file-list-container {
-    padding: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
     box-sizing: border-box;
 }
 
