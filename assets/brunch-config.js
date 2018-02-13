@@ -91,6 +91,6 @@ exports.config = {
 
     npm: {
         enabled: true,
-        whitelist: ["phoenix", "phoenix_html", "vue", "fine-uploader"]
+        whitelist: ["phoenix", "phoenix_html", "vue", "babel-runtime"]
     }
 };
