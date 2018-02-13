@@ -1,19 +1,17 @@
 "use strict";
 
-const PPresence = require("phoenix").Presence;
+import {Presence as PhoenixPresence} from "phoenix";
 
-class Presence {
+export default class Presence {
     constructor() {
         this.presences = {};
     }
 
     syncState(state) {
-        this.presences = PPresence.syncState(this.presences, state);
+        this.presences = PhoenixPresence.syncState(this.presences, state);
     }
 
     diffState(diff) {
-        this.presences = PPresence.syncDiff(this.presences, diff);
+        this.presences = PhoenixPresence.syncDiff(this.presences, diff);
     }
 }
-
-module.exports = Presence;

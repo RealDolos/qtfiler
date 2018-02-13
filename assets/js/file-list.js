@@ -1,9 +1,9 @@
 "use strict";
 
-const Upload  = require("./upload");
-const File  = require ("./file");
+import Upload from "./upload";
+import File from "./file";
 
-class FileList {
+export default class FileList {
     constructor(room_id) {
         this.uploads = [];
         this.files = [];
@@ -148,6 +148,3 @@ class FileList {
         this.files.unshift(file);
     }
 }
-
-
-module.exports = FileList;

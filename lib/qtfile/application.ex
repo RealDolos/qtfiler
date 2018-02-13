@@ -6,7 +6,9 @@ defmodule Qtfile.Application do
   def start(_type, _args) do
     import Supervisor.Spec
     
-    PhoenixCowboyLogging.enable_for(:qtfile, QtfileWeb.Endpoint)
+    if Application.get_env(:qtfile, :environment) == :dev do
+      PhoenixCowboyLogging.enable_for(:qtfile, QtfileWeb.Endpoint)
+    end
 
     # Define workers and child supervisors to be supervised
     children = [

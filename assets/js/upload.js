@@ -1,11 +1,9 @@
 "use strict";
 
-class Upload {
+export default class Upload {
     constructor(id, file) {
         this.id = id;
         this.file = file;
         this.uploaded = 0;
     }
 };
-
-module.exports = Upload;

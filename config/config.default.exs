@@ -9,7 +9,8 @@ use Mix.Config
 config :qtfile,
   ecto_repos: [Qtfile.Repo],
   token_secret_key_base: "REPLACE THIS",
-  secret_key_ip: "REPLACE THIS"
+  secret_key_ip: "REPLACE THIS",
+  environment: Mix.env()
 
 # Configures the endpoint
 config :qtfile, QtfileWeb.Endpoint,
@@ -17,7 +18,8 @@ config :qtfile, QtfileWeb.Endpoint,
   secret_key_base: "REPLACE THIS",
   render_errors: [view: QtfileWeb.ErrorView, accepts: ~w(html json)],
   pubsub: [name: Qtfile.PubSub,
-           adapter: Phoenix.PubSub.PG2]
+           adapter: Phoenix.PubSub.PG2],
+  max_file_length: 4 * 1024 * 1024 * 1024
 
 # Configures Elixir's Logger
 config :logger, :console,
