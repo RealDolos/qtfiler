@@ -1,8 +1,8 @@
 //import "js/uploader.js";
-const FileList = require("./file-list");
-const Presence = require("./presence");
+import FileList from "./file-list";
+import Presence from "./presence";
 
-class Room {
+export default class Room {
     constructor(socket) {
         this.room_id = window.config.room_id;
         this.fileList = new FileList(this.room_id);
@@ -99,5 +99,3 @@ class Room {
         });
     }
 }
-
-module.exports = Room;

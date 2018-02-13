@@ -1,6 +1,6 @@
 "use strict";
 
-class File {
+export default class File {
     static create(data) {
         const file = new File();
         return Object.assign(file, data);
@@ -10,5 +10,3 @@ class File {
         this.markedForDeletion = false;
     }
 }
-
-module.exports = File;
