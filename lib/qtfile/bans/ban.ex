@@ -27,8 +27,8 @@ defmodule Qtfile.Bans.Ban do
         ban
       end
     end.()
-    |> put_assoc(:user_bans, attrs.user_bans)
-    |> put_assoc(:file_bans, attrs.file_bans)
+    |> cast_assoc(:user_bans)
+    |> cast_assoc(:file_bans)
     |> validate_required([:end, :reason])
   end
 end

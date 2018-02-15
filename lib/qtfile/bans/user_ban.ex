@@ -24,7 +24,7 @@ defmodule Qtfile.Bans.UserBan do
         user_ban
       end
     end.()
-    |> put_assoc(:ip_bans, attrs.ip_bans)
+    |> cast_assoc(:ip_bans)
     |> unique_constraint([:ban, :bannee])
     |> validate_required([:hell])
   end
