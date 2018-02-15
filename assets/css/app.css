@@ -1,40 +1,39 @@
-
-/* This file is for your main application css. */
+/*This file is for your main application css*/
 :root {
-    --base-text: #C7C7C7; //everything from her toooo...
+    --base-text: #C7C7C7; /*Everything from her to...*/
     --blue-text: #3C8FFF;
     --pink-text: #F557FF;
     --green-text: #57FF53;
-    --red-text: #FF0000; // here is unused
-    --qtstream: #f1d98d; //logo for the site
-    --dark-background: #202127; //Background for the whole site
-    --dark-background2:#1A1B20; //Used nowhere
-    --dropzone-bg: #2d2d2d; //Used nowhere
-    --lighter-dark-background: #32353e; //Used for various backgrounds, mainly the header and the login/registration forms
-    --lighter-dark-background2: #292b32; //This one effects the even files on the file list
-    --odd-file: #3e424c; //Used for the odd file coloring
-    --del-button:#462b2d; //Used for the delete button coloring
-    --l-bg:#54555B; //Used nowhere
-    --border-color: #4f5c6d; //Affects the header's border
-    --pointless-border: #626262; //Used nowhere
-    --dimmer: rgba(255, 255, 255, 0.5); //Is used when the page is dimmed
-    --filter-border:#404552; //This one effects the border of the filter on the file list
-    --general-text:white; //Affects the base text of the website
-    --expire-text: #b1b5c4; //Affects the file expiration date?
-    //These are visited and unvisited links
+    --red-text: #FF0000; /*... here is unused*/
+    --qtstream: #f1d98d; /*Logo for the site*/
+    --dark-background: #202127; /*Background for the whole site*/
+    --dark-background2:#1A1B20; /*Used nowhere*/
+    --dropzone-bg: #2d2d2d; /*Used nowhere*/
+    --lighter-dark-background: #32353e; /*Used for various backgrounds, mainly the header and the login/registration forms*/
+    --lighter-dark-background2: #292b32; /*This one effects the even files on the file list*/
+    --odd-file: #3e424c; /*Used for the odd file coloring*/
+    --del-button:#462b2d; /*Used for the delete button coloring*/
+    --l-bg:#54555B; /*Used nowhere*/
+    --border-color: #4f5c6d; /*Affects the header's border*/
+    --pointless-border: #626262; /*Used nowhere*/
+    --dimmer: rgba(255, 255, 255, 0.5); /*Is used when the page is dimmed*/
+    --filter-border:#404552; /*This one effects the border of the filter on the file list*/
+    --general-text:white; /*Affects the base text of the website*/
+    --expire-text: #b1b5c4; /*Affects the file expiration date?*/
+    /*These are visited and unvisited links*/
     --new-link: #3961F8;
     --visited-link: #9660FA;
-    //These are for the file list the first two determine the file uploader border and background. The second one effects the color of the text
+    /*These are for the file list the first two determine the file uploader border and background. The second one effects the color of the text*/
     --uploader-boarder: #58525b;
     --uploader-bg: #273049;
     --file-link: #d2d5e0;
-    //The first one effects the font of the input text on the registration and login page when it's not focused
+    /*The first one effects the font of the input text on the registration and login page when it's not focused*/
     --input-color: rgb(140,143,148);
-    //These are for the input forms on the login and registration page
+    /*These are for the input forms on the login and registration page*/
     --input-underline: #4e588d;
     --input-background: #373743;
     --input-text: #c7c9db;
-    //These effect the upload button
+    /*These affect the upload button*/
     --upload-bg: #2b3246;
     --upload-boarder: #0e1320;
     --upload-text: #e8e8e8;
@@ -404,16 +403,16 @@ main .room, main .room-list {
     font-size: 18px;
 }
 
-.room-list > span:nth-child(1) {
+.room-list > .room-id {
     width: 10%;
     min-width: 100px;
 }
 
-.room-list > span:nth-child(2) {
+.room-list > .room-name {
     width: 50%;
 }
 
-.room-list > span:nth-child(3) {
+.room-list > .room-owner {
     width: 15%;
 }
 
@@ -422,19 +421,19 @@ main .room, main .room-list {
     display: inline-block;
 }
 
-.room > span:nth-child(1) {
+.room > .room-id {
     width: 10%;
     min-width: 100px;
 }
 
-.room > span:nth-child(2) {
+.room > .room-name {
     width: 50%;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-.room > span:nth-child(3) {
+.room > .room-owner {
     width: 15%;
     white-space: nowrap;
     overflow: hidden;
@@ -522,7 +521,6 @@ button:hover, .custom-file-upload:hover, #delete-button:hover {
 }
 
 #file-dropzone input {
-    background: var(--filter-border);
     border-style: solid;
     border-radius: 3px;
     border-color: var(--filter-border);
