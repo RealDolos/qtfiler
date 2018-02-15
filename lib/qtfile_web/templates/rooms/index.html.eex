@@ -1,7 +1,7 @@
 <div class="room-list">
-    <span>id</span>
-    <span>Room</span>
-    <span>Owner</span>
+    <span class="room-id">id</span>
+    <span class="room-name">Room</span>
+    <span class="room-owner">Owner</span>
 </div>
 <div id="room-container">
     <%= print_all_rooms() %>
