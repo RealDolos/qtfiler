@@ -1,16 +1,43 @@
+
 /* This file is for your main application css. */
 :root {
-    --base-text: #C7C7C7;
+    --base-text: #C7C7C7; //everything from her toooo...
     --blue-text: #3C8FFF;
     --pink-text: #F557FF;
     --green-text: #57FF53;
-    --red-text: #FF0000;
-    --qtstream: #f1d98d;
-    --dark-background: #202127;
-    --lighter-dark-background: #32353e;
-    --dark-background2:#1A1B20;
-    --l-bg:#54555B;
-    --lighter-dark-background2: #292b32;
+    --red-text: #FF0000; // here is unused
+    --qtstream: #f1d98d; //logo for the site
+    --dark-background: #202127; //Background for the whole site
+    --dark-background2:#1A1B20; //Used nowhere
+    --dropzone-bg: #2d2d2d; //Used nowhere
+    --lighter-dark-background: #32353e; //Used for various backgrounds, mainly the header and the login/registration forms
+    --lighter-dark-background2: #292b32; //This one effects the even files on the file list
+    --odd-file: #3e424c; //Used for the odd file coloring
+    --del-button:#462b2d; //Used for the delete button coloring
+    --l-bg:#54555B; //Used nowhere
+    --border-color: #4f5c6d; //Affects the header's border
+    --pointless-border: #626262; //Used nowhere
+    --dimmer: rgba(255, 255, 255, 0.5); //Is used when the page is dimmed
+    --filter-border:#404552; //This one effects the border of the filter on the file list
+    --general-text:white; //Affects the base text of the website
+    --expire-text: #b1b5c4; //Affects the file expiration date?
+    //These are visited and unvisited links
+    --new-link: #3961F8;
+    --visited-link: #9660FA;
+    //These are for the file list the first two determine the file uploader border and background. The second one effects the color of the text
+    --uploader-boarder: #58525b;
+    --uploader-bg: #273049;
+    --file-link: #d2d5e0;
+    //The first one effects the font of the input text on the registration and login page when it's not focused
+    --input-color: rgb(140,143,148);
+    //These are for the input forms on the login and registration page
+    --input-underline: #4e588d;
+    --input-background: #373743;
+    --input-text: #c7c9db;
+    //These effect the upload button
+    --upload-bg: #2b3246;
+    --upload-boarder: #0e1320;
+    --upload-text: #e8e8e8;
 }
 
 @open-sans {
@@ -25,17 +52,17 @@
 
 a {
     /* color: #4458ED; */
-    color: #3961F8;
+    color: var(--new-link);
 }
 
 a:visited {
-    color: #9660FA;
+    color: var(--visited-link);
 }
 
 body {
     font-family: Open Sans;
     font-size: 16px;
-    color: white;
+    color: var(--general-text);
     background: var(--dark-background);
 }
 
@@ -51,7 +78,7 @@ body {
 .nav-container {
     width: 100%;
     border-color: var(--lighter-dark-background);
-    border-bottom: 2px solid #4f5c6d;
+    border-bottom: 2px solid var(--border-color);
     background-color: var(--lighter-dark-background);
 }
 
@@ -69,7 +96,7 @@ body {
 .header-icon {
     text-align: center;
     padding: 15px;
-    /* background-color: #2d2d2d; */
+    /* background-color: var(--dropzone-bg); */
     background-color: var(--lighter-dark-background);
     /* width: 100%; */
 }
@@ -114,7 +141,7 @@ body {
 .stream-url-box {
     display: inline-block;
     margin: auto;
-    background-color: #2d2d2d;
+    background-color: var(--dropzone-bg);
     padding: 20px;
     border-radius: 5px;
     border: 2px solid #555555;
@@ -136,13 +163,13 @@ body {
 */
 
 hr {
-    border-top: 1px solid #626262;
+    border-top: 1px solid var(--pointless-border);
     margin-top: 10px;
     margin-bottom: 5px;
 }
 
 #file-dropzone {
-    background-color: #2d2d2d;
+    background-color: var(--dropzone-bg);
 }
 
 #file-list-container {
@@ -243,15 +270,15 @@ hr {
 .file-link {
     margin-left: 7px;
     text-decoration: none;
-    color: #d2d5e0;
+    color: var(--file-link);
     font-weight: 500;
     display: block;
 }
 
 .file-uploader {
-    background: #273049;
+    background: var(--uploader-bg);
     border-style: solid;
-    border-color: #58525b;
+    border-color: var(--uploader-boarder);
     border-width: 1px;
     border-radius: 2px;
     padding-left: 2px;
@@ -283,7 +310,7 @@ hr {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(255, 255, 255, 0.5);
+    background: var(--dimmer);
     display: flex;
 }
 
@@ -300,7 +327,7 @@ hr {
     margin-top: 2%;
     padding-bottom: 15px;
     padding-top: 8px;
-    border: 1px solid rgb(20,20,20);
+    border: 1px solid var(--form-border);
     border-radius: 5px;
 }
 
@@ -311,7 +338,7 @@ hr {
     margin-top: 1%;
     padding-bottom: 15px;
     padding-top: 5px;
-    border: 1px solid rgb(20,20,20);
+    border: 1px solid var(--form-border);
     border-radius: 5px;
     text-align: center;
 }
@@ -330,7 +357,7 @@ hr {
     transition: ease-in-out 0.2s;
     width: 40%;
     max-width: 300px;
-    color: rgb(140,143,148);
+    color: var(--input-color);
     font-size: 18px;
 }
 
@@ -340,9 +367,9 @@ hr {
 }
 
 .register-field input:focus, .login-field input:focus {
-    border-color: #4e588d;
-    background: #373743;
-    color: #c7c9db;
+    border-color: var(--input-underline);
+    background: var(--input-background);
+    color: var(--input-text);
     transition: ease-in-out 0.2s;
 }
 
@@ -424,12 +451,12 @@ h1, .register-field > span, .red, .presence {
 
 .button, .custom-file-upload, button {
     position: relative;
-    background: #2b3246;
+    background: var(--upload-bg);
     border-radius: 3px;
-    border: 1px solid #0e1320;
+    border: 1px solid var(--upload-border);
     display: inline-block;
     cursor: pointer;
-    color: #e8e8e8;
+    color: var(--upload-text);
     font-family: Arial;
     font-size: 15px;
     font-weight: bold;
@@ -453,7 +480,7 @@ button:hover, .custom-file-upload:hover, #delete-button:hover {
 }
 
 #delete-button {
-    background: #462b2d;
+    background: var(--del-button);
 }
 
 .small.delete.button, .mark{
@@ -472,12 +499,12 @@ button:hover, .custom-file-upload:hover, #delete-button:hover {
 }
 
 .file-odd {
-    background: #3e424c;
+    background: var(--odd-file);
 }
 
 .file-expiration {
     font-size: 10px;
-    color: #b1b5c4;
+    color: var(--expire-text);
     margin: auto 6px auto 6px;
     display: block;
 }
@@ -495,10 +522,10 @@ button:hover, .custom-file-upload:hover, #delete-button:hover {
 }
 
 #file-dropzone input {
-    background: #404552;
+    background: var(--filter-border);
     border-style: solid;
     border-radius: 3px;
-    border-color: #404552;
+    border-color: var(--filter-border);
 }
 
 input[type="file"] {
@@ -517,3 +544,4 @@ input[type="file"] {
     padding-top: 2px;
     padding-bottom: 2px;
 }*/
+
