@@ -76,14 +76,8 @@
       <template v-if="mod">
         <div class="row row-centre">
           <input class="mark" type="checkbox" v-model="marked">
-          <div v-show="deleteStatus == 'ready'" v-on:click="deleteMe" class="small delete button">🗑</div>
-          <div v-show="deleteStatus == 'waiting'" class="small delete button">⌛</div>
-          <div v-show="deleteStatus == 'succeeded'" class="small delete button">✓</div>
-          <div v-show="deleteStatus == 'failed'" class="small delete button">❌</div>
-          <div v-show="banStatus == 'ready'" v-on:click="banMe" class="small delete button">🚫</div>
-          <div v-show="banStatus == 'waiting'" class="small delete button">⌛</div>
-          <div v-show="banStatus == 'succeeded'" class="small delete button">✓</div>
-          <div v-show="banStatus == 'failed'" class="small delete button">❌</div>
+          <span is="async-button" :id="id + '-del'" :default-icon="128465" :action="deleteMe"></span>
+          <span is="async-button" :id="id + '-ban'" :default-icon="128683" :action="banMe"></span>
         </div>
       </template>
     </div>
@@ -93,12 +87,12 @@
 
 <template id="async-button-template">
   <div>
-    <div v-show="status == 'ready'" v-on:click="action" class="small delete button">
-      {{ standardIcon }}
+    <div v-show="status == 'ready'" v-on:click="click" class="small delete button">
+      {{ String.fromCodePoint(defaultIcon) }}
     </div>
     <div v-show="status == 'waiting'" class="small delete button">⌛</div>
-    <div v-show="status == 'succeeded'" class="small delete button">✓</div>
     <div v-show="status == 'failed'" class="small delete button">❌</div>
+    <div v-show="status == 'succeeded'" class="small delete button">✓</div>
   </div>
 </template>
 

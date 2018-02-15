@@ -1,5 +1,7 @@
 "use strict";
 
+import asyncButton from "./async-button-view";
+
 export default function(room) {
     return {
         data() {
@@ -38,11 +40,17 @@ export default function(room) {
             async deleteMe() {
                 this.deleteStatus = "waiting";
                 const files = [this.uuid];
-                await room.deleteFiles(files);
+                let result = await room.deleteFiles(files);
+                result.success = result.results == ["ok"];
+                return result;
             },
             async banMe() {
                 console.log("banned ;^)");
+                return {success: true};
             }
+        },
+        components: {
+            asyncButton: asyncButton
         }
     };
 };
