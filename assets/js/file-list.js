@@ -99,7 +99,9 @@ export default class FileList {
         }
     }
 
-    setFileDeletionResults(uuids, results) {
+    setFileDeletionResults(uuids_original, results_original) {
+        let uuids = uuids_original.slice(0);
+        let results = results_original.slice(0);
         for (let file of this.files.reverse()) {
             if (uuids[uuids.length - 1] == file.uuid) {
                 if (results[results.length - 1] == "ok") {

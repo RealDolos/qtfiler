@@ -41,7 +41,7 @@ export default function(room) {
                 this.deleteStatus = "waiting";
                 const files = [this.uuid];
                 let result = await room.deleteFiles(files);
-                result.success = result.results == ["ok"];
+                result.success = result.results.length == 1 && result.results[0] == "ok";
                 return result;
             },
             async banMe() {
