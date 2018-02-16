@@ -24,8 +24,14 @@ defmodule Qtfile.Bans.UserBan do
         user_ban
       end
     end.()
-    |> cast_assoc(:ip_bans)
-    |> unique_constraint([:ban, :bannee])
+    |> fn(user_ban) ->
+      if Map.has_key?(attrs, :ip_bans) do
+        cast_assoc(user_ban, :ip_bans)
+      else
+        user_ban
+      end
+    end.()
+    |> unique_constraint(:ban_id_bannee_id)
     |> validate_required([:hell])
   end
 end

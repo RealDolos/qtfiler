@@ -23,7 +23,7 @@ defmodule Qtfile.IPAddressObfuscation do
       "user" -> if room.owner == user.id do
         decrypt_ip_address(ip_address, :crypto.exor(user.secret, room.secret))
       else
-        :error
+        {:error, :insufficient_ip_decryption_permission}
       end
     end
   end
@@ -53,7 +53,7 @@ defmodule Qtfile.IPAddressObfuscation do
     key = get_secret_key_base()
     <<ct::128, mac::128>> = Base.url_decode64!(encrypted_ip_address)
     case :crypto.block_decrypt(:aes_gcm, key, iv, {iv, ct, mac}) do
-      :error -> :error
+      :error -> {:error, :ip_decryption_failed}
       pt -> {:ok, pt}
     end
   end

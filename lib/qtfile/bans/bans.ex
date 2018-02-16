@@ -144,4 +144,66 @@ defmodule Qtfile.Bans do
   when is_list(stuff) do
     Enum.flat_map(stuff, &get_bans_for(&1, room))
   end
+
+  def defaultBan() do
+    %{
+      "reason" => "No reason given",
+      "user_bans" => [],
+      "file_bans" => [],
+      "global" => false,
+      "end" => 0,
+    }
+  end
+
+  def preprocess_input_for_database(user, room, ban) do
+    ban = Map.merge(ban, defaultBan(), fn(_, v1, _) -> v1 end)
+    ban_room = if ban["global"] do nil else room end
+    can_ban = Qtfile.Accounts.has_mod_authority(user, ban_room)
+    if can_ban do
+      processed_user_bans_e =
+        Qtfile.Util.mapSequence(ban["user_bans"], fn(user_ban) ->
+          processed_ip_bans_e =
+            Qtfile.Util.mapSequence(user_ban["ip_bans"], fn(ip_ban) ->
+              processed_ip_address_e =
+                Qtfile.IPAddressObfuscation.ban_filter(room, user, ip_ban["ip_address"])
+              case processed_ip_address_e do
+                {:ok, processed_ip_address} ->
+                  {:ok, %{ip_address: processed_ip_address}}
+                {:error, _} = e -> e
+              end
+            end)
+          case processed_ip_bans_e do
+            {:ok, processed_ip_bans} ->
+              {:ok, %{ip_bans: processed_ip_bans, hell: user_ban["hell"]}}
+            {:error, _} = e -> e
+          end
+        end)
+      processed_file_bans =
+        Enum.map(ban["file_bans"], fn(file_ban) ->
+          %{hash: file_ban["hash"]}
+        end)
+      processed_ban_e =
+        case processed_user_bans_e do
+          {:ok, processed_user_bans} ->
+            ban =
+              ban
+              |> Map.put(:user_bans, processed_user_bans)
+              |> Map.delete("user_bans")
+              |> Map.put(:file_bans, processed_file_bans)
+              |> Map.delete("file_bans")
+              |> Map.put(:reason, ban["reason"])
+              |> Map.delete("reason")
+              |> Map.put(:end, DateTime.from_unix!(ban["end"]))
+              |> Map.delete("end")
+              |> Map.put(:banner, user)
+              |> Map.put(:room, ban_room)
+              |> Map.delete("global")
+            {:ok, ban}
+          {:error, _} = e -> e
+        end
+      processed_ban_e
+    else
+      {:error, :insufficient_ban_permission}
+    end
+  end
 end

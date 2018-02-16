@@ -38,6 +38,16 @@ export default class Room {
         }
    }
 
+    async ban(data) {
+        try {
+            const result = await this.push("ban", data)
+            return result;
+        } catch (e) {
+            console.log("failed to ban: " + e);
+            throw e;
+        }
+   }
+
     initialiseUploader() {
         const uploadButton = document.getElementById("upload-button");
         const self = this;

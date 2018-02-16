@@ -14,8 +14,14 @@ defmodule Qtfile.Bans.IPBan do
   def changeset(%IPBan{} = ip_ban, attrs) do
     ip_ban
     |> cast(attrs, [:ip_address])
-    |> put_assoc(:user_ban, attrs.user_ban)
+    |> fn(ip_ban) ->
+      if Map.has_key?(attrs, :user_ban) do
+        put_assoc(ip_ban, :user_ban, attrs.user_ban)
+      else
+        ip_ban
+      end
+    end.()
     |> validate_required([:ip_address])
-    |> unique_constraint([:user_ban, :ip_address])
+    |> unique_constraint(:user_ban_id_ip_address)
   end
 end

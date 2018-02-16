@@ -45,8 +45,20 @@ export default function(room) {
                 return result;
             },
             async banMe() {
-                console.log("banned ;^)");
-                return {success: true};
+                const date = new Date(
+                    new Date().setFullYear(new Date().getFullYear() + 10)
+                );
+                const ban = {
+                    file_bans: [
+                        {
+                            hash: this.hash
+                        }
+                    ],
+                    reason: "quick ban",
+                    end: Math.round(date.getTime() / 1000)
+                };
+                const result = await room.ban(ban);
+                return result;
             }
         },
         components: {

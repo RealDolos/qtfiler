@@ -27,8 +27,20 @@ defmodule Qtfile.Bans.Ban do
         ban
       end
     end.()
-    |> cast_assoc(:user_bans)
-    |> cast_assoc(:file_bans)
+    |> fn(ban) ->
+      if Map.has_key?(attrs, :user_bans) do
+        cast_assoc(ban, :user_bans)
+      else
+        ban
+      end
+    end.()
+    |> fn(ban) ->
+      if Map.has_key?(attrs, :file_bans) do
+        cast_assoc(ban, :file_bans)
+      else
+        ban
+      end
+    end.()
     |> validate_required([:end, :reason])
   end
 end
