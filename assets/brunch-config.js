@@ -17,7 +17,8 @@ exports.config = {
                     "js/file-view.js",
                     "js/presence.js",
                     "js/presence-view.js",
-                    "js/room-view.js"
+                    "js/room-view.js",
+                    "js/async-button-view.js"
                 ],
                 "js/app.js": /(js\/app\.js|^(?!js))/
             }

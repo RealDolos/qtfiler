@@ -1,4 +1,5 @@
 defmodule QtfileWeb.RoomChannel do
+  require Logger
   use Phoenix.Channel
   alias QtfileWeb.Presence
   intercept ["files", "presence_diff"]
@@ -104,6 +105,34 @@ defmodule QtfileWeb.RoomChannel do
       {:reply, {:ok, %{results: results}}, socket}
     else
       {:reply, :error, socket}
+    end
+  end
+
+  def handle_in("ban", ban, socket) do
+    {user, room} = get_user_and_room(socket)
+    ban_e = Qtfile.Bans.preprocess_input_for_database(user, room, ban)
+    result =
+      case ban_e do
+        {:ok, ban} -> Qtfile.Bans.create_ban(ban)
+        {:error, _} = e -> e
+      end
+    case result do
+      {:ok, _} -> {:reply, {:ok, %{success: true}}, socket}
+      {:error, e} ->
+        error =
+          case e do
+            :insufficient_ban_permission ->
+              "you do not have permission to ban with these parameters"
+            :insufficient_ip_decryption_permission ->
+              "you do not have permission to decrypt one of the ip addresses specified"
+            :ip_decryption_failed ->
+              "failed to decrypt one of the specified ip addresses"
+            _ ->
+              Logger.info("error creating ban: ")
+              Logger.info(e)
+              "unknown error, please report to an admin"
+          end
+        {:reply, {:ok, %{success: false, error: e}}, socket}
     end
   end
 

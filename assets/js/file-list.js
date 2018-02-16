@@ -90,10 +90,36 @@ export default class FileList {
         return FileList.search("uuid", this.files, id, cont);
     }
 
+    setFileDeletionFailed(uuids) {
+        for (let file of this.files.reverse()) {
+            if (uuids[uuids.length - 1] == file.uuid) {
+                file.deleteStatus = "failed";
+                uuids.pop();
+            }
+        }
+    }
+
+    setFileDeletionResults(uuids_original, results_original) {
+        let uuids = uuids_original.slice(0);
+        let results = results_original.slice(0);
+        for (let file of this.files.reverse()) {
+            if (uuids[uuids.length - 1] == file.uuid) {
+                if (results[results.length - 1] == "ok") {
+                    file.deleteStatus = "succeeded";
+                } else {
+                    file.deleteStatus = "failed";
+                }
+                results.pop();
+                uuids.pop();
+            }
+        }
+    }
+
     getDeletedFiles() {
         const result = [];
         for (let file of this.files) {
-            if (file.markedForDeletion) {
+            if (file.marked) {
+                file.deleteStatus = "waiting";
                 result.push(file.uuid);
             }
         }

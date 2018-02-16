@@ -7,6 +7,8 @@ export default class File {
     }
 
     constructor() {
-        this.markedForDeletion = false;
+        this.marked = false;
+        this.deleteStatus = "ready";
+        this.banStatus = "ready";
     }
 }

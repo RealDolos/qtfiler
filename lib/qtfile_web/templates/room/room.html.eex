@@ -69,17 +69,31 @@
       <div class="row row-right">
         <span class="file-uploader">{{ uploader }}</span>
         <template v-if="mod"><span class="file-uploader">{{ ip_address }}</span></template>
+        <span is="async-button" :default-icon="128683" :action="banUploader"></span>
       </div>
     </div>
     <div class="row row-right grow-shrink">
       <span class="file-expiration">{{ formattedExpirationDate }}</span>
       <template v-if="mod">
         <div class="row row-centre">
-          <input class="mark" type="checkbox" v-model="markedForDeletion">
-          <div v-on:click="deleteMe" class="small delete button">🗑</div>
+          <input class="mark" type="checkbox" v-model="marked">
+          <span is="async-button" :default-icon="128465" :action="deleteMe"></span>
+          <span is="async-button" :default-icon="128683" :action="banMe"></span>
         </div>
       </template>
     </div>
+  </div>
+</template>
+
+
+<template id="async-button-template">
+  <div>
+    <div v-show="status == 'ready'" v-on:click="click" class="small delete button">
+      {{ String.fromCodePoint(defaultIcon) }}
+    </div>
+    <div v-show="status == 'waiting'" class="small delete button">⌛</div>
+    <div v-show="status == 'failed'" class="small delete button">❌</div>
+    <div v-show="status == 'succeeded'" class="small delete button">✓</div>
   </div>
 </template>
 

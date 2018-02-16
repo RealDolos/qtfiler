@@ -14,8 +14,14 @@ defmodule Qtfile.Bans.FileBan do
   def changeset(%FileBan{} = file_ban, attrs) do
     file_ban
     |> cast(attrs, [:hash])
-    |> put_assoc(:ban, attrs.ban)
+    |> fn(file_ban) ->
+      if Map.has_key?(attrs, :ban) do
+        put_assoc(file_ban, :ban, attrs.ban)
+      else
+        file_ban
+      end
+    end.()
     |> validate_required([:hash])
-    |> unique_constraint([:ban, :hash])
+    |> unique_constraint(:ban_hash)
   end
 end

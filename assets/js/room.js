@@ -25,6 +25,29 @@ export default class Room {
         });
     }
 
+    async deleteFiles(files) {
+        try {
+            const results = await this.push("delete", {files: files})
+            this.fileList.setFileDeletionResults(files, results.results);
+            console.log("files deleted: " + results.results);
+            return results;
+        } catch (e) {
+            this.fileList.setFileDeletionFailed(files);
+            console.log("failed to delete files: " + e);
+            throw e;
+        }
+   }
+
+    async ban(data) {
+        try {
+            const result = await this.push("ban", data)
+            return result;
+        } catch (e) {
+            console.log("failed to ban: " + e);
+            throw e;
+        }
+   }
+
     initialiseUploader() {
         const uploadButton = document.getElementById("upload-button");
         const self = this;

@@ -16,16 +16,16 @@ defmodule Qtfile.Bans.UserBan do
   def changeset(%UserBan{} = user_ban, attrs) do
     user_ban
     |> cast(attrs, [:hell])
-    |> put_assoc(:ban, attrs.ban)
     |> fn(user_ban) ->
-      if Map.has_key?(attrs, :bannee) do
-        put_assoc(user_ban, :bannee, attrs.bannee)
+      if Map.has_key?(attrs, :ban) do
+        put_assoc(user_ban, :ban, attrs.ban)
       else
         user_ban
       end
     end.()
-    |> put_assoc(:ip_bans, attrs.ip_bans)
-    |> unique_constraint([:ban, :bannee])
+    |> put_assoc(:bannee, attrs.bannee)
+    |> cast_assoc(:ip_bans)
+    |> unique_constraint(:ban_id_bannee_id)
     |> validate_required([:hell])
   end
 end

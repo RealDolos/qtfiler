@@ -1,5 +1,7 @@
 "use strict";
 
+import asyncButton from "./async-button-view";
+
 export default function(room) {
     return {
         data() {
@@ -36,14 +38,56 @@ export default function(room) {
         },
         methods: {
             async deleteMe() {
-                try {
-                    const results = await room.push("delete", {files: [this.uuid]})
-                    // todo: handle result
-                    console.log("files deleted: " + results.results)
-                } catch (e) {
-                    console.log("failed to delete files: " + e)
-                }
+                this.deleteStatus = "waiting";
+                const files = [this.uuid];
+                let result = await room.deleteFiles(files);
+                result.success = result.results.length == 1 && result.results[0] == "ok";
+                return result;
+            },
+            async banMe() {
+                const date = new Date(
+                    new Date().setFullYear(new Date().getFullYear() + 10)
+                );
+                const ban = {
+                    file_bans: [
+                        {
+                            hash: this.hash
+                        }
+                    ],
+                    reason: "quick ban",
+                    end: Math.round(date.getTime() / 1000)
+                };
+                const result = await room.ban(ban);
+                return result;
+            },
+
+            async banUploader() {
+                const date = new Date(
+                    new Date().setHours(new Date().getHours() + 1)
+                );
+
+                const ban = {
+                    user_bans: [
+                        {
+                            bannee_id: this.uploader_id,
+                            hell: false,
+                            ip_bans: [
+                                {
+                                    ip_address: this.ip_address
+                                }
+                            ]
+                        }
+                    ],
+                    reason: "quick ban",
+                    end: Math.round(date.getTime() / 1000)
+                };
+                const result = await room.ban(ban);
+                return result;
             }
+        },
+
+        components: {
+            asyncButton: asyncButton
         }
     };
 };

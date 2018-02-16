@@ -1,5 +1,7 @@
 "use strict";
 
+import asyncButton from "./async-button-view";
+
 export default function(room) {
     return {
         name: "upload",
@@ -23,6 +25,9 @@ export default function(room) {
             isEven() {
                 return (this.index + 1) % 2;
             }
+        },
+        components: {
+            asyncButton: asyncButton
         }
     };
 };
