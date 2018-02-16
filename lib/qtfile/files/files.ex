@@ -55,11 +55,9 @@ defmodule Qtfile.Files do
   end
 
   def process_for_browser(%{location: location, uploader: uploader} = file) do
-    Enum.reduce(
-      [:location_id, :uploader_id, :location, :uploader, :__meta__, :secret], file,
-      fn (n, c) ->
-        Map.delete(c, n)
-      end
+    file
+    |> Qtfile.Util.multiDelete(
+      [:location_id, :uploader_id, :location, :uploader, :__meta__, :secret]
     )
     |> Map.put(:room_id, location.room_id)
     |> Map.put(:uploader, uploader.name)

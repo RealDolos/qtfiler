@@ -11,4 +11,16 @@ defmodule Qtfile.Util do
       end
     end)
   end
+
+  def multiDelete(map, keys) do
+    Enum.reduce(keys, map, fn (n, c) ->
+      Map.delete(c, n)
+    end)
+  end
+
+  def multiPut(map, kvpairs) do
+    Enum.reduce(kvpairs, map, fn ({k, v}, c) ->
+      Map.put(c, k, v)
+    end)
+  end
 end

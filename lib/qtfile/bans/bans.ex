@@ -193,17 +193,21 @@ defmodule Qtfile.Bans do
           {:ok, processed_user_bans} ->
             ban =
               ban
-              |> Map.put(:user_bans, processed_user_bans)
-              |> Map.delete("user_bans")
-              |> Map.put(:file_bans, processed_file_bans)
-              |> Map.delete("file_bans")
-              |> Map.put(:reason, ban["reason"])
-              |> Map.delete("reason")
-              |> Map.put(:end, DateTime.from_unix!(ban["end"]))
-              |> Map.delete("end")
-              |> Map.put(:banner, user)
-              |> Map.put(:room, ban_room)
-              |> Map.delete("global")
+              |> Qtfile.Util.multiPut([
+                user_bans: processed_user_bans,
+                file_bans: processed_file_bans,
+                reason: ban["reason"],
+                end: DateTime.from_unix!(ban["end"]),
+                banner: user,
+                room: ban_room,
+              ])
+              |> Qtfile.Util.multiDelete([
+                "user_bans",
+                "file_bans",
+                "reason",
+                "end",
+                "global",
+              ])
             {:ok, ban}
           {:error, _} = e -> e
         end
