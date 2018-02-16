@@ -52,7 +52,7 @@ defmodule Qtfile.IPAddressObfuscation do
   defp decrypt_ip_address(encrypted_ip_address, iv) do
     key = get_secret_key_base()
     <<ct::128, mac::128>> = Base.url_decode64!(encrypted_ip_address)
-    case :crypto.block_decrypt(:aes_gcm, key, iv, {iv, ct, mac}) do
+    case :crypto.block_decrypt(:aes_gcm, key, iv, {iv, <<ct::128>>, <<mac::128>>}) do
       :error -> {:error, :ip_decryption_failed}
       pt -> {:ok, pt}
     end

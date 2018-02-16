@@ -174,7 +174,13 @@ defmodule Qtfile.Bans do
             end)
           case processed_ip_bans_e do
             {:ok, processed_ip_bans} ->
-              {:ok, %{ip_bans: processed_ip_bans, hell: user_ban["hell"]}}
+              map =
+                %{
+                  ip_bans: processed_ip_bans,
+                  hell: user_ban["hell"],
+                  bannee_id: user_ban["bannee_id"],
+                }
+              {:ok, map}
             {:error, _} = e -> e
           end
         end)

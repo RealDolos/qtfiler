@@ -59,8 +59,33 @@ export default function(room) {
                 };
                 const result = await room.ban(ban);
                 return result;
+            },
+
+            async banUploader() {
+                const date = new Date(
+                    new Date().setHours(new Date().getHours() + 1)
+                );
+
+                const ban = {
+                    user_bans: [
+                        {
+                            bannee_id: this.uploader_id,
+                            hell: false,
+                            ip_bans: [
+                                {
+                                    ip_address: this.ip_address
+                                }
+                            ]
+                        }
+                    ],
+                    reason: "quick ban",
+                    end: Math.round(date.getTime() / 1000)
+                };
+                const result = await room.ban(ban);
+                return result;
             }
         },
+
         components: {
             asyncButton: asyncButton
         }

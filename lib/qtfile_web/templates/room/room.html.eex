@@ -69,6 +69,7 @@
       <div class="row row-right">
         <span class="file-uploader">{{ uploader }}</span>
         <template v-if="mod"><span class="file-uploader">{{ ip_address }}</span></template>
+        <span is="async-button" :default-icon="128683" :action="banUploader"></span>
       </div>
     </div>
     <div class="row row-right grow-shrink">

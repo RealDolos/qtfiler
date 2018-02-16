@@ -63,6 +63,7 @@ defmodule Qtfile.Files do
     )
     |> Map.put(:room_id, location.room_id)
     |> Map.put(:uploader, uploader.name)
+    |> Map.put(:uploader_id, uploader.id)
   end
 
   def get_file_by_uuid(uuid) do
