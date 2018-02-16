@@ -20,27 +20,9 @@ defmodule Qtfile.Bans.Ban do
     ban
     |> cast(attrs, [:end, :reason])
     |> put_assoc(:banner, attrs.banner)
-    |> fn(ban) ->
-      if Map.has_key?(attrs, :room) do
-        put_assoc(ban, :room, attrs.room)
-      else
-        ban
-      end
-    end.()
-    |> fn(ban) ->
-      if Map.has_key?(attrs, :user_bans) do
-        cast_assoc(ban, :user_bans)
-      else
-        ban
-      end
-    end.()
-    |> fn(ban) ->
-      if Map.has_key?(attrs, :file_bans) do
-        cast_assoc(ban, :file_bans)
-      else
-        ban
-      end
-    end.()
+    |> put_assoc(:room, attrs.room)
+    |> cast_assoc(:user_bans)
+    |> cast_assoc(:file_bans)
     |> validate_required([:end, :reason])
   end
 end
