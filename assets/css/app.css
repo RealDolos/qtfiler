@@ -472,6 +472,7 @@ h1, .register-field > span, .red, .presence {
     padding: 11px 23px;
     text-decoration: none;
     transition: 0.1s;
+    text-align: center;
 }
 
 button:hover, .custom-file-upload:hover, #delete-button:hover {
