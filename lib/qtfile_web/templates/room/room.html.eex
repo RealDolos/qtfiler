@@ -1,10 +1,10 @@
-<div id="file-dropzone" class="wrapped column">
+<div id="file-dropzone" class="wrapped column grow">
   <div id="room" class="grow column">
     <div v-if="false" id="dim-screen"><div id="loading-message">Loading</div></div>
 
-    <div v-cloak class="control-bar row shrink-double">
+    <div v-cloak class="control-bar row">
       <template>
-        <div class="form-group shrink-double">
+        <div class="form-group">
           <label for="upload-button" class="custom-file-upload">
             <i class="fa fa-cloud-upload"></i>Upload
           </label>
@@ -13,25 +13,25 @@
       </template>
 
       <template v-if="mod">
-        <div class="form-group shrink-double">
+        <div class="form-group">
           <div v-on:click="deleteFiles" id="delete-button" class="button">Delete</div>
         </div>
       </template>
 
       <template>
-        <div class="form-group shrink-double">
+        <div class="form-group">
           <input v-model="filter" placeholder="Filter">
         </div>
       </template>
 
       <template v-if="mod">
-        <div :class="['presence-container', 'form-group', 'grow', 'scroll-container', { 'presence-container-small': presenceSmall, 'presence-container-big': presenceBig, 'presence-container-medium': presenceMedium }]">
+        <div :class="['presence-container', 'form-group', 'grow', 'no-shrink', 'scroll-container', { 'presence-container-small': presenceSmall, 'presence-container-big': presenceBig, 'presence-container-medium': presenceMedium }]">
           <span is="presence" :presence-hidden="presenceHidden" v-on:toggle-presence="togglePresence" :role="role" />
         </div>
       </template>
     </div>
 
-    <div v-cloak id="file-list-container" class="grow scroll-container">
+    <div v-cloak id="file-list-container" class="grow zero-basis scroll-container">
       <span is="file-list" :role="role" :filter="filter" />
     </div>
   </div>
@@ -63,7 +63,7 @@
 
 <template id="file-template">
   <div :id="domId" :class="['file-container', 'row', 'row-spaced', { 'file-odd': isOdd, 'file-even': isEven }]">
-    <div class="row grow-double shrink">
+    <div class="row grow-double">
       <a target="_blank" :href="link" class="file-link" :data-hash-sha1="hash">{{ filename }}</a>
       <div class="row row-right">
         <span class="file-uploader">{{ uploader }}</span>
@@ -71,7 +71,7 @@
         <span is="async-button" :default-icon="128683" :action="banUploader"></span>
       </div>
     </div>
-    <div class="row row-right grow shrink">
+    <div class="row row-right grow">
       <span class="file-expiration">{{ formattedExpirationDate }}</span>
       <template v-if="mod">
         <div class="row row-centre">
@@ -106,8 +106,8 @@
           <div class="column">
             <template v-for="meta in user.metas">
               <div class="row">
-                <span class="file-uploader shrink">{{ meta.ip_address }}</span>
-                <span class="file-uploader shrink">{{ meta.online_at }}</span>
+                <span class="file-uploader">{{ meta.ip_address }}</span>
+                <span class="file-uploader">{{ meta.online_at }}</span>
               </div>
             </template>
           </div>
