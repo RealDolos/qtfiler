@@ -32,7 +32,7 @@
       </template>
     </div>
 
-    <div v-cloak id="file-list-container" class="grow-shrink scroll-container">
+    <div v-cloak id="file-list-container" class="grow shrink scroll-container">
       <span is="file-list" :role="role" :filter="filter" />
     </div>
   </div>
@@ -64,7 +64,7 @@
 
 <template id="file-template">
   <div :id="domId" :class="['file-container', 'row', 'row-spaced', { 'file-odd': isOdd, 'file-even': isEven }]">
-    <div class="row grow-double-shrink">
+    <div class="row grow-double shrink">
       <a target="_blank" :href="link" class="file-link" :data-hash-sha1="hash">{{ filename }}</a>
       <div class="row row-right">
         <span class="file-uploader">{{ uploader }}</span>
@@ -72,7 +72,7 @@
         <span is="async-button" :default-icon="128683" :action="banUploader"></span>
       </div>
     </div>
-    <div class="row row-right grow-shrink">
+    <div class="row row-right grow shrink">
       <span class="file-expiration">{{ formattedExpirationDate }}</span>
       <template v-if="mod">
         <div class="row row-centre">
