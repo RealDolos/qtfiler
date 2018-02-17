@@ -77,9 +77,17 @@ export default class Room {
             ev.preventDefault();
             ev.stopPropagation();
             const dt = ev.dataTransfer;
-            for (let item of dt.items) {
-                if (item.kind == "file") {
-                    this.fileList.addUpload(this.topid, item.getAsFile());
+            if (dt.items) {
+                for (let item of dt.items) {
+                    if (item.kind == "file") {
+                        this.fileList.addUpload(this.topid, item.getAsFile());
+                        this.topid += 1;
+                    }
+                }
+            } else {
+                // version that works in palememe
+                for (let item of dt.files) {
+                    this.fileList.addUpload(this.topid, item);
                     this.topid += 1;
                 }
             }
