@@ -1,10 +1,9 @@
 <div id="file-dropzone" class="wrapped column">
   <div id="room" class="grow column">
+    <div v-if="false" id="dim-screen"><div id="loading-message">Loading</div></div>
 
-    <div class="row shrink-double">
-      <div v-if="false" id="dim-screen"><div id="loading-message">Loading</div></div>
-
-      <template v-cloak>
+    <div v-cloak class="control-bar row shrink-double">
+      <template>
         <div class="form-group shrink-double">
           <label for="upload-button" class="custom-file-upload">
             <i class="fa fa-cloud-upload"></i>Upload
@@ -13,19 +12,19 @@
         </div>
       </template>
 
-      <template v-cloak v-if="mod">
+      <template v-if="mod">
         <div class="form-group shrink-double">
           <div v-on:click="deleteFiles" id="delete-button" class="button">Delete</div>
         </div>
       </template>
 
-      <template v-cloak>
+      <template>
         <div class="form-group shrink-double">
           <input v-model="filter" placeholder="Filter">
         </div>
       </template>
 
-      <template v-cloak v-if="mod">
+      <template v-if="mod">
         <div :class="['presence-container', 'form-group', 'grow', 'scroll-container', { 'presence-container-small': presenceSmall, 'presence-container-big': presenceBig, 'presence-container-medium': presenceMedium }]">
           <span is="presence" :presence-hidden="presenceHidden" v-on:toggle-presence="togglePresence" :role="role" />
         </div>

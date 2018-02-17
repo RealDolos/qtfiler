@@ -90,6 +90,8 @@ body {
 
 #room {
     background: var(--dark-background);
+    margin-left: 10px;
+    margin-right: 10px;
 }
 
 .header-icon {
@@ -172,8 +174,6 @@ hr {
 }
 
 #file-list-container {
-    padding-left: 10px;
-    padding-right: 10px;
     box-sizing: border-box;
 }
 
@@ -185,6 +185,8 @@ hr {
     align-items: stretch;
     align-content: stretch;
     max-width: 100%;
+    margin: 0;
+    padding: 0;
 }
 
 .column-wrap {
@@ -199,6 +201,8 @@ hr {
     align-items: baseline;
     align-content: flex-start;
     max-height: 100%;
+    margin: 0;
+    padding: 0;
 }
 
 .row-right {
@@ -280,9 +284,8 @@ hr {
     display: block;
 }
 
-.v-cloak {
+[v-cloak] {
     visibility: hidden;
-    display: inherit;
 }
 
 .hidden {
@@ -440,6 +443,9 @@ h1, .register-field > span, .red, .presence {
     max-height: 20vh;
 }
 
+.control-bar {
+}
+
 .presence-container-medium {
     max-height: 50vh;
 }
@@ -457,7 +463,7 @@ h1, .register-field > span, .red, .presence {
     background: var(--upload-bg);
     border-radius: 3px;
     border: 1px solid var(--upload-border);
-    display: inline-block;
+    display: block;
     cursor: pointer;
     color: var(--upload-text);
     font-family: Arial;
