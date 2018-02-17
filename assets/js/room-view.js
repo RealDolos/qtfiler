@@ -23,11 +23,26 @@ export default new Vue({
         async deleteFiles() {
             const files = room.fileList.getDeletedFiles();
             await room.deleteFiles(files);
+        },
+        togglePresence() {
+            this.presenceSize = (this.presenceSize + 1) % 4;
         }
     },
     computed: {
         mod() {
             return this.role == "mod" || this.role == "admin";
+        },
+        presenceBig() {
+            return this.presenceSize == 3;
+        },
+        presenceMedium() {
+            return this.presenceSize == 2;
+        },
+        presenceSmall() {
+            return this.presenceSize == 1;
+        },
+        presenceHidden() {
+            return this.presenceSize == 0;
         }
     }
 });

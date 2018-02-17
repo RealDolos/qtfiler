@@ -436,8 +436,20 @@ h1, .register-field > span, .red, .presence {
     color: #c9c9c9;
 }
 
-.presence-container {
+.presence-container, .presence-container-small {
     max-height: 20vh;
+}
+
+.presence-container-medium {
+    max-height: 50vh;
+}
+
+.presence-container-big {
+    max-height: 75vh;
+}
+
+.collapse {
+    visibility: collapse;
 }
 
 .button, .custom-file-upload, button {

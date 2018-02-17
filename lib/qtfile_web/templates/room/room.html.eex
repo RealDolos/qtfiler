@@ -26,8 +26,8 @@
       </template>
 
       <template v-cloak v-if="mod">
-        <div class="presence-container form-group grow scroll-container">
-          <span is="presence" :role="role" />
+        <div :class="['presence-container', 'form-group', 'grow', 'scroll-container', { 'presence-container-small': presenceSmall, 'presence-container-big': presenceBig, 'presence-container-medium': presenceMedium }]">
+          <span is="presence" :presence-hidden="presenceHidden" v-on:toggle-presence="togglePresence" :role="role" />
         </div>
       </template>
     </div>
@@ -99,10 +99,10 @@
 
 <template id="presence-template">
   <div class="scroll-content presence">
-    Presences
+    <div v-on:click="togglePresence" class="button">Presences</div>
     <div class="column">
       <template v-for="(user, id) in presences">
-        <div>
+        <div :class="[ { 'collapse': hidden } ]">
           {{ user.user.name }}/{{ user.user.role }}:
           <div class="column">
             <template v-for="meta in user.metas">
