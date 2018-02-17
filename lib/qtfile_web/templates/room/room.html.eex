@@ -26,13 +26,13 @@
       </template>
 
       <template v-cloak v-if="mod">
-        <div class="presence-container form-group grow auto-basis scroll-container">
-          <span is="presence" :role="role" />
+        <div :class="['presence-container', 'form-group', 'grow', 'scroll-container', { 'presence-container-small': presenceSmall, 'presence-container-big': presenceBig, 'presence-container-medium': presenceMedium }]">
+          <span is="presence" :presence-hidden="presenceHidden" v-on:toggle-presence="togglePresence" :role="role" />
         </div>
       </template>
     </div>
 
-    <div v-cloak id="file-list-container" class="grow-shrink scroll-container">
+    <div v-cloak id="file-list-container" class="grow scroll-container">
       <span is="file-list" :role="role" :filter="filter" />
     </div>
   </div>
@@ -64,7 +64,7 @@
 
 <template id="file-template">
   <div :id="domId" :class="['file-container', 'row', 'row-spaced', { 'file-odd': isOdd, 'file-even': isEven }]">
-    <div class="row grow-double-shrink">
+    <div class="row grow-double shrink">
       <a target="_blank" :href="link" class="file-link" :data-hash-sha1="hash">{{ filename }}</a>
       <div class="row row-right">
         <span class="file-uploader">{{ uploader }}</span>
@@ -72,7 +72,7 @@
         <span is="async-button" :default-icon="128683" :action="banUploader"></span>
       </div>
     </div>
-    <div class="row row-right grow-shrink">
+    <div class="row row-right grow shrink">
       <span class="file-expiration">{{ formattedExpirationDate }}</span>
       <template v-if="mod">
         <div class="row row-centre">
@@ -99,10 +99,10 @@
 
 <template id="presence-template">
   <div class="scroll-content presence">
-    Presences
+    <div v-on:click="togglePresence" class="button">Presences</div>
     <div class="column">
       <template v-for="(user, id) in presences">
-        <div>
+        <div :class="[ { 'collapse': hidden } ]">
           {{ user.user.name }}/{{ user.user.role }}:
           <div class="column">
             <template v-for="meta in user.metas">

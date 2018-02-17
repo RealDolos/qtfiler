@@ -14,6 +14,7 @@ export default class Room {
         this.role = "user";
         this.filter = "";
         this.topid = 0;
+        this.presenceSize = 0;
     }
 
     push(method, data) {

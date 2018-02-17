@@ -217,31 +217,19 @@ hr {
 }
 
 .grow, .container, main {
-    flex: 1 0 0;
+    flex-grow: 1;
 }
 
 .grow-double {
-    flex: 2 0 0;
-}
-
-.grow-double-shrink {
-    flex: 2 1 0;
-}
-
-.grow-shrink-double {
-    flex: 1 2 0;
-}
-
-.grow-shrink {
-    flex: 1 1 0;
+    flex-grow: 2;
 }
 
 .shrink {
-    flex: 0 1 0;
+    flex-shrink: 1;
 }
 
 .shrink-double {
-    flex: 0 2 0;
+    flex-shrink: 2;
 }
 
 .scroll-container {
@@ -255,6 +243,10 @@ hr {
 
 .auto-basis {
     flex-basis: auto;
+}
+
+.zero-basis, .scroll-container {
+    flex-basis: 0;
 }
 
 .file-container {
@@ -444,8 +436,20 @@ h1, .register-field > span, .red, .presence {
     color: #c9c9c9;
 }
 
-.presence-container {
+.presence-container, .presence-container-small {
     max-height: 20vh;
+}
+
+.presence-container-medium {
+    max-height: 50vh;
+}
+
+.presence-container-big {
+    max-height: 75vh;
+}
+
+.collapse {
+    visibility: collapse;
 }
 
 .button, .custom-file-upload, button {
