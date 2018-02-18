@@ -79,7 +79,8 @@ exports.config = {
                 ["transform-runtime", {
                     "polyfill": false,
                     "regenerator": true
-                }]
+                }],
+                ["transform-object-assign"]
             ]
         }
     },
