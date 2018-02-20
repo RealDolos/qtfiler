@@ -88,10 +88,9 @@ defmodule QtfileWeb.FileController do
 
   def download(conn, %{"uuid" => uuid, "realfilename" => _realfilename}) do
     file = Qtfile.Files.get_file_by_uuid(uuid)
-    path = Application.get_env(:arc, :storage_dir, "uploads/rooms")
 
     if file != nil do
-      absolute_path = Qtfile.Files.get_absolute_path(file)
+      absolute_path = "uploads/" <> uuid
 
       mime_type = file.mime_type
 
