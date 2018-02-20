@@ -123,7 +123,7 @@ defmodule Qtfile.Files do
 
   """
   def delete_file(%File{} = file) do
-    absolute_path = get_absolute_path(file)
+    absolute_path = "uploads/" <> file.uuid
     Repo.delete(file)
     Elixir.File.rm(absolute_path)
   end
