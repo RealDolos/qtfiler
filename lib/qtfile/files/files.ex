@@ -92,30 +92,6 @@ defmodule Qtfile.Files do
     |> Repo.insert()
   end
 
-  def add_file(uuid, filename, room, hash, size, uploader, ip_address, expiration_date, mime_type) do
-    data = %{
-      uuid: uuid,
-      filename: filename,
-      mime_type: mime_type,
-      location: room,
-      hash: hash,
-      size: size,
-      uploader: uploader,
-      ip_address: ip_address,
-      expiration_date: expiration_date
-    }
-    result = create_file(data)
-    case result do
-      {:ok, _} ->
-        QtfileWeb.RoomChannel.broadcast_new_files([data], room.room_id)
-        :ok
-      {:error, changeset} ->
-        Logger.error("failed to add file to db")
-        Logger.error(inspect(changeset))
-        :error
-    end
-  end
-
   @doc """
   Updates a file.
 
@@ -163,10 +139,5 @@ defmodule Qtfile.Files do
   """
   def change_file(%File{} = file) do
     File.changeset(file, %{})
-  end
-
-  def get_absolute_path(file) do
-    path = Application.get_env(:arc, :storage_dir, "uploads/rooms")
-    path <> "/" <> file.location.room_id <> "/" <> file.uuid <> "-original" <> Path.extname(file.filename)
   end
 end
