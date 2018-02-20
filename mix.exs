@@ -45,6 +45,9 @@ defmodule Qtfile.Mixfile do
       {:comeonin, "~> 4.0", only: :prod},
       {:bcrypt_elixir, "~> 1.0", only: :prod},
       {:phoenix_cowboy_logging, "~> 1.0", only: :dev},
+      {:witchcraft, "~> 1.0"},
+      {:algae, "~> 1.1"},
+      {:quark, "~> 2.3"},
     ]
   end
 
