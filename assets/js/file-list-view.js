@@ -32,7 +32,7 @@ export default function(room) {
                 return this.files.filter((f) => {
                     for(var i = 0; i < filter2.length; i++) {
                         if(filter2[i].search("user:") >= 0) { //checks if filtering by user
-                            if(!(f.uploader.toUpperCase().search(filter2[i].substring(5).toUpperCase()) >= 0 == bools[i])) {
+                            if(!((f.uploader.toUpperCase().search(filter2[i].substring(5).toUpperCase()) == 0) == bools[i])) {
                                 return 0;
                             }
                           }
