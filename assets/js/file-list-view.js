@@ -15,11 +15,35 @@ export default function(room) {
             file: file(room),
             upload: upload(room)
         },
+        
         computed: {
             filteredFiles() {
+                var bools = [];
+                var filter2 = this.filter.split(" ");
+                for(var i = 0; i < filter2.length; i++) {
+                    if(filter2[i][0] == "-") {
+                        bools[i] = false;
+                        filter2[i] = filter2[i].substring(1);
+                    }
+                    else {
+                        bools[i] = true;
+                    }
+                }
                 return this.files.filter((f) => {
-                    return f.filename.toUpperCase().search(this.filter.toUpperCase()) >= 0;
-                });
+                    for(var i = 0; i < filter2.length; i++) {
+                        if(filter2[i].search("user:") >= 0) { //checks if filtering by user
+                            if(!((f.uploader.toUpperCase().search(filter2[i].substring(5).toUpperCase()) == 0) == bools[i])) {
+                                return 0;
+                            }
+                          }
+                          else {
+                              if(!(f.filename.toUpperCase().search(filter2[i].toUpperCase()) >= 0 == bools[i])) {
+                                  return 0;
+                              }
+                          }
+                      }
+                    
+                    return 1;});
             },
             filesLength() {
                 return this.files.length;
