@@ -101,4 +101,12 @@ defmodule Qtfile.Settings do
   def change_setting(%Setting{} = setting) do
     Setting.changeset(setting, %{})
   end
+
+  def get_setting_by_key(setting_key) do
+    query = from s in Setting,
+      select: s,
+      where: s.key == ^setting_key
+
+    Repo.one(query)
+  end
 end

@@ -1,5 +1,8 @@
 defmodule Qtfile.Util do
+  use Witchcraft
   alias Algae.Either
+  alias Either.{Left, Right}
+  import Either
 
   def get_ip_address(%{remote_ip: ip}) do
     Qtfile.IPAddressObfuscation.normalise_ip_address(ip)
@@ -28,23 +31,30 @@ defmodule Qtfile.Util do
 
   def errToEither(e) do
     case e do
-      :ok -> Either.Right.new
+      :ok -> Right.new
       {t, v} ->
         m =
           case t do
-            :ok -> Either.Right
-            :error -> Either.Left
+            :ok -> Right
+            :error -> Left
           end
         m.new v
-      :error -> Either.Left.new
+      :error -> Left.new
     end
   end
 
-  def mapLeft(%Either.Left{left: l}, f) do
-    %Either.Left{left: f.(l)}
+  def nilToEither(n) do
+    case n do
+      nil -> Left.new
+      x -> Right.new(x)
+    end
   end
 
-  def mapLeft(%Either.Right{} = r, _) do
+  def mapLeft(%Left{left: l}, f) do
+    %Left{left: f.(l)}
+  end
+
+  def mapLeft(%Right{} = r, _) do
     r
   end
 
