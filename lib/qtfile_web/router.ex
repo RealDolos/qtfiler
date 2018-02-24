@@ -48,6 +48,11 @@ defmodule QtfileWeb.Router do
     end
   end
 
+  scope "/admin", QtfileWeb do
+    pipe_through [:browser, :logged_in?, :is_admin?]
+    get "/settings", AdminController, :settings
+  end
+
   scope "/r", QtfileWeb do
     pipe_through [:browser, :logged_in?]
 
@@ -94,6 +99,17 @@ defmodule QtfileWeb.Router do
   defp is_mod?(conn, _) do
     user = Qtfile.Accounts.get_user!(get_session(conn, :user_id))
     unless user.role == "mod" or user.role == "admin" do
+      conn
+      |> send_resp(:forbidden, "Insufficient privileges")
+      |> halt()
+    else
+      conn
+    end
+  end
+
+  defp is_admin?(conn, _) do
+    user = Qtfile.Accounts.get_user!(get_session(conn, :user_id))
+    unless user.role == "admin" do
       conn
       |> send_resp(:forbidden, "Insufficient privileges")
       |> halt()
