@@ -95,7 +95,7 @@ defmodule QtfileWeb.FileController do
   end
 
   def download(conn, %{"uuid" => uuid, "realfilename" => _realfilename}) do
-    if  logged_in?(conn) or Settings.get_setting_value!("anon_download") do
+    if logged_in?(conn) or Settings.get_setting_value!("anon_download") do
       file = Qtfile.Files.get_file_by_uuid(uuid)
 
       if file != nil do
