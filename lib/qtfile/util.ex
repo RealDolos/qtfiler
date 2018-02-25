@@ -62,6 +62,10 @@ defmodule Qtfile.Util do
   end
 
   def errToEitherTag(e, t) do
-    e |> errToEither |> tagLeft t
+    e |> errToEither |> tagLeft(t)
+  end
+
+  def nilToEitherTag(e, t) do
+    e |> nilToEither |> tagLeft(t)
   end
 end
