@@ -1,5 +1,6 @@
 defmodule QtfileWeb.FileController do
   use QtfileWeb, :controller
+  alias Qtfile.Settings
   @image_extensions ~w(.jpg .jpeg .png)
   @nice_mime_types ~w(text audio video image)
 
@@ -30,9 +31,9 @@ defmodule QtfileWeb.FileController do
 
   defp save_file_loop(conn, state, write) do
     {status, data, conn} = read_body(conn,
-      length: Application.get_env(:qtfile, QtfileWeb.Endpoint, :max_file_length),
+      length: Settings.get_setting_value!("max_file_length"),
       read_length: 64 * 1024,
-      read_timeout: 1024
+      read_timeout: 2048
     )
     {^status, state} = write.(state, data)
     case status do
@@ -86,42 +87,55 @@ defmodule QtfileWeb.FileController do
     })
   end
 
+  defp logged_in?(conn) do
+    case get_session(conn, :user_id) do
+      nil -> false
+      _ -> true
+    end
+  end
+
   def download(conn, %{"uuid" => uuid, "realfilename" => _realfilename}) do
-    file = Qtfile.Files.get_file_by_uuid(uuid)
+    if logged_in?(conn) or Settings.get_setting_value!("anon_download") do
+      file = Qtfile.Files.get_file_by_uuid(uuid)
 
-    if file != nil do
-      absolute_path = "uploads/" <> uuid
+      if file != nil do
+        absolute_path = "uploads/" <> uuid
 
-      mime_type = file.mime_type
+        mime_type = file.mime_type
 
-      nice_file =
-        case mime_type do
-          nil -> false
-          _ ->
-            case String.split(mime_type, "/") do
-              [type, _] -> Enum.member?(@nice_mime_types, type)
-              _ -> false
-            end
-        end
+        nice_file =
+          case mime_type do
+            nil -> false
+            _ ->
+              case String.split(mime_type, "/") do
+                [type, _] -> Enum.member?(@nice_mime_types, type)
+                _ -> false
+              end
+          end
 
-      if nice_file do
-        conn
-        |> put_resp_content_type(mime_type)
-        |> send_file(200, absolute_path)
-      else
-        download_params = [filename: file.filename] ++ if file.mime_type == nil do
-          []
+        if nice_file do
+          conn
+          |> put_resp_content_type(mime_type)
+          |> send_file(200, absolute_path)
         else
-          [content_type: file.mime_type]
+          download_params = [filename: file.filename] ++ if file.mime_type == nil do
+            []
+          else
+            [content_type: file.mime_type]
+          end
+          conn
+          |> send_download({:file, absolute_path}, download_params)
         end
-        conn
-        |> send_download({:file, absolute_path}, download_params)
-      end
 
+      else
+        conn
+        |> put_status(404)
+        |> text("file not found!")
+      end
     else
       conn
-      |> put_status(404)
-      |> text("file not found!")
+      |> send_resp(:forbidden, "Not logged in")
+      |> halt()
     end
   end
 

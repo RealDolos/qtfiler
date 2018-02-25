@@ -1,0 +1,25 @@
+<form method="post">
+  <input type="hidden" name="_csrf_token" value="<%= Plug.CSRFProtection.get_csrf_token() %>" />
+  <div class="column">
+    <%= for setting <- settings do %>
+      <div class="row">
+        <label for="<%= setting.key %>"><%= setting.name %>:</label>
+        <%= cond do %>
+          <% setting.type == "int" -> %>
+            <input id="<%= setting.key %>" type="text" name="<%= setting.key %>" value="<%= setting.value %>" />
+          <% setting.type == "bool" -> %>
+            <div class="column">
+              <%= if setting.value == "true" do %>
+                <label>True:<input type="radio" name="<%= setting.key %>" value="true" checked /></label>
+                <label>False:<input type="radio" name="<%= setting.key %>" value="false" /></label>
+              <% else %>
+                <label>True:<input type="radio" name="<%= setting.key %>" value="true" /></label>
+                <label>False:<input type="radio" name="<%= setting.key %>" value="false" checked /></label>
+              <% end %>
+            </div>  
+        <% end %>
+      </div>
+    <% end %>
+    <input type="submit" value="Save" />
+  </div>
+</form>
