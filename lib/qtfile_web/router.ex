@@ -37,14 +37,14 @@ defmodule QtfileWeb.Router do
     get "/", PageController, :index
     get "/login", UserController, :login_page
     get "/register", UserController, :register_page
+    get "/get/:uuid/:realfilename", FileController, :download
+    get "/get/:uuid/", FileController, :download_no_filename
 
     scope "/" do
       pipe_through :logged_in?
 
       get "/new", RoomController, :create_room
       get "/rooms", RoomsController, :index
-      get "/get/:uuid/:realfilename", FileController, :download
-      get "/get/:uuid/", FileController, :download_no_filename
     end
   end
 
