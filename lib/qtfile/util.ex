@@ -1,8 +1,5 @@
 defmodule Qtfile.Util do
-  use Witchcraft
-  alias Algae.Either
-  alias Either.{Left, Right}
-  import Either
+  alias Algae.Either.{Left, Right}
 
   def get_ip_address(%{remote_ip: ip}) do
     Qtfile.IPAddressObfuscation.normalise_ip_address(ip)

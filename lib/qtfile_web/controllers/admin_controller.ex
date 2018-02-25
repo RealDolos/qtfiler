@@ -1,11 +1,9 @@
 defmodule QtfileWeb.AdminController do
   use QtfileWeb, :controller
   import Qtfile.Settings
-  import Qtfile.Util
+  alias Algae.Either.{Left, Right}
   use Witchcraft
-  alias Algae.Either
-  alias Either.{Left, Right}
-  import Either
+  import Qtfile.Util
 
   def settings(conn, _params) do
     render(conn, "settings.html")
