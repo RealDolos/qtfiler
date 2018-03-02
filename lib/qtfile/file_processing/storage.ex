@@ -1,72 +1,105 @@
 defmodule Qtfile.FileProcessing.Storage do
-  require Logger
+  def new_file(id, size) do
+    written = :uninitialised
+    state = {written}
+    info = {id, size}
+    {:ok, {info, state}}
+  end
 
-  def store_file(file_data, callback) do
-    hash = :crypto.hash_init(:sha)
-    path = "uploads/" <> file_data.uuid
-    size = file_data.size
+  def write_chunk(
+    {{id, size} = info, {written} = state} = upload, offset, chunkSize, writeCB, doneCB
+  ) do
+    path = "uploads/" <> id
 
-    delete_on_error(path, [:write, :binary],
+    {mode, initialise} =
+      case written do
+        :uninitialised ->
+          {[:write, :binary], fn(file) ->
+            {:ok, _} = :file.position(file, size)
+            :ok = :file.truncate(file)
+            {:initialised, 0}
+          end}
+        {:initialised, _} ->
+          {[:read, :write, :binary], fn(_) ->
+            written
+          end}
+      end
+
+    delete_on_error(path, mode,
       fn(file) ->
-        {:ok, _} = :file.position(file, size)
-        :ok = :file.truncate(file)
-        {:ok, _} = :file.position(file, 0)
-        {:ok, {_, 0, hash}, result} =
-          callback.({file, size, hash}, fn({file, size, hash}, data) ->
-            size = size - :erlang.byte_size(data)
-            :ok = :file.write(file, data)
-            status =
-              cond do
-                size > 0 -> :more
-                size == 0 -> :ok
-              end
-            {status, {
-              file,
-              size,
-              :crypto.hash_update(hash, data)
-            }}
-          end)
-        {:ok, {result, hash}}
-      end,
-      fn({result, hash}) ->
-        hash = Base.encode16(:crypto.hash_final(hash), case: :lower)
-        file_data = Map.put(file_data, :hash, hash)
-        case Qtfile.Files.create_file(file_data) do
-          {:ok, _} ->
-            QtfileWeb.RoomChannel.broadcast_new_files(
-              [file_data], file_data.location.room_id
-            )
-            {:ok, result}
-          {:error, changeset} ->
-            Logger.error("failed to add file to db")
-            Logger.error(inspect(changeset))
-            raise "file creation db error"
+        written = initialise.(file)
+        {:initialised, currentOffset} = written
+
+        if offset > currentOffset do
+          raise "offset too far"
         end
+
+        {:ok, _} = :file.position(file, offset)
+        chunkState = {0}
+
+        {status, {chunkWritten}, result} =
+          writeCB.(chunkState, fn({chunkWritten}, data) ->
+            size = :erlang.byte_size(data)
+            chunkWritten = chunkWritten + size
+            
+            if chunkWritten > chunkSize do
+              :error
+            else
+              :file.write(file, data)
+
+              status = if chunkWritten == chunkSize do
+                :ok
+              else
+                :more
+              end
+
+              {status, {chunkWritten}}
+            end
+          end)
+
+        case status do
+          :ok ->
+            true = chunkWritten == chunkSize
+          :suspended ->
+            true = chunkWritten < chunkSize
+        end
+
+        written = {:initialised, offset + chunkWritten}
+        {:ok, {{info, {written}}, result}}
+      end, fn({upload, result}) ->
+        {{_, size}, {written}} = upload
+        done =
+          case written do
+            :uninitialised -> false
+            {:initialised, ^size} -> true
+          end
+        doneCB.(done, result)
       end
     )
   end
 
-  defp delete_on_error(path, args, writeCallback, closedCallback) do
+  defp delete_on_error(
+    path, args, writeCallback, closedCallback
+  ) do
     {:ok, file} = :file.open(path, args)
     try do
       {:ok, result} = writeCallback.(file)
       :ok = :file.sync(file)
+      :ok = :file.close(file)
       {:ok, result}
     rescue
       e ->
-        :file.close(file)
-        :file.delete(path)
+        :ok = :file.close(file)
+        :ok = :file.delete(path)
         raise e
     else
       {:ok, result} ->
         try do
-          :ok = :file.close(file)
-          {:ok, result} = closedCallback.(result)
-          {:ok, result}
+          closedCallback.(result)
         rescue
           e ->
-            :file.delete(path)
-          raise e
+            :ok = :file.delete(path)
+            raise e
         end
     end
   end

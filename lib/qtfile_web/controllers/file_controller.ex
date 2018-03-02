@@ -1,5 +1,6 @@
 defmodule QtfileWeb.FileController do
   use QtfileWeb, :controller
+  require Logger
   @image_extensions ~w(.jpg .jpeg .png)
   @nice_mime_types ~w(text audio video image)
 
@@ -48,30 +49,44 @@ defmodule QtfileWeb.FileController do
       "content_type" => content_type
     }, room) do
 
+    id = Ecto.UUID.generate()
     size = :erlang.binary_to_integer(hd(get_req_header(conn, "content-length")))
-    uploader_id = get_session(conn, :user_id)
-    uploader = Qtfile.Accounts.get_user!(uploader_id)
-    ip_address = Qtfile.Util.get_ip_address(conn)
-    %{file_ttl: file_ttl} = room
-    expiration_date = DateTime.from_unix!(DateTime.to_unix(DateTime.utc_now()) + file_ttl)
+    {:ok, upload_state} = Qtfile.FileProcessing.Storage.new_file(id, size)
 
-    file_data = %{
-      uuid: Ecto.UUID.generate(),
-      filename: filename,
-      mime_type: content_type,
-      location: room,
-      size: size,
-      uploader: uploader,
-      ip_address: ip_address,
-      expiration_date: expiration_date,
-    }
-
-    {:ok, conn} =
-      Qtfile.FileProcessing.Storage.store_file(file_data, fn(state, write) ->
-        save_file_loop(conn, state, write)
-      end)
-
-    json conn, %{success: true}
+    Qtfile.FileProcessing.Storage.write_chunk(upload_state, 0, size, fn(state, write) ->
+      save_file_loop(conn, state, write)
+    end, fn(true, conn) ->
+      uploader_id = get_session(conn, :user_id)
+      uploader = Qtfile.Accounts.get_user!(uploader_id)
+      ip_address = Qtfile.Util.get_ip_address(conn)
+      %{file_ttl: file_ttl} = room
+      expiration_date = DateTime.from_unix!(DateTime.to_unix(DateTime.utc_now()) + file_ttl)
+      
+      file_data = %{
+        uuid: id,
+        filename: filename,
+        mime_type: content_type,
+        location: room,
+        size: size,
+        uploader: uploader,
+        ip_address: ip_address,
+        expiration_date: expiration_date,
+      }
+      # hash = Base.encode16(:crypto.hash_final(hash), case: :lower)
+      hash = "dsdfsdf"
+      file_data = Map.put(file_data, :hash, hash)
+      case Qtfile.Files.create_file(file_data) do
+        {:ok, _} ->
+          QtfileWeb.RoomChannel.broadcast_new_files(
+            [file_data], file_data.location.room_id
+          )
+        {:error, changeset} ->
+          Logger.error("failed to add file to db")
+          Logger.error(inspect(changeset))
+          raise "file creation db error"
+      end
+      json conn, %{success: true}
+    end)
   end
 
   defp upload_validated(conn,
