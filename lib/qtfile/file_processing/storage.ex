@@ -1,13 +1,12 @@
 defmodule Qtfile.FileProcessing.Storage do
   def new_file(id, size) do
     written = :uninitialised
-    state = {written}
     info = {id, size}
-    {:ok, {info, state}}
+    {:ok, {info, written}}
   end
 
   def write_chunk(
-    {{id, size} = info, {written} = state} = upload, offset, chunkSize, writeCB, doneCB
+    {{id, size} = info, written} = upload, offset, chunkSize, writeCB, doneCB
   ) do
     path = "uploads/" <> id
 
@@ -65,13 +64,13 @@ defmodule Qtfile.FileProcessing.Storage do
         end
 
         written = {:initialised, offset + chunkWritten}
-        {:ok, {{info, {written}}, result}}
+        {:ok, {{info, written}, result}}
       end, fn({upload, result}) ->
-        {{_, size}, {written}} = upload
+        {{_, size}, written} = upload
         done =
           case written do
-            :uninitialised -> false
             {:initialised, ^size} -> true
+            _ -> false
           end
         doneCB.(done, result)
       end
