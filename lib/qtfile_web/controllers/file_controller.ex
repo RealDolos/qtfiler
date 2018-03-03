@@ -2,6 +2,7 @@ defmodule QtfileWeb.FileController do
   use QtfileWeb, :controller
   require Logger
   alias Qtfile.Settings
+  alias Qtfile.FileProcessing.{Storage, Hashing}
   @image_extensions ~w(.jpg .jpeg .png)
   @nice_mime_types ~w(text audio video image)
 
@@ -30,17 +31,38 @@ defmodule QtfileWeb.FileController do
     end
   end
 
-  defp save_file_loop(conn, state, write) do
+  defp save_file_loop(conn, state, write, hash) do
     {status, data, conn} = read_body(conn,
       length: Settings.get_setting_value!("max_file_length"),
       read_length: 64 * 1024,
       read_timeout: Settings.get_setting_value!("upload_timeout")
     )
     {^status, state} = write.(state, data)
+    hash = Hashing.update_hash(hash, data)
     case status do
-      :more -> save_file_loop(conn, state, write)
-      :ok -> {:ok, state, conn}
+      :more -> save_file_loop(conn, state, write, hash)
+      :ok -> {:ok, state, {conn, hash}}
     end
+  end
+
+  defp upload_data(conn, room, filename, content_type, uuid, hash, size) do
+    uploader_id = get_session(conn, :user_id)
+    uploader = Qtfile.Accounts.get_user!(uploader_id)
+    ip_address = Qtfile.Util.get_ip_address(conn)
+    %{file_ttl: file_ttl} = room
+    expiration_date = DateTime.from_unix!(DateTime.to_unix(DateTime.utc_now()) + file_ttl)
+      
+    %{
+      uuid: uuid,
+      filename: filename,
+      mime_type: content_type,
+      location: room,
+      size: size,
+      uploader: uploader,
+      ip_address: ip_address,
+      expiration_date: expiration_date,
+      hash: hash,
+    }
   end
 
   defp upload_validated(conn,
@@ -50,32 +72,16 @@ defmodule QtfileWeb.FileController do
       "content_type" => content_type
     }, room) do
 
-    id = Ecto.UUID.generate()
+    uuid = Ecto.UUID.generate()
     size = :erlang.binary_to_integer(hd(get_req_header(conn, "content-length")))
-    {:ok, upload_state} = Qtfile.FileProcessing.Storage.new_file(id, size)
+    {:ok, upload_state} = Storage.new_file(uuid, size)
+    hash = Hashing.initialise_hash()
 
-    Qtfile.FileProcessing.Storage.write_chunk(upload_state, 0, size, fn(state, write) ->
-      save_file_loop(conn, state, write)
-    end, fn(true, conn) ->
-      uploader_id = get_session(conn, :user_id)
-      uploader = Qtfile.Accounts.get_user!(uploader_id)
-      ip_address = Qtfile.Util.get_ip_address(conn)
-      %{file_ttl: file_ttl} = room
-      expiration_date = DateTime.from_unix!(DateTime.to_unix(DateTime.utc_now()) + file_ttl)
-      
-      file_data = %{
-        uuid: id,
-        filename: filename,
-        mime_type: content_type,
-        location: room,
-        size: size,
-        uploader: uploader,
-        ip_address: ip_address,
-        expiration_date: expiration_date,
-      }
-      # hash = Base.encode16(:crypto.hash_final(hash), case: :lower)
-      hash = "dsdfsdf"
-      file_data = Map.put(file_data, :hash, hash)
+    Storage.write_chunk(upload_state, 0, size, fn(state, write) ->
+      save_file_loop(conn, state, write, hash)
+    end, fn(true, {conn, hash}) ->
+      hash = Hashing.finalise_hash(hash)
+      file_data = upload_data(conn, room, filename, content_type, uuid, hash, size)
       case Qtfile.Files.create_file(file_data) do
         {:ok, _} ->
           QtfileWeb.RoomChannel.broadcast_new_files(
