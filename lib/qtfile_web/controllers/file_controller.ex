@@ -34,7 +34,7 @@ defmodule QtfileWeb.FileController do
     {status, data, conn} = read_body(conn,
       length: Settings.get_setting_value!("max_file_length"),
       read_length: 64 * 1024,
-      read_timeout: 2048
+      read_timeout: Settings.get_setting_value!("upload_timeout")
     )
     {^status, state} = write.(state, data)
     case status do
