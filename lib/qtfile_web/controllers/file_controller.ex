@@ -32,16 +32,24 @@ defmodule QtfileWeb.FileController do
   end
 
   defp save_file_loop(conn, state, write, hash) do
-    {status, data, conn} = read_body(conn,
+    result = read_body(conn,
       length: Settings.get_setting_value!("max_file_length"),
       read_length: 64 * 1024,
       read_timeout: Settings.get_setting_value!("upload_timeout")
     )
-    {^status, state} = write.(state, data)
-    hash = Hashing.update_hash(hash, data)
-    case status do
-      :more -> save_file_loop(conn, state, write, hash)
-      :ok -> {:ok, state, {conn, hash}}
+    case result do
+      {status, data, conn} ->
+        {^status, state} = write.(state, data)
+        hash = Hashing.update_hash(hash, data)
+        case status do
+          :more -> save_file_loop(conn, state, write, hash)
+          :ok -> {:ok, state, {conn, hash}}
+        end
+      {:error, e} ->
+        case e do
+          :closed -> {:suspended, state, {conn, hash}}
+          :timeout -> {:suspended, state, {conn, hash}}
+        end
     end
   end
 
