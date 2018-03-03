@@ -2,7 +2,7 @@ defmodule QtfileWeb.FileController do
   use QtfileWeb, :controller
   require Logger
   alias Qtfile.Settings
-  alias Qtfile.FileProcessing.{Storage, Hashing}
+  alias Qtfile.FileProcessing.{Storage, Hashing, UploadState}
   @image_extensions ~w(.jpg .jpeg .png)
   @nice_mime_types ~w(text audio video image)
 
@@ -65,34 +65,71 @@ defmodule QtfileWeb.FileController do
     }
   end
 
+  defp new_upload(conn) do
+    uuid = Ecto.UUID.generate()
+    size = :erlang.binary_to_integer(hd(get_req_header(conn, "content-length")))
+    {:ok, upload_state} = Storage.new_file(uuid, size)
+    hash = Hashing.initialise_hash()
+    {uuid, size, hash, upload_state}
+  end
+
   defp upload_validated(conn,
     %{
       "room_id" => room_id,
       "filename" => filename,
       "content_type" => content_type
-    }, room) do
+    } = params, room) do
 
-    uuid = Ecto.UUID.generate()
-    size = :erlang.binary_to_integer(hd(get_req_header(conn, "content-length")))
-    {:ok, upload_state} = Storage.new_file(uuid, size)
-    hash = Hashing.initialise_hash()
+    maybe_id = Map.fetch(params, "upload_id")
+
+    {uuid, size, hash, upload_state} =
+      case maybe_id do
+        {:ok, id} ->
+          case UploadState.get(id) do
+            {:ok, {upload_state, hash}} ->
+              {
+                Storage.get_id(upload_state),
+                Storage.get_size(upload_state),
+                hash,
+                upload_state,
+              }
+            _ ->
+              result = new_upload(conn)
+              {_, _, hash, upload_state} = result
+              :ok = UploadState.put(id, {hash, upload_state})
+              result
+          end
+        _ ->
+          new_upload(conn)          
+      end
 
     Storage.write_chunk(upload_state, 0, size, fn(state, write) ->
       save_file_loop(conn, state, write, hash)
-    end, fn(true, {conn, hash}) ->
-      hash = Hashing.finalise_hash(hash)
-      file_data = upload_data(conn, room, filename, content_type, uuid, hash, size)
-      case Qtfile.Files.create_file(file_data) do
-        {:ok, _} ->
-          QtfileWeb.RoomChannel.broadcast_new_files(
-            [file_data], file_data.location.room_id
-          )
-        {:error, changeset} ->
-          Logger.error("failed to add file to db")
-          Logger.error(inspect(changeset))
-          raise "file creation db error"
+    end, fn(done, upload_state, {conn, hash}) ->
+      case done do
+        true ->
+          hash = Hashing.finalise_hash(hash)
+          file_data = upload_data(conn, room, filename, content_type, uuid, hash, size)
+          case Qtfile.Files.create_file(file_data) do
+            {:ok, _} ->
+              QtfileWeb.RoomChannel.broadcast_new_files(
+                [file_data], file_data.location.room_id
+              )
+            {:error, changeset} ->
+              Logger.error("failed to add file to db")
+              Logger.error(inspect(changeset))
+              raise "file creation db error"
+          end
+          case maybe_id do
+            {:ok, id} -> UploadState.delete(id)
+            _ -> nil
+          end
+          json conn, %{success: true, done: true}
+        false ->
+          {:ok, id} = maybe_id
+          UploadState.put(id, {hash, upload_state})
+          json conn, %{success: true, done: false}
       end
-      json conn, %{success: true}
     end)
   end
 

@@ -5,6 +5,14 @@ defmodule Qtfile.FileProcessing.Storage do
     {:ok, {info, written}}
   end
 
+  def get_id({{id, _}, _}) do
+    id
+  end
+
+  def get_size({{_, size}, _}) do
+    size
+  end
+
   def write_chunk(
     {{id, size} = info, written} = upload, offset, chunkSize, writeCB, doneCB
   ) do
@@ -72,7 +80,7 @@ defmodule Qtfile.FileProcessing.Storage do
             {:initialised, ^size} -> true
             _ -> false
           end
-        doneCB.(done, result)
+        doneCB.(done, upload, result)
       end
     )
   end
