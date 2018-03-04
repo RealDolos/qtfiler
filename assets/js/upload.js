@@ -13,5 +13,6 @@ export default class Upload {
         this.id = btoa(id);
         this.file = file;
         this.uploaded = 0;
+        this.attempt = 0;
     }
 };

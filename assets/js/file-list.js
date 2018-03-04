@@ -11,6 +11,10 @@ export default class FileList {
         this.room_id = room_id;
     }
 
+    sleep(time) {
+        return new Promise(resolve => setTimeout(resolve, time));
+    }
+
     async wakeUploader() {
         if (this.status) {
             return;
@@ -27,17 +31,28 @@ export default class FileList {
     }
 
     async performUploads() {
+        let upload = null;
         while (this.uploads.length) {
-            await this.upload(this.uploads[0]);
-            this.uploads.shift();
+            upload = this.uploads[0];
+            try {
+                const result = await this.upload(upload);
+                this.uploads.shift();
+            } catch(e) {
+                console.log(e);
+                await this.sleep((2 ** upload.attempt) * 1000);
+                upload.attempt += 1;
+            }
         }
     }
 
     upload(upload) {
+        const offset = upload.uploaded;
+
         let query =
             "room_id=" + encodeURIComponent(this.room_id) +
             "&filename=" + encodeURIComponent(upload.file.name) +
-            "&upload_id=" + encodeURIComponent(upload.id);
+            "&upload_id=" + encodeURIComponent(upload.id) +
+            "&offset=" + encodeURIComponent(offset);
 
         if (upload.file.type) {
             query += "&content_type=" + upload.file.type;
@@ -59,14 +74,22 @@ export default class FileList {
             });
 
             req.addEventListener("error", (ev) => {
-                reject(req.response);
+                let result = req.response;
+                result.done = false;
+                result.success = false;
+                result.aborted = false;
+                reject(result);
             });
 
             req.addEventListener("abort", (ev) => {
-                resolve("aborted xhr");
+                reject({
+                    success: false,
+                    aborted: true,
+                    done: false
+                });
             });
 
-            req.send(upload.file);
+            req.send(upload.file.slice(offset));
         });
     }
 
