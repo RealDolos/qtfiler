@@ -120,8 +120,10 @@ defmodule QtfileWeb.FileController do
             {:ok, id} -> UploadState.put(id, {hash, upload_state})
             _ -> nil
           end
+
           hash = Hashing.finalise_hash(hash)
           file_data = upload_data(conn, room, filename, content_type, uuid, hash, size)
+
           case Qtfile.Files.create_file(file_data) do
             {:ok, _} ->
               QtfileWeb.RoomChannel.broadcast_new_files(
@@ -132,10 +134,12 @@ defmodule QtfileWeb.FileController do
               Logger.error(inspect(changeset))
               raise "file creation db error"
           end
+
           case maybe_id do
             {:ok, id} -> UploadState.delete(id)
             _ -> nil
           end
+
           json conn, %{success: true, done: true}
         false ->
           {:ok, id} = maybe_id
