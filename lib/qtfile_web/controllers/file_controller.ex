@@ -73,11 +73,11 @@ defmodule QtfileWeb.FileController do
     }
   end
 
-  defp new_upload(conn, size) do
+  defp new_upload(conn, unparsed_size) do
     uuid = Ecto.UUID.generate()
     {:ok, upload_state} = Storage.new_file(uuid, size)
     hash = Hashing.initialise_hash()
-    {size, ""} = Integer.parse(size)
+    {size, ""} = Integer.parse(unparsed_size)
     {uuid, size, hash, upload_state}
   end
 
@@ -86,7 +86,7 @@ defmodule QtfileWeb.FileController do
       "room_id" => room_id,
       "filename" => filename,
       "content_type" => content_type,
-      "size" => size,
+      "size" => unparsed_size,
     } = params, room) do
 
     maybe_id = Map.fetch(params, "upload_id")
@@ -103,13 +103,13 @@ defmodule QtfileWeb.FileController do
                 upload_state,
               }
             _ ->
-              result = new_upload(conn, size)
+              result = new_upload(conn, unparsed_size)
               {_, _, hash, upload_state} = result
               :ok = UploadState.put(id, {hash, upload_state})
               result
           end
         _ ->
-          new_upload(conn, size)
+          new_upload(conn, unparsed_size)
       end
 
     Storage.write_chunk(upload_state, 0, size, fn(state, write) ->
