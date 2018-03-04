@@ -33,7 +33,7 @@ defmodule QtfileWeb.FileController do
 
   defp save_file_loop(conn, state, write, hash) do
     result = read_body(conn,
-      length: Settings.get_setting_value!("max_file_length"),
+      length: 64 * 1024,
       read_length: 64 * 1024,
       read_timeout: Settings.get_setting_value!("upload_timeout")
     )
