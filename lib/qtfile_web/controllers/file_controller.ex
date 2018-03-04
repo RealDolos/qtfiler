@@ -94,7 +94,7 @@ defmodule QtfileWeb.FileController do
       case maybe_id do
         {:ok, id} ->
           case UploadState.get(id) do
-            {:ok, {upload_state, hash}} ->
+            {:ok, {hash, upload_state}} ->
               {
                 Storage.get_id(upload_state),
                 Storage.get_size(upload_state),
