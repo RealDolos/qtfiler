@@ -112,7 +112,9 @@ defmodule QtfileWeb.FileController do
           new_upload(conn, unparsed_size)
       end
 
-    Storage.write_chunk(upload_state, 0, size, fn(state, write) ->
+    chunk_size = :erlang.binary_to_integer(hd(get_req_header(conn, "content-length")))
+
+    Storage.write_chunk(upload_state, 0, chunk_size, fn(state, write) ->
       save_file_loop(conn, state, write, hash)
     end, fn(done, upload_state, {conn, hash}) ->
       case done do
