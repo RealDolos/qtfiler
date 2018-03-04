@@ -116,6 +116,10 @@ defmodule QtfileWeb.FileController do
     end, fn(done, upload_state, {conn, hash}) ->
       case done do
         true ->
+          case maybe_id do
+            {:ok, id} -> UploadState.put(id, {hash, upload_state})
+            _ -> nil
+          end
           hash = Hashing.finalise_hash(hash)
           file_data = upload_data(conn, room, filename, content_type, uuid, hash, size)
           case Qtfile.Files.create_file(file_data) do
