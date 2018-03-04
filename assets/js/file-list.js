@@ -36,7 +36,10 @@ export default class FileList {
             upload = this.uploads[0];
             try {
                 const result = await this.upload(upload);
-                this.uploads.shift();
+
+                if (result.done) {
+                    this.uploads.shift();
+                }
             } catch(e) {
                 console.log(e);
                 await this.sleep((2 ** upload.attempt) * 1000);
