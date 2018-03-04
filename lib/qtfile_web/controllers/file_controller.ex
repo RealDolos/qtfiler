@@ -77,6 +77,7 @@ defmodule QtfileWeb.FileController do
     uuid = Ecto.UUID.generate()
     {:ok, upload_state} = Storage.new_file(uuid, size)
     hash = Hashing.initialise_hash()
+    {size, ""} = Integer.parse(size)
     {uuid, size, hash, upload_state}
   end
 
