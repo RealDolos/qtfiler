@@ -6,7 +6,7 @@ export default function(room) {
     return {
         name: "upload",
         template: "#upload-template",
-        props: ["role", "index", "id"],
+        props: ["role", "index", "id", "wake", "pause"],
         data() {
             return room.fileList.searchUploads(this.id, (upload, i) => {
                 return upload;
@@ -24,10 +24,22 @@ export default function(room) {
             },
             isEven() {
                 return (this.index + 1) % 2;
+            },
+            running() {
+                return !this.paused;
             }
         },
         components: {
             asyncButton: asyncButton
+        },
+        methods: {
+            async toggle() {
+                this.paused = !this.paused;
+                if (this.paused) {
+                    this.pause(this.id);
+                }
+                return await this.wake();
+            }
         }
     };
 };

@@ -9,11 +9,19 @@ export default class FileList {
         this.files = [];
         this.status = 0;
         this.room_id = room_id;
+        this.current = null;
+        this.currentID = "";
+    }
+
+    sleep(time) {
+        return new Promise(resolve => setTimeout(resolve, time));
     }
 
     async wakeUploader() {
         if (this.status) {
-            return;
+            return {
+                success: true
+            };
         }
 
         this.status += 1;
@@ -24,51 +32,117 @@ export default class FileList {
             // todo: catch
             this.status -= 1;
         }
+
+        return {
+            success: true
+        };
     }
 
-    async performUploads() {
-        while (this.uploads.length) {
-            await this.upload(this.uploads[0]);
-            this.uploads.shift();
+    pause(id) {
+        if (this.currentID == id && this.current != null) {
+            this.current.abort();
         }
     }
 
+    getNextUpload() {
+        for (let upload of this.uploads) {
+            if (!upload.paused) {
+                return upload;
+            }
+        }
+        return null;
+    }
+
+    async performUploads() {
+        let upload = null;
+        while ((upload = this.getNextUpload()) !== null) {
+            try {
+                const result = await this.upload(upload);
+                this.current = null;
+
+                if (result.done) {
+                    this.uploads.shift();
+                } else {
+                    if ("offset" in result) {
+                        upload.uploaded = result.offset;
+                    }
+                }
+            } catch(e) {
+                if (!e.aborted) {
+                    await this.sleep((2 ** upload.attempt) * 1000);
+                    upload.attempt += 1;
+                }
+            }
+        }
+        this.current = null;
+    }
+
     upload(upload) {
+        const offset = upload.uploaded;
+
+        let query =
+            "room_id=" + encodeURIComponent(this.room_id) +
+            "&filename=" + encodeURIComponent(upload.file.name) +
+            "&upload_id=" + encodeURIComponent(upload.id) +
+            "&offset=" + encodeURIComponent(offset) +
+            "&size=" + encodeURIComponent(upload.file.size);
+
+        if (upload.file.type) {
+            query += "&content_type=" + upload.file.type;
+        }
+
         return new Promise((resolve, reject) => {
             const req = new XMLHttpRequest();
-            var query = "room_id=" + this.room_id + "&filename=" + upload.file.name;
-
-            if (upload.file.type) {
-                query += "&content_type=" + upload.file.type;
-            }
-
+            this.current = req;
+            this.currentID = upload.id;
             req.open("POST", "/api/upload?" + query, true);
             req.setRequestHeader("Content-Type", "application/octet-stream");
 
-            req.upload.addEventListener("progress", (ev) => {
+            const progress = (ev) => {
                 if (ev.lengthComputable) {
-                    upload.uploaded = ev.loaded;
+                    upload.uploaded = ev.loaded + offset;
                 }
-            });
+            };
+
+            req.upload.addEventListener("progress", progress);
 
             req.addEventListener("load", (ev) => {
-                resolve(req.response);
+                req.upload.removeEventListener("progress", progress);
+                resolve(JSON.parse(req.response));
             });
 
             req.addEventListener("error", (ev) => {
-                reject(req.response);
+                req.upload.removeEventListener("progress", progress);
+                reject({
+                    done: false,
+                    success: false,
+                    aborted: false
+                });
             });
 
             req.addEventListener("abort", (ev) => {
-                resolve("aborted xhr");
+                req.upload.removeEventListener("progress", progress);
+                reject({
+                    success: false,
+                    aborted: true,
+                    done: false
+                });
             });
 
-            req.send(upload.file);
+            if (upload.paused) {
+                reject({
+                    success: false,
+                    done: false,
+                    aborted: true
+                });
+            } else {
+                req.send(upload.file.slice(offset));
+            }
         });
     }
 
-    async addUpload(id, name) {
-        const upload = new Upload(id, name);
+    async addUpload(name) {
+        const upload = new Upload(name);
         this.uploads.push(upload);
         await this.wakeUploader();
     }

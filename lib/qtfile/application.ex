@@ -19,6 +19,7 @@ defmodule Qtfile.Application do
       # Start your own worker by calling: Qtfile.Worker.start_link(arg1, arg2, arg3)
       # worker(Qtfile.Worker, [arg1, arg2, arg3]),
       supervisor(QtfileWeb.Presence, []),
+      worker(Qtfile.FileProcessing.UploadState, []),
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

@@ -1,6 +1,8 @@
 defmodule QtfileWeb.FileController do
   use QtfileWeb, :controller
+  require Logger
   alias Qtfile.Settings
+  alias Qtfile.FileProcessing.{Storage, Hashing, UploadState}
   @image_extensions ~w(.jpg .jpeg .png)
   @nice_mime_types ~w(text audio video image)
 
@@ -29,35 +31,37 @@ defmodule QtfileWeb.FileController do
     end
   end
 
-  defp save_file_loop(conn, state, write) do
-    {status, data, conn} = read_body(conn,
-      length: Settings.get_setting_value!("max_file_length"),
+  defp save_file_loop(conn, state, write, hash) do
+    result = read_body(conn,
+      length: 64 * 1024,
       read_length: 64 * 1024,
-      read_timeout: 2048
+      read_timeout: 2048,
     )
-    {^status, state} = write.(state, data)
-    case status do
-      :more -> save_file_loop(conn, state, write)
-      :ok -> {:ok, state, conn}
+    case result do
+      {status, data, conn} ->
+        {^status, state} = write.(state, data)
+        hash = Hashing.update_hash(hash, data)
+        case status do
+          :more -> save_file_loop(conn, state, write, hash)
+          :ok -> {:ok, state, {conn, hash}}
+        end
+      {:error, e} ->
+        case e do
+          :closed -> {:suspended, state, {conn, hash}}
+          :timeout -> {:suspended, state, {conn, hash}}
+        end
     end
   end
 
-  defp upload_validated(conn,
-    %{
-      "room_id" => room_id,
-      "filename" => filename,
-      "content_type" => content_type
-    }, room) do
-
-    size = :erlang.binary_to_integer(hd(get_req_header(conn, "content-length")))
+  defp upload_data(conn, room, filename, content_type, uuid, hash, size) do
     uploader_id = get_session(conn, :user_id)
     uploader = Qtfile.Accounts.get_user!(uploader_id)
     ip_address = Qtfile.Util.get_ip_address(conn)
     %{file_ttl: file_ttl} = room
     expiration_date = DateTime.from_unix!(DateTime.to_unix(DateTime.utc_now()) + file_ttl)
-
-    file_data = %{
-      uuid: Ecto.UUID.generate(),
+      
+    %{
+      uuid: uuid,
       filename: filename,
       mime_type: content_type,
       location: room,
@@ -65,14 +69,99 @@ defmodule QtfileWeb.FileController do
       uploader: uploader,
       ip_address: ip_address,
       expiration_date: expiration_date,
+      hash: hash,
     }
+  end
 
-    {:ok, conn} =
-      Qtfile.FileProcessing.Storage.store_file(file_data, fn(state, write) ->
-        save_file_loop(conn, state, write)
-      end)
+  defp new_upload(conn, unparsed_size) do
+    uuid = Ecto.UUID.generate()
+    {size, ""} = Integer.parse(unparsed_size)
+    {:ok, upload_state} = Storage.new_file(uuid, size)
+    hash = Hashing.initialise_hash()
+    {uuid, size, hash, upload_state}
+  end
 
-    json conn, %{success: true}
+  defp upload_validated(conn,
+    %{
+      "room_id" => room_id,
+      "filename" => filename,
+      "content_type" => content_type,
+      "size" => unparsed_size,
+      "offset" => unparsed_offset,
+    } = params, room) do
+
+    maybe_id = Map.fetch(params, "upload_id")
+    {offset, ""} = Integer.parse(unparsed_offset)
+
+    {uuid, size, hash, upload_state} =
+      case maybe_id do
+        {:ok, id} ->
+          case UploadState.get(id) do
+            {:ok, {hash, upload_state}} ->
+              {
+                Storage.get_id(upload_state),
+                Storage.get_size(upload_state),
+                hash,
+                upload_state,
+              }
+            _ ->
+              result = new_upload(conn, unparsed_size)
+              {_, _, hash, upload_state} = result
+              :ok = UploadState.put(id, {hash, upload_state})
+              result
+          end
+        _ ->
+          new_upload(conn, unparsed_size)
+      end
+
+    chunk_size = :erlang.binary_to_integer(hd(get_req_header(conn, "content-length")))
+
+    Storage.write_chunk(upload_state, offset, chunk_size, fn(state, write) ->
+      save_file_loop(conn, state, write, hash)
+    end, fn(done, upload_state, result) ->
+      case result do
+        {conn, hash} ->
+          case done do
+            true ->
+              case maybe_id do
+                {:ok, id} -> UploadState.put(id, {hash, upload_state})
+                _ -> nil
+              end
+
+              hash = Hashing.finalise_hash(hash)
+              file_data = upload_data(conn, room, filename, content_type, uuid, hash, size)
+
+              case Qtfile.Files.create_file(file_data) do
+                {:ok, _} ->
+                  QtfileWeb.RoomChannel.broadcast_new_files(
+                    [file_data], file_data.location.room_id
+                  )
+                {:error, changeset} ->
+                  Logger.error("failed to add file to db")
+                  Logger.error(inspect(changeset))
+                  raise "file creation db error"
+              end
+
+              case maybe_id do
+                {:ok, id} -> UploadState.delete(id)
+                _ -> nil
+              end
+
+              json conn, %{success: true, done: true}
+            false ->
+              {:ok, id} = maybe_id
+              UploadState.put(id, {hash, upload_state})
+              json conn, %{success: true, done: false}
+          end
+        :offset_incorrect ->
+          json conn,
+          %{
+            success: false,
+            done: false,
+            offset: Storage.get_offset(upload_state),
+          }
+      end
+    end)
   end
 
   defp upload_validated(conn,

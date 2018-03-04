@@ -51,6 +51,14 @@ export default function(room) {
             filteredFilesLength() {
                 return this.filteredFiles.length;
             }
+        },
+        methods: {
+            async wake() {
+                return await this.$data.wakeUploader();
+            },
+            async pause(id) {
+                return await this.$data.pause(id);
+            }
         }
     };
 };

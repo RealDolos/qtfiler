@@ -23,8 +23,8 @@ export default {
                     this.status = "succeeded";
                 } else {
                     this.status = "failed";
-                    this.failCount += 1;
                     await sleep((2 ** this.failCount) * 1000);
+                    this.failCount += 1;
                     this.status = "ready";
                 }
             }
