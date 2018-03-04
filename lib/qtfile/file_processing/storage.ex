@@ -37,7 +37,7 @@ defmodule Qtfile.FileProcessing.Storage do
         written = initialise.(file)
         {:initialised, currentOffset} = written
 
-        if offset > currentOffset do
+        unless offset == currentOffset do
           raise "offset too far"
         end
 
@@ -78,7 +78,8 @@ defmodule Qtfile.FileProcessing.Storage do
         done =
           case written do
             {:initialised, ^size} -> true
-            _ -> false
+            {:initialised, _} -> false
+            :uninitialised -> false
           end
         doneCB.(done, upload, result)
       end

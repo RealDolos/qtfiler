@@ -52,7 +52,8 @@ export default class FileList {
             "room_id=" + encodeURIComponent(this.room_id) +
             "&filename=" + encodeURIComponent(upload.file.name) +
             "&upload_id=" + encodeURIComponent(upload.id) +
-            "&offset=" + encodeURIComponent(offset);
+            "&offset=" + encodeURIComponent(offset) +
+            "&size=" + encodeURIComponent(upload.file.size);
 
         if (upload.file.type) {
             query += "&content_type=" + upload.file.type;
