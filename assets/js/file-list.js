@@ -65,7 +65,7 @@ export default class FileList {
 
             req.upload.addEventListener("progress", (ev) => {
                 if (ev.lengthComputable) {
-                    upload.uploaded = ev.loaded;
+                    upload.uploaded = ev.loaded + offset;
                 }
             });
 
@@ -74,11 +74,12 @@ export default class FileList {
             });
 
             req.addEventListener("error", (ev) => {
-                let result = req.response;
-                result.done = false;
-                result.success = false;
-                result.aborted = false;
-                reject(result);
+                reject({
+                    done: false,
+                    success: false,
+                    aborted: false,
+                    response: req.response
+                });
             });
 
             req.addEventListener("abort", (ev) => {
