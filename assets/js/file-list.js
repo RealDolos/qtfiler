@@ -9,6 +9,8 @@ export default class FileList {
         this.files = [];
         this.status = 0;
         this.room_id = room_id;
+        this.current = null;
+        this.currentID = "";
     }
 
     sleep(time) {
@@ -17,7 +19,9 @@ export default class FileList {
 
     async wakeUploader() {
         if (this.status) {
-            return;
+            return {
+                success: true
+            };
         }
 
         this.status += 1;
@@ -28,14 +32,33 @@ export default class FileList {
             // todo: catch
             this.status -= 1;
         }
+
+        return {
+            success: true
+        };
+    }
+
+    pause(id) {
+        if (this.currentID == id && this.current != null) {
+            this.current.abort();
+        }
+    }
+
+    getNextUpload() {
+        for (let upload of this.uploads) {
+            if (!upload.paused) {
+                return upload;
+            }
+        }
+        return null;
     }
 
     async performUploads() {
         let upload = null;
-        while (this.uploads.length) {
-            upload = this.uploads[0];
+        while ((upload = this.getNextUpload()) !== null) {
             try {
                 const result = await this.upload(upload);
+                this.current = null;
 
                 if (result.done) {
                     this.uploads.shift();
@@ -45,10 +68,13 @@ export default class FileList {
                     }
                 }
             } catch(e) {
-                await this.sleep((2 ** upload.attempt) * 1000);
-                upload.attempt += 1;
+                if (!e.aborted) {
+                    await this.sleep((2 ** upload.attempt) * 1000);
+                    upload.attempt += 1;
+                }
             }
         }
+        this.current = null;
     }
 
     upload(upload) {
@@ -67,6 +93,8 @@ export default class FileList {
 
         return new Promise((resolve, reject) => {
             const req = new XMLHttpRequest();
+            this.current = req;
+            this.currentID = upload.id;
             req.open("POST", "/api/upload?" + query, true);
             req.setRequestHeader("Content-Type", "application/octet-stream");
 
@@ -101,7 +129,15 @@ export default class FileList {
                 });
             });
 
-            req.send(upload.file.slice(offset));
+            if (upload.paused) {
+                reject({
+                    success: false,
+                    done: false,
+                    aborted: true
+                });
+            } else {
+                req.send(upload.file.slice(offset));
+            }
         });
     }
 

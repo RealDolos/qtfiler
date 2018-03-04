@@ -14,5 +14,6 @@ export default class Upload {
         this.file = file;
         this.uploaded = 0;
         this.attempt = 0;
+        this.paused = false;
     }
 };

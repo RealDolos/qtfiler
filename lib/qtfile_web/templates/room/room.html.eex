@@ -40,7 +40,7 @@
 <template id="file-list-template">
   <div id="file-list" class="scroll-content column">
     <template v-for="(upload, index) in uploads">
-      <span is="upload" :id="upload.id" :key="upload.id" :role="role" :index="index" />
+      <span is="upload" :wake="wake" :pause="pause" :id="upload.id" :key="upload.id" :role="role" :index="index" />
     </template>
     <template v-if="filter == ''">
       <template v-for="(file, index) in files">
@@ -56,8 +56,14 @@
 </template>
 
 <template id="upload-template">
-  <div :id="domId" class="file-container">
-    {{ file.name }} - {{ progress }}%
+  <div :id="domId" class="file-container row">
+    <div class="row grow">
+      {{ file.name }}
+    </div>
+    <div class="row row-right grow">
+      {{ progress }}%
+      <input class="mark" type="checkbox" v-on:click="toggle" v-bind:value="paused">
+    </div>
   </div>
 </template>
 
