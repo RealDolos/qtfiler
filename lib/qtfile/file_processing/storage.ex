@@ -13,6 +13,14 @@ defmodule Qtfile.FileProcessing.Storage do
     size
   end
 
+  def get_offset({_, :uninitialised}) do
+    0
+  end
+
+  def get_offset({_, {:initialised, o}}) do
+    o
+  end
+
   def write_chunk(
     {{id, size} = info, written} = upload, offset, chunkSize, writeCB, doneCB
   ) do
@@ -37,42 +45,42 @@ defmodule Qtfile.FileProcessing.Storage do
         written = initialise.(file)
         {:initialised, currentOffset} = written
 
-        unless offset == currentOffset do
-          raise "offset too far"
-        end
+        if offset == currentOffset do
+          {:ok, _} = :file.position(file, offset)
+          chunkState = {0}
 
-        {:ok, _} = :file.position(file, offset)
-        chunkState = {0}
+          {status, {chunkWritten}, result} =
+            writeCB.(chunkState, fn({chunkWritten}, data) ->
+              size = :erlang.byte_size(data)
+              chunkWritten = chunkWritten + size
 
-        {status, {chunkWritten}, result} =
-          writeCB.(chunkState, fn({chunkWritten}, data) ->
-            size = :erlang.byte_size(data)
-            chunkWritten = chunkWritten + size
-            
-            if chunkWritten > chunkSize do
-              :error
-            else
-              :file.write(file, data)
-
-              status = if chunkWritten == chunkSize do
-                :ok
+              if chunkWritten > chunkSize do
+                :error
               else
-                :more
+                :file.write(file, data)
+
+                status = if chunkWritten == chunkSize do
+                  :ok
+                else
+                  :more
+                end
+
+                {status, {chunkWritten}}
               end
+            end)
 
-              {status, {chunkWritten}}
-            end
-          end)
+          case status do
+            :ok ->
+              true = chunkWritten == chunkSize
+            :suspended ->
+              true = chunkWritten < chunkSize
+          end
 
-        case status do
-          :ok ->
-            true = chunkWritten == chunkSize
-          :suspended ->
-            true = chunkWritten < chunkSize
+          written = {:initialised, offset + chunkWritten}
+          {:ok, {{info, written}, result}}
+        else
+          {:ok, {{info, written}, :offset_incorrect}}
         end
-
-        written = {:initialised, offset + chunkWritten}
-        {:ok, {{info, written}, result}}
       end, fn({upload, result}) ->
         {{_, size}, written} = upload
         done =

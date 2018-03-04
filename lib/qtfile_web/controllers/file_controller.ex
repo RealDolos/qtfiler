@@ -118,38 +118,48 @@ defmodule QtfileWeb.FileController do
 
     Storage.write_chunk(upload_state, offset, chunk_size, fn(state, write) ->
       save_file_loop(conn, state, write, hash)
-    end, fn(done, upload_state, {conn, hash}) ->
-      case done do
-        true ->
-          case maybe_id do
-            {:ok, id} -> UploadState.put(id, {hash, upload_state})
-            _ -> nil
+    end, fn(done, upload_state, result) ->
+      case result do
+        {conn, hash} ->
+          case done do
+            true ->
+              case maybe_id do
+                {:ok, id} -> UploadState.put(id, {hash, upload_state})
+                _ -> nil
+              end
+
+              hash = Hashing.finalise_hash(hash)
+              file_data = upload_data(conn, room, filename, content_type, uuid, hash, size)
+
+              case Qtfile.Files.create_file(file_data) do
+                {:ok, _} ->
+                  QtfileWeb.RoomChannel.broadcast_new_files(
+                    [file_data], file_data.location.room_id
+                  )
+                {:error, changeset} ->
+                  Logger.error("failed to add file to db")
+                  Logger.error(inspect(changeset))
+                  raise "file creation db error"
+              end
+
+              case maybe_id do
+                {:ok, id} -> UploadState.delete(id)
+                _ -> nil
+              end
+
+              json conn, %{success: true, done: true}
+            false ->
+              {:ok, id} = maybe_id
+              UploadState.put(id, {hash, upload_state})
+              json conn, %{success: true, done: false}
           end
-
-          hash = Hashing.finalise_hash(hash)
-          file_data = upload_data(conn, room, filename, content_type, uuid, hash, size)
-
-          case Qtfile.Files.create_file(file_data) do
-            {:ok, _} ->
-              QtfileWeb.RoomChannel.broadcast_new_files(
-                [file_data], file_data.location.room_id
-              )
-            {:error, changeset} ->
-              Logger.error("failed to add file to db")
-              Logger.error(inspect(changeset))
-              raise "file creation db error"
-          end
-
-          case maybe_id do
-            {:ok, id} -> UploadState.delete(id)
-            _ -> nil
-          end
-
-          json conn, %{success: true, done: true}
-        false ->
-          {:ok, id} = maybe_id
-          UploadState.put(id, {hash, upload_state})
-          json conn, %{success: true, done: false}
+        :offset_incorrect ->
+          json conn,
+          %{
+            success: false,
+            done: false,
+            offset: Storage.get_offset(upload_state),
+          }
       end
     end)
   end

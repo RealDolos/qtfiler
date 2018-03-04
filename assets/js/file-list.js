@@ -39,9 +39,12 @@ export default class FileList {
 
                 if (result.done) {
                     this.uploads.shift();
+                } else {
+                    if ("offset" in result) {
+                        upload.uploaded = result.offset;
+                    }
                 }
             } catch(e) {
-                console.log(e);
                 await this.sleep((2 ** upload.attempt) * 1000);
                 upload.attempt += 1;
             }
@@ -67,26 +70,30 @@ export default class FileList {
             req.open("POST", "/api/upload?" + query, true);
             req.setRequestHeader("Content-Type", "application/octet-stream");
 
-            req.upload.addEventListener("progress", (ev) => {
+            const progress = (ev) => {
                 if (ev.lengthComputable) {
                     upload.uploaded = ev.loaded + offset;
                 }
-            });
+            };
+
+            req.upload.addEventListener("progress", progress);
 
             req.addEventListener("load", (ev) => {
-                resolve(req.response);
+                req.upload.removeEventListener("progress", progress);
+                resolve(JSON.parse(req.response));
             });
 
             req.addEventListener("error", (ev) => {
+                req.upload.removeEventListener("progress", progress);
                 reject({
                     done: false,
                     success: false,
-                    aborted: false,
-                    response: req.response
+                    aborted: false
                 });
             });
 
             req.addEventListener("abort", (ev) => {
+                req.upload.removeEventListener("progress", progress);
                 reject({
                     success: false,
                     aborted: true,
