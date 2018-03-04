@@ -34,14 +34,17 @@ export default class FileList {
     }
 
     upload(upload) {
+        let query =
+            "room_id=" + encodeURIComponent(this.room_id) +
+            "&filename=" + encodeURIComponent(upload.file.name) +
+            "&upload_id=" + encodeURIComponent(upload.id);
+
+        if (upload.file.type) {
+            query += "&content_type=" + upload.file.type;
+        }
+
         return new Promise((resolve, reject) => {
             const req = new XMLHttpRequest();
-            var query = "room_id=" + this.room_id + "&filename=" + upload.file.name;
-
-            if (upload.file.type) {
-                query += "&content_type=" + upload.file.type;
-            }
-
             req.open("POST", "/api/upload?" + query, true);
             req.setRequestHeader("Content-Type", "application/octet-stream");
 
@@ -67,8 +70,8 @@ export default class FileList {
         });
     }
 
-    async addUpload(id, name) {
-        const upload = new Upload(id, name);
+    async addUpload(name) {
+        const upload = new Upload(name);
         this.uploads.push(upload);
         await this.wakeUploader();
     }

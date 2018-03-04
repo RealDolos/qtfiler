@@ -1,11 +1,12 @@
 defmodule Qtfile.FileProcessing.UploadState do
   use GenServer
+  require Logger
 
   def start_link() do
-    GenServer.start_link(__MODULE__, {})
+    GenServer.start_link(__MODULE__, [], name: __MODULE__)
   end
 
-  def init({}) do
+  def init([]) do
     {:ok, %{}}
   end
 

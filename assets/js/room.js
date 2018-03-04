@@ -13,7 +13,6 @@ export default class Room {
         });
         this.role = "user";
         this.filter = "";
-        this.topid = 0;
         this.presenceSize = 0;
     }
 
@@ -55,8 +54,7 @@ export default class Room {
         uploadButton.addEventListener("change", function() {
             const files = this.files;
             for (const file of files) {
-                self.fileList.addUpload(self.topid, file);
-                self.topid += 1;
+                self.fileList.addUpload(file);
             }
             this.value = "";
         });
@@ -81,15 +79,13 @@ export default class Room {
             if (dt.items) {
                 for (let item of dt.items) {
                     if (item.kind == "file") {
-                        this.fileList.addUpload(this.topid, item.getAsFile());
-                        this.topid += 1;
+                        this.fileList.addUpload(item.getAsFile());
                     }
                 }
             } else {
                 // version that works in palememe
                 for (let item of dt.files) {
-                    this.fileList.addUpload(this.topid, item);
-                    this.topid += 1;
+                    this.fileList.addUpload(item);
                 }
             }
             return false;
