@@ -87,9 +87,11 @@ defmodule QtfileWeb.FileController do
       "filename" => filename,
       "content_type" => content_type,
       "size" => unparsed_size,
+      "offset" => unparsed_offset,
     } = params, room) do
 
     maybe_id = Map.fetch(params, "upload_id")
+    {offset, ""} = Integer.parse(unparsed_offset)
 
     {uuid, size, hash, upload_state} =
       case maybe_id do
@@ -114,7 +116,7 @@ defmodule QtfileWeb.FileController do
 
     chunk_size = :erlang.binary_to_integer(hd(get_req_header(conn, "content-length")))
 
-    Storage.write_chunk(upload_state, 0, chunk_size, fn(state, write) ->
+    Storage.write_chunk(upload_state, offset, chunk_size, fn(state, write) ->
       save_file_loop(conn, state, write, hash)
     end, fn(done, upload_state, {conn, hash}) ->
       case done do
