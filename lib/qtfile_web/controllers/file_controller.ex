@@ -218,13 +218,22 @@ defmodule QtfileWeb.FileController do
         conn =
           with [range | _] <- ranges,
                ["bytes", bytes] <- String.split(range, "=", parts: 2),
-               [s_start, s_end] <- String.split(bytes, "-", parts: 2),
-               {r_start, ""} <- Integer.parse(s_start)
+               [s_start, s_end] <- String.split(bytes, "-", parts: 2)
           do
-            r_end =
-              case Integer.parse(s_end) do
-                {r_end, ""} -> r_end
-                _ -> file.size - 1
+            maybe_end = Integer.parse(s_end)
+
+            {r_start, r_end} =
+              case Integer.parse(s_start) do
+                {r_start, ""} ->
+                  case maybe_end do
+                    {r_end, ""} -> {r_start, r_end}
+                    _ -> {r_start, file.size - 1}
+                  end
+                _ ->
+                  case maybe_end do
+                    {r_end, ""} -> {file.size - r_end, file.size - 1}
+                    _ -> {0, file.size - 1}
+                  end
               end
 
             length = r_end - r_start + 1
