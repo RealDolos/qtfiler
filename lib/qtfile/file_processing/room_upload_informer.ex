@@ -2,8 +2,8 @@ defmodule Qtfile.FileProcessing.RoomUploadInformer do
   use GenStage
   alias Qtfile.FileProcessing.UploadEvent
 
-  def start_link(max_demand) do
-    GenStage.start_link(__MODULE__, [max_demand], name: __MODULE__)
+  def start_link(args) do
+    GenStage.start_link(__MODULE__, args, name: __MODULE__)
   end
 
   def init([max_demand]) do
