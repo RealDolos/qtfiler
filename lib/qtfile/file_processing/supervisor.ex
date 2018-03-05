@@ -8,8 +8,8 @@ defmodule Qtfile.FileProcessing.Supervisor do
 
   def init([]) do
     children = [
-      {UploadState, []},
-      {UploadEvent, []},
+      UploadState,
+      UploadEvent,
       {RoomUploadInformer, [10]},
     ]
 
