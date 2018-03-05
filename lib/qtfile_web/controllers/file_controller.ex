@@ -133,9 +133,7 @@ defmodule QtfileWeb.FileController do
 
               case Qtfile.Files.create_file(file_data) do
                 {:ok, _} ->
-                  QtfileWeb.RoomChannel.broadcast_new_files(
-                    [file_data], file_data.location.room_id
-                  )
+                  :ok = Qtfile.FileProcessing.UploadEvent.notify_upload(file_data)
                 {:error, changeset} ->
                   Logger.error("failed to add file to db")
                   Logger.error(inspect(changeset))

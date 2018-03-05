@@ -48,6 +48,8 @@ defmodule Qtfile.Mixfile do
       {:witchcraft, "~> 1.0"},
       {:algae, "~> 1.1"},
       {:quark, "~> 2.3"},
+      {:gen_stage, "~> 0.13"},
+      {:okasaki, "~> 1.0"},
     ]
   end
 

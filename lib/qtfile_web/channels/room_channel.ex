@@ -137,7 +137,6 @@ defmodule QtfileWeb.RoomChannel do
   end
 
   def broadcast_new_files(files, room_id) do
-    files = Enum.map(files, &(Qtfile.Files.process_for_browser/1))
     QtfileWeb.Endpoint.broadcast!("room:" <> room_id, "files", %{body: files})
   end
 
