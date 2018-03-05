@@ -184,6 +184,7 @@ defmodule QtfileWeb.FileController do
   end
 
   def download(conn, %{"uuid" => uuid, "realfilename" => _realfilename}) do
+    conn = put_resp_header(conn, "Accept-Ranges", "bytes")
     if logged_in?(conn) or Settings.get_setting_value!("anon_download") do
       file = Qtfile.Files.get_file_by_uuid(uuid)
 
@@ -202,20 +203,43 @@ defmodule QtfileWeb.FileController do
               end
           end
 
-        if nice_file do
-          conn
-          |> put_resp_content_type(mime_type)
-          |> send_file(200, absolute_path)
+        conn = unless mime_type == nil do
+          put_resp_content_type(conn, mime_type)
         else
-          download_params = [filename: file.filename] ++ if file.mime_type == nil do
-            []
-          else
-            [content_type: file.mime_type]
-          end
-          conn
-          |> send_download({:file, absolute_path}, download_params)
+          put_resp_content_type(conn, "application/octet-stream")
         end
 
+        disposition = if nice_file do "inline" else "attachment" end
+        filename = "\"" <> URI.encode(file.filename) <> "\""
+        conn = put_resp_header(conn, "Content-Disposition", disposition <> "; filename=" <> filename)
+
+        ranges = get_req_header(conn, "range")
+
+        conn =
+          with [range | _] <- ranges,
+               ["bytes", bytes] <- String.split(range, "=", parts: 2),
+               [s_start, s_end] <- String.split(bytes, "-", parts: 2),
+               {r_start, ""} <- Integer.parse(s_start)
+          do
+            r_end =
+              case Integer.parse(s_end) do
+                {r_end, ""} -> r_end
+                _ -> file.size - 1
+              end
+
+            length = r_end - r_start + 1
+
+            conn
+            |> put_resp_header(
+              "Content-Range", "bytes " <>
+              Integer.to_string(r_start) <> "-" <>
+              Integer.to_string(r_end) <> "/" <>
+              Integer.to_string(file.size)
+            )
+            |> send_file(206, absolute_path, r_start, length)
+          else
+            x -> send_file(conn, 200, absolute_path)
+          end
       else
         conn
         |> put_status(404)
