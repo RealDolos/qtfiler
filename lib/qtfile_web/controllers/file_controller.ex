@@ -166,14 +166,13 @@ defmodule QtfileWeb.FileController do
 
   defp upload_validated(conn,
     %{
-      "room_id" => room_id,
-      "filename" => filename,
-    }) do
-    upload_validated(conn, %{
-      "room_id" => room_id,
-      "filename" => filename,
-      "content_type" => nil
-    })
+      "room_id" => _,
+      "filename" => _,
+    } = params, room) do
+    upload_validated(conn,
+      params
+      |> Map.put_new("content_type", nil),
+      room)
   end
 
   defp logged_in?(conn) do
