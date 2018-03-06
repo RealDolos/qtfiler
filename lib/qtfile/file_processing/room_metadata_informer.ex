@@ -12,8 +12,8 @@ defmodule Qtfile.FileProcessing.RoomMetadataInformer do
     }
   end
 
-  def handle_events(metadata_objects, _from, state) do
-    Enum.map(metadata_objects, fn(metadata_object) ->
+  def handle_events(tagged_metadata_objects, _from, state) do
+    Enum.map(tagged_metadata_objects, fn({_, _, metadata_object}) ->
       QtfileWeb.RoomChannel.broadcast_new_metadata(
         metadata_object.data, metadata_object.file, metadata_object.file.location.room_id
       )

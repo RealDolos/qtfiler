@@ -14,7 +14,13 @@ defmodule Qtfile.FileProcessing.MediaTagger do
   end
 
   defp mime_tag(file) do
-    case String.split(file.mime_type, "/") do
+    mime_type =
+      case file.mime_type do
+        nil -> ""
+        x -> x
+      end
+
+    case String.split(mime_type, "/") do
       ["video" | _] -> {:media, :video, file}
       ["audio" | _] -> {:media, :audio, file}
       ["image" | _] -> {:media, :image, file}
