@@ -6,11 +6,9 @@ defmodule Qtfile.FileProcessing.RoomUploadInformer do
     GenStage.start_link(__MODULE__, args, name: __MODULE__)
   end
 
-  def init([max_demand]) do
-    {:consumer, {}, subscribe_to:
-     [
-       {UploadEvent, max_demand: max_demand}
-     ]
+  def init([]) do
+    {:consumer, {},
+     subscribe_to: [UploadEvent],
     }
   end
 

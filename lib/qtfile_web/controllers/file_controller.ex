@@ -132,8 +132,8 @@ defmodule QtfileWeb.FileController do
               file_data = upload_data(conn, room, filename, content_type, uuid, hash, size)
 
               case Qtfile.Files.create_file(file_data) do
-                {:ok, _} ->
-                  :ok = Qtfile.FileProcessing.UploadEvent.notify_upload(file_data)
+                {:ok, file} ->
+                  :ok = Qtfile.FileProcessing.UploadEvent.notify_upload(file)
                 {:error, changeset} ->
                   Logger.error("failed to add file to db")
                   Logger.error(inspect(changeset))

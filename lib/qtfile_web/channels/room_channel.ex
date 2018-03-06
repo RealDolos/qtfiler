@@ -140,6 +140,12 @@ defmodule QtfileWeb.RoomChannel do
     QtfileWeb.Endpoint.broadcast!("room:" <> room_id, "files", %{body: files})
   end
 
+  def broadcast_new_metadata(metadata, file, room_id) do
+    QtfileWeb.Endpoint.broadcast!(
+      "room:" <> room_id, "metadata", %{file.uuid => metadata}
+    )
+  end
+
   def broadcast_deleted_file(file) do
     send(self(), {:deleted, file.location.room_id, file.uuid})
   end

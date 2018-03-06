@@ -1,6 +1,12 @@
 defmodule Qtfile.FileProcessing.Supervisor do
   use Supervisor
-  alias Qtfile.FileProcessing.{UploadState, UploadEvent, RoomUploadInformer}
+  alias Qtfile.FileProcessing.{
+    UploadState,
+    UploadEvent,
+    RoomUploadInformer,
+    MetadataGenerator,
+    RoomMetadataInformer,
+  }
 
   def start_link() do
     Supervisor.start_link(__MODULE__, [], name: __MODULE__)
@@ -10,7 +16,9 @@ defmodule Qtfile.FileProcessing.Supervisor do
     children = [
       UploadState,
       UploadEvent,
-      {RoomUploadInformer, [10]},
+      RoomUploadInformer,
+      MetadataGenerator,
+      RoomMetadataInformer,
     ]
 
     Supervisor.init(children, strategy: :rest_for_one)

@@ -5,6 +5,8 @@ defmodule Qtfile.Repo.Migrations.CreateMetadata do
     create table(:metadata) do
       add :file_id, references(:files)
       add :data, :map
+
+      timestamps()
     end
 
     create unique_index(:metadata, [:file_id])

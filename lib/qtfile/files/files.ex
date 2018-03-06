@@ -7,7 +7,7 @@ defmodule Qtfile.Files do
   require Logger
   alias Qtfile.Repo
 
-  alias Qtfile.Files.File
+  alias Qtfile.Files.{File, Metadata}
 
   @doc """
   Returns the list of files.
@@ -139,5 +139,11 @@ defmodule Qtfile.Files do
   """
   def change_file(%File{} = file) do
     File.changeset(file, %{})
+  end
+
+  def add_metadata(%File{} = file, metadata_object) do
+    %Metadata{}
+    |> Metadata.changeset(%{file: file, data: metadata_object})
+    |> Repo.insert()
   end
 end
