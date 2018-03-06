@@ -22,8 +22,12 @@ defmodule Qtfile.FileProcessing.MetadataGenerator do
   end
 
   def handle_events(tagged_files, _from, {}) do
-    metadata_objects = Enum.map(tagged_files, fn({:media, type, file}) ->
-      {:media, type, process_media_file(file)}
+    metadata_objects = Enum.flat_map(tagged_files, fn({:media, type, file}) ->
+      try do
+        [{:media, type, process_media_file(file)}]
+      rescue
+        _ -> []
+      end
     end)
 
     {:noreply, metadata_objects, {}}
