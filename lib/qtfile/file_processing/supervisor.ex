@@ -6,6 +6,7 @@ defmodule Qtfile.FileProcessing.Supervisor do
     RoomUploadInformer,
     MetadataGenerator,
     RoomMetadataInformer,
+    MediaTagger,
   }
 
   def start_link() do
@@ -17,6 +18,7 @@ defmodule Qtfile.FileProcessing.Supervisor do
       UploadState,
       UploadEvent,
       RoomUploadInformer,
+      MediaTagger,
       MetadataGenerator,
       RoomMetadataInformer,
     ]

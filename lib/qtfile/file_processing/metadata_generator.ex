@@ -1,6 +1,6 @@
 defmodule Qtfile.FileProcessing.MetadataGenerator do
   use GenStage
-  alias Qtfile.FileProcessing.UploadEvent
+  alias Qtfile.FileProcessing.MediaTagger
 
   def start_link(args) do
     GenStage.start_link(__MODULE__, args, name: __MODULE__)
@@ -9,19 +9,27 @@ defmodule Qtfile.FileProcessing.MetadataGenerator do
   def init([]) do
     {:producer_consumer, {},
      dispatcher: GenStage.BroadcastDispatcher,
-     subscribe_to: [UploadEvent],
+     subscribe_to: [{MediaTagger, selector: &tag_selector/1}],
     }
   end
 
-  def handle_events(files, _from, {}) do
-    metadata_objects = Enum.map(files, fn(file) ->
-      process_file(file)
+  defp tag_selector({:media, _, _}) do
+    true
+  end
+
+  defp tag_selector(_) do
+    false
+  end
+
+  def handle_events(tagged_files, _from, {}) do
+    metadata_objects = Enum.map(tagged_files, fn({:media, type, file}) ->
+      {:media, type, process_media_file(file)}
     end)
 
     {:noreply, metadata_objects, {}}
   end
 
-  defp process_file(file) do
+  defp process_media_file(file) do
     path = "uploads/" <> file.uuid
 
     result = Porcelain.exec("ffprobe",
