@@ -7,6 +7,8 @@ defmodule Qtfile.FileProcessing.Supervisor do
     MetadataGenerator,
     RoomMetadataInformer,
     MediaTagger,
+    Thumbnailer,
+    RoomPreviewInformer,
   }
 
   def start_link() do
@@ -21,6 +23,8 @@ defmodule Qtfile.FileProcessing.Supervisor do
       MediaTagger,
       MetadataGenerator,
       RoomMetadataInformer,
+      Thumbnailer,
+      RoomPreviewInformer,
     ]
 
     Supervisor.init(children, strategy: :rest_for_one)

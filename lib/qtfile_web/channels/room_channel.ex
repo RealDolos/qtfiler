@@ -146,6 +146,12 @@ defmodule QtfileWeb.RoomChannel do
     )
   end
 
+  def broadcast_new_preview(mime_type, file, room_id) do
+    QtfileWeb.Endpoint.broadcast!(
+      "room:" <> room_id, "preview", %{file.uuid => mime_type}
+    )
+  end
+
   def broadcast_deleted_file(file) do
     send(self(), {:deleted, file.location.room_id, file.uuid})
   end
