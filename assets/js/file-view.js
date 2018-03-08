@@ -36,7 +36,6 @@ export default function(room) {
                 return this.ip_address.substring(0, 22);
             },
             previewLink() {
-                console.log(this.uuid);
                 return "/pget/" + this.uuid;
             },
             fileType() {
