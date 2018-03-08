@@ -94,7 +94,7 @@
         <template v-if="image">
           <picture>
             <template v-for="p in previews">
-              <source :srcset="previewLink" />
+              <source :srcset="previewLink" :type="p.mime_type" />
             </template>
           </picture>
         </template>
