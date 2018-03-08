@@ -93,7 +93,6 @@
       <div class="row">
         <template v-if="image">
           <picture>
-            {{ previews }}
             <template v-for="p in previews">
               <source :srcset="previewLink" />
             </template>
