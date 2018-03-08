@@ -22,6 +22,6 @@ defmodule Qtfile.Files.Preview do
       :mime_type,
     ])
     |> put_assoc(:file, attrs.file)
-    |> unique_constraint([:file_id, :mime_type])
+    |> unique_constraint(:file_id_mime_type)
   end
 end
