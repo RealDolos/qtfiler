@@ -45,23 +45,62 @@ defmodule Qtfile.Files do
       order_by: [asc: :expiration_date],
       join: o in assoc(r, :owner),
       join: u in assoc(f, :uploader),
-      preload: [location: {r, owner: o}, uploader: u],
+      join: m in assoc(f, :metadata),
+      preload: [location: {r, owner: o}, uploader: u, metadata: m],
       select: f
     Repo.all(query)
   end
 
   def process_for_browser(%Qtfile.Files.File{} = file) do
-    process_for_browser(Map.from_struct(file))
+    file
+    |> Repo.preload(:previews)
+    |> Map.from_struct()
+    |> process_for_browser()
   end
 
-  def process_for_browser(%{location: location, uploader: uploader} = file) do
+  def process_for_browser(
+    %{
+      location: location,
+      uploader: uploader,
+      metadata: metadata,
+      previews: previews,
+    } = file
+  ) do
+    previews = Enum.map(previews, fn(preview) ->
+      preview
+      |> Map.from_struct()
+      |> Qtfile.Util.multiDelete(
+        [
+          :file,
+          :file_id,
+          :__meta__,
+        ]
+      )
+    end)
     file
     |> Qtfile.Util.multiDelete(
-      [:location_id, :uploader_id, :location, :uploader, :__meta__, :secret]
+      [
+        :location_id,
+        :location,
+        :__meta__,
+        :secret,
+      ]
     )
     |> Map.put(:room_id, location.room_id)
     |> Map.put(:uploader, uploader.name)
     |> Map.put(:uploader_id, uploader.id)
+    |> Map.put(:previews, previews)
+    |> Map.put(:metadata,
+      metadata
+      |> Map.from_struct()
+      |> Qtfile.Util.multiDelete(
+        [
+          :file,
+          :file_id,
+          :__meta__,
+        ]
+      )
+    )
   end
 
   def get_file_by_uuid(uuid) do
