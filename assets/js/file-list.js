@@ -11,6 +11,7 @@ export default class FileList {
         this.room_id = room_id;
         this.current = null;
         this.currentID = "";
+        this.info = "";
     }
 
     sleep(time) {

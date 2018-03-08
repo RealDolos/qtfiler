@@ -12,7 +12,7 @@ export default function(room) {
         },
         name: "file",
         template: "#file-template",
-        props: ["role", "uuid", "index", "filesLength"],
+        props: ["role", "uuid", "index", "filesLength", "displayInfo", "displayInfoHere"],
         computed: {
             domId() {
                 return "file-" + this.uuid;
@@ -37,6 +37,12 @@ export default function(room) {
             }
         },
         methods: {
+            showMyInfo() {
+                this.displayInfo(this.uuid);
+            },
+            hideMyInfo() {
+                this.displayInfo("");
+            },
             async deleteMe() {
                 this.deleteStatus = "waiting";
                 const files = [this.uuid];
