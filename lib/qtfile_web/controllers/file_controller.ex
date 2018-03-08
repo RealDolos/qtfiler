@@ -180,6 +180,38 @@ defmodule QtfileWeb.FileController do
     end
   end
 
+  def download_preview(conn, %{"uuid" => uuid}) do
+    if logged_in?(conn) or Settings.get_setting_value!("anon_download") do
+      file = Qtfile.Files.get_file_by_uuid(uuid)
+
+      if file != nil do
+        ext =
+          case get_req_header(conn, "accept") do
+            "image/jpeg" -> "jpg"
+            _ -> nil
+          end
+
+        case ext do
+          nil ->
+            conn
+            |> put_status(404)
+            |> text("file not found!")
+          _ ->
+            path = "previews/" <> uuid <> ".jpg"
+            send_file(conn, 200, path)
+        end
+      else
+        conn
+        |> put_status(404)
+        |> text("file not found!")
+      end
+    else
+      conn
+      |> send_resp(:forbidden, "Not logged in")
+      |> halt()
+    end
+  end
+
   def download(conn, %{"uuid" => uuid, "realfilename" => _realfilename}) do
     conn = put_resp_header(conn, "Accept-Ranges", "bytes")
     if logged_in?(conn) or Settings.get_setting_value!("anon_download") do
