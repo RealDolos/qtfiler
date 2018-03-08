@@ -1,6 +1,7 @@
 defmodule Qtfile.FileProcessing.Thumbnailer do
   use GenStage
   alias Qtfile.FileProcessing.MediaTagger
+  require Logger
 
   def start_link(args) do
     GenStage.start_link(__MODULE__, args, name: __MODULE__)
@@ -26,7 +27,10 @@ defmodule Qtfile.FileProcessing.Thumbnailer do
       try do
         [thumbnail(file)]
       rescue
-        _ -> []
+        e ->
+          Logger.info "thumbgen error"
+          Logger.info(inspect(e))
+          []
       end
     end)
 
@@ -45,7 +49,7 @@ defmodule Qtfile.FileProcessing.Thumbnailer do
     )
 
     0 = result.status
-    {:ok, thumbnail} = Qtfile.Files.add_thumbnail(
+    {:ok, thumbnail} = Qtfile.Files.add_preview(
       %{
         file: file,
         mime_type: "image/jpeg",
