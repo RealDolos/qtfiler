@@ -90,8 +90,15 @@
       </div>
     </div>
     <template v-if="displayInfoHere">
-      <div>
-        blaaa!
+      <div class="row">
+        <template v-if="image">
+          <picture>
+            {{ previews }}
+            <template v-for="p in previews">
+              <source :srcset="previewLink" />
+            </template>
+          </picture>
+        </template>
       </div>
     </template>
   </div>

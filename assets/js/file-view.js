@@ -34,6 +34,25 @@ export default function(room) {
             },
             shrunken_ip() {
                 return this.ip_address.substring(0, 22);
+            },
+            previewLink() {
+                console.log(this.uuid);
+                return "/pget/" + this.uuid;
+            },
+            fileType() {
+                if ("mime_type" in this) {
+                    const type = this.mime_type.split("/")[0];
+                    if (["audio", "video", "image"].includes(type)) {
+                        return type;
+                    } else {
+                        return null;
+                    }
+                } else {
+                    return null;
+                }
+            },
+            image() {
+                return this.fileType == "image";
             }
         },
         methods: {
