@@ -105,7 +105,7 @@ export default class Room {
             channel.on("metadata", payload => {
                 for (let uuid in payload) {
                     self.fileList.searchFiles(uuid, file => {
-                        file.metadata = payload[uuid];
+                        file.metadata.data = payload[uuid];
                     });
                 };
             });

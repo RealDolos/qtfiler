@@ -14,6 +14,22 @@ export default function(room) {
         template: "#file-template",
         props: ["role", "uuid", "index", "filesLength", "displayInfo", "displayInfoHere"],
         computed: {
+            tagList() {
+                const data = this.metadata.data;
+                if (("format" in data) && ("tags" in data.format)) {
+                    const tags = data.format.tags;
+                    const list = [];
+                    for (let key in tags) {
+                        list.push({
+                            key: key,
+                            value: tags[key]
+                        });
+                    }
+                    return list;
+                } else {
+                    return [];
+                }
+            },
             domId() {
                 return "file-" + this.uuid;
             },

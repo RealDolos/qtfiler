@@ -100,7 +100,9 @@
           </picture>
         </template>
         <div class="column column-wrap">
-          tags go here
+          <template v-for="t in tagList">
+            <p>{{ t.key }}: {{ t.value }}</p>
+          </template>
         </div>
       </div>
     </template>
