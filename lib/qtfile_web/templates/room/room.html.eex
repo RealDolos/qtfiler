@@ -96,8 +96,12 @@
             <template v-for="p in previews">
               <source :srcset="previewLink" :type="p.mime_type" />
             </template>
+            <img src="previewLink" />
           </picture>
         </template>
+        <div class="column column-wrap">
+          tags go here
+        </div>
       </div>
     </template>
   </div>

@@ -191,4 +191,20 @@ defmodule Qtfile.Files do
     |> Preview.changeset(preview)
     |> Repo.insert()
   end
+
+  def get_previews_by_file(file) do
+    query =
+      from p in Preview,
+      where: p.file_id == ^file.id,
+      select: p
+    Repo.all(query)
+  end
+
+  def get_preview_by_file_and_type(file, types) do
+    query =
+      from p in Preview,
+      where: p.file_id == ^file.id and p.mime_type in ^types,
+      select: p
+    Repo.all(query)
+  end
 end
