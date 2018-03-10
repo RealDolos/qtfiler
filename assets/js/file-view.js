@@ -55,7 +55,7 @@ export default function(room) {
                 return "/pget/" + this.uuid;
             },
             fileType() {
-                if ("mime_type" in this && this.mime_type) {
+                if ("mime_type" in this) {
                     const type = this.mime_type.split("/")[0];
                     if (["audio", "video", "image"].includes(type)) {
                         return type;
