@@ -15,9 +15,17 @@ export default function(room) {
         props: ["role", "uuid", "index", "filesLength", "displayInfo", "displayInfoHere"],
         computed: {
             tagList() {
-                const data = this.metadata.data;
-                if (data && ("format" in data) && ("tags" in data.format)) {
-                    const tags = data.format.tags;
+                if ((this != null)
+                    && ("metadata" in this)
+                    && (this.metadata != null)
+                    && ("data" in this.metadata)
+                    && (this.metadata.data != null)
+                    && ("format" in this.metadata.data)
+                    && (this.metadata.data.format != null)
+                    && ("tags" in this.metadata.data.format)
+                    && (this.metadata.data.format.tags != null)
+                   ) {
+                    const tags = this.metadata.data.format.tags;
                     const list = [];
                     for (let key in tags) {
                         list.push({

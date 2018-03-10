@@ -43,9 +43,9 @@ defmodule Qtfile.Files do
       join: r in assoc(f, :location),
       where: r.room_id == ^room_id,
       order_by: [asc: :expiration_date],
-      join: o in assoc(r, :owner),
-      join: u in assoc(f, :uploader),
-      join: m in assoc(f, :metadata),
+      left_join: o in assoc(r, :owner),
+      left_join: u in assoc(f, :uploader),
+      left_join: m in assoc(f, :metadata),
       preload: [location: {r, owner: o}, uploader: u, metadata: m],
       select: f
     Repo.all(query)
@@ -91,15 +91,19 @@ defmodule Qtfile.Files do
     |> Map.put(:uploader_id, uploader.id)
     |> Map.put(:previews, previews)
     |> Map.put(:metadata,
-      metadata
-      |> Map.from_struct()
-      |> Qtfile.Util.multiDelete(
-        [
-          :file,
-          :file_id,
-          :__meta__,
-        ]
-      )
+      if metadata != nil do
+        metadata
+        |> Map.from_struct()
+        |> Qtfile.Util.multiDelete(
+          [
+            :file,
+            :file_id,
+            :__meta__,
+          ]
+        )
+      else
+        nil
+      end
     )
   end
 

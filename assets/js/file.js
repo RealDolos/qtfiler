@@ -10,9 +10,6 @@ export default class File {
         this.marked = false;
         this.deleteStatus = "ready";
         this.banStatus = "ready";
-        this.metadata = {
-            data: {}
-        };
         this.previews = [];
     }
 }
