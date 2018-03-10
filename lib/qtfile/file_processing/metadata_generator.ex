@@ -24,7 +24,7 @@ defmodule Qtfile.FileProcessing.MetadataGenerator do
   def handle_events(tagged_files, _from, {}) do
     metadata_objects = Enum.flat_map(tagged_files, fn({:media, type, file}) ->
       try do
-        [{:media, type, process_media_file(file)}]
+        [{:media, type, process_media_file(file, type)}]
       rescue
         _ -> []
       end
@@ -33,11 +33,21 @@ defmodule Qtfile.FileProcessing.MetadataGenerator do
     {:noreply, metadata_objects, {}}
   end
 
-  defp process_media_file(file) do
+  defp process_media_file(file, type) do
     path = "uploads/" <> file.uuid
 
+    show_data_args = Enum.map(
+      case type do
+        :image -> ["show_format", "show_streams", "show_frames"]
+        _ -> ["show_format", "show_streams"]
+      end,
+      fn (arg) ->
+        "-" <> arg
+      end
+    )
+
     result = Porcelain.exec("ffprobe",
-      ["-print_format", "json", "-show_format", "-show_streams", path]
+      ["-print_format", "json"] ++ show_data_args ++ [path]
     )
 
     0 = result.status
