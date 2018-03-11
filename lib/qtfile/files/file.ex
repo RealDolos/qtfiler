@@ -14,7 +14,8 @@ defmodule Qtfile.Files.File do
     belongs_to :uploader, Qtfile.Accounts.User, foreign_key: :uploader_id
     field :ip_address, :binary
     field :expiration_date, :utc_datetime
-
+    has_one :metadata, Qtfile.Files.Metadata, foreign_key: :file_id, on_delete: :delete_all
+    has_many :previews, Qtfile.Files.Preview, foreign_key: :file_id, on_delete: :delete_all
     timestamps()
   end
 

@@ -102,6 +102,26 @@ export default class Room {
                     self.fileList.addFile(file);
                 });
             });
+
+            channel.on("metadata", payload => {
+                for (let uuid in payload) {
+                    self.fileList.searchFiles(uuid, file => {
+                        file.metadata.data = payload[uuid];
+                    });
+                };
+            });
+
+            channel.on("preview", payload => {
+                for (let uuid in payload) {
+                    self.fileList.searchFiles(uuid, file => {
+                        file.previews += payload[uuid].map(mime_type => {
+                            return {
+                                mime_type: mime_type
+                            };
+                        });
+                    });
+                };
+            });
         
             channel.on("role", payload => {
                 self.role = payload.body;

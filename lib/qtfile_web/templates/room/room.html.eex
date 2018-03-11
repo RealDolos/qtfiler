@@ -48,12 +48,12 @@
     </template>
     <template v-if="filter == ''">
       <template v-for="(file, index) in files">
-        <span is="file" :files-length="filesLength" :uuid="file.uuid" :key="file.uuid" :index="index" :role="role" :owner="owner" />
+        <span is="file" :display-info-here="info == file.uuid" :display-info="displayInfo" :files-length="filesLength" :uuid="file.uuid" :key="file.uuid" :index="index" :role="role" :owner="owner" />
       </template>
     </template>
     <template v-else>
       <template v-for="(file, index) in filteredFiles">
-        <span is="file" :files-length="filteredFilesLength" :uuid="file.uuid" :key="file.uuid" :index="index" :role="role" :owner="owner" />
+        <span is="file" :display-info-here="info == file.uuid" :display-info="displayInfo" :files-length="filteredFilesLength" :uuid="file.uuid" :key="file.uuid" :index="index" :role="role" :owner="owner" />
       </template>
     </template>
   </div>
@@ -72,25 +72,44 @@
 </template>
 
 <template id="file-template">
-  <div :id="domId" :class="['file-container', 'row', 'row-spaced', { 'file-odd': isOdd, 'file-even': isEven }]">
-    <div class="row grow-double">
-      <a target="_blank" :href="link" class="file-link" :data-hash-sha1="hash">{{ filename }}</a>
-      <div class="row row-right">
-        <span class="file-uploader">{{ uploader }}</span>
-        <template v-if="mod"><span class="file-uploader">{{ ip_address }}</span></template>
-        <span is="async-button" :default-icon="128683" :action="banUploader"></span>
+  <div :id="domId" class="file-container column" v-on:mouseenter="showMyInfo" v-on:mouseleave="hideMyInfo" :class="{ 'file-odd': isOdd, 'file-even': isEven }">
+    <div class="row row-spaced">
+      <div class="row grow-double">
+        <a target="_blank" :href="link" class="file-link" :data-hash-sha1="hash">{{ filename }}</a>
+        <div class="row row-right">
+          <span class="file-uploader">{{ uploader }}</span>
+          <template v-if="mod"><span class="file-uploader">{{ ip_address }}</span></template>
+          <span is="async-button" :default-icon="128683" :action="banUploader"></span>
+        </div>
+      </div>
+      <div class="row row-right grow">
+        <span class="file-expiration">{{ formattedExpirationDate }}</span>
+        <template v-if="mod">
+          <div class="row row-centre">
+            <input class="mark" type="checkbox" v-model="marked">
+            <span is="async-button" :default-icon="128465" :action="deleteMe"></span>
+            <span is="async-button" :default-icon="128683" :action="banMe"></span>
+          </div>
+        </template>
       </div>
     </div>
-    <div class="row row-right grow">
-      <span class="file-expiration">{{ formattedExpirationDate }}</span>
-      <template v-if="mod">
-        <div class="row row-centre">
-          <input class="mark" type="checkbox" v-model="marked">
-          <span is="async-button" :default-icon="128465" :action="deleteMe"></span>
-          <span is="async-button" :default-icon="128683" :action="banMe"></span>
+    <template v-if="displayInfoHere">
+      <div class="row">
+        <template v-if="image">
+          <picture>
+            <template v-for="p in previews">
+              <source :srcset="previewLink" :type="p.mime_type" />
+            </template>
+            <img src="previewLink" />
+          </picture>
+        </template>
+        <div class="column column-wrap">
+          <template v-for="t in tagList">
+            <p>{{ t.key }}: {{ t.value }}</p>
+          </template>
         </div>
-      </template>
-    </div>
+      </div>
+    </template>
   </div>
 </template>
 

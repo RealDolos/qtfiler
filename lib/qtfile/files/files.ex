@@ -7,7 +7,7 @@ defmodule Qtfile.Files do
   require Logger
   alias Qtfile.Repo
 
-  alias Qtfile.Files.File
+  alias Qtfile.Files.{File, Metadata, Preview}
 
   @doc """
   Returns the list of files.
@@ -43,25 +43,68 @@ defmodule Qtfile.Files do
       join: r in assoc(f, :location),
       where: r.room_id == ^room_id,
       order_by: [asc: :expiration_date],
-      join: o in assoc(r, :owner),
-      join: u in assoc(f, :uploader),
-      preload: [location: {r, owner: o}, uploader: u],
+      left_join: o in assoc(r, :owner),
+      left_join: u in assoc(f, :uploader),
+      left_join: m in assoc(f, :metadata),
+      preload: [location: {r, owner: o}, uploader: u, metadata: m],
       select: f
     Repo.all(query)
   end
 
   def process_for_browser(%Qtfile.Files.File{} = file) do
-    process_for_browser(Map.from_struct(file))
+    file
+    |> Repo.preload(:previews)
+    |> Map.from_struct()
+    |> process_for_browser()
   end
 
-  def process_for_browser(%{location: location, uploader: uploader} = file) do
+  def process_for_browser(
+    %{
+      location: location,
+      uploader: uploader,
+      metadata: metadata,
+      previews: previews,
+    } = file
+  ) do
+    previews = Enum.map(previews, fn(preview) ->
+      preview
+      |> Map.from_struct()
+      |> Qtfile.Util.multiDelete(
+        [
+          :file,
+          :file_id,
+          :__meta__,
+        ]
+      )
+    end)
     file
     |> Qtfile.Util.multiDelete(
-      [:location_id, :uploader_id, :location, :uploader, :__meta__, :secret]
+      [
+        :location_id,
+        :location,
+        :__meta__,
+        :secret,
+      ]
     )
     |> Map.put(:room_id, location.room_id)
     |> Map.put(:uploader, uploader.name)
     |> Map.put(:uploader_id, uploader.id)
+    |> Map.put(:previews, previews)
+    |> Map.put(:metadata,
+      if metadata != nil do
+        metadata
+        |> Map.from_struct()
+        |> Qtfile.Util.multiDelete(
+          [
+            :file,
+            :file_id,
+            :__meta__,
+          ]
+        )
+      else
+        nil
+      end
+    )
   end
 
   def get_file_by_uuid(uuid) do
@@ -139,5 +182,33 @@ defmodule Qtfile.Files do
   """
   def change_file(%File{} = file) do
     File.changeset(file, %{})
+  end
+
+  def add_metadata(%File{} = file, metadata_object) do
+    %Metadata{}
+    |> Metadata.changeset(%{file: file, data: metadata_object})
+    |> Repo.insert()
+  end
+
+  def add_preview(preview) do
+    %Preview{}
+    |> Preview.changeset(preview)
+    |> Repo.insert()
+  end
+
+  def get_previews_by_file(file) do
+    query =
+      from p in Preview,
+      where: p.file_id == ^file.id,
+      select: p
+    Repo.all(query)
+  end
+
+  def get_preview_by_file_and_type(file, types) do
+    query =
+      from p in Preview,
+      where: p.file_id == ^file.id and p.mime_type in ^types,
+      select: p
+    Repo.all(query)
   end
 end

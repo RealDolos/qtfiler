@@ -3,6 +3,7 @@ defmodule QtfileWeb.FileController do
   require Logger
   alias Qtfile.Settings
   alias Qtfile.FileProcessing.{Storage, Hashing, UploadState}
+  alias Qtfile.Files
   @image_extensions ~w(.jpg .jpeg .png)
   @nice_mime_types ~w(text audio video image)
 
@@ -131,11 +132,9 @@ defmodule QtfileWeb.FileController do
               hash = Hashing.finalise_hash(hash)
               file_data = upload_data(conn, room, filename, content_type, uuid, hash, size)
 
-              case Qtfile.Files.create_file(file_data) do
-                {:ok, _} ->
-                  QtfileWeb.RoomChannel.broadcast_new_files(
-                    [file_data], file_data.location.room_id
-                  )
+              case Files.create_file(file_data) do
+                {:ok, file} ->
+                  :ok = Qtfile.FileProcessing.UploadEvent.notify_upload(file)
                 {:error, changeset} ->
                   Logger.error("failed to add file to db")
                   Logger.error(inspect(changeset))
@@ -182,10 +181,43 @@ defmodule QtfileWeb.FileController do
     end
   end
 
+  def download_preview(conn, %{"uuid" => uuid}) do
+    if logged_in?(conn) or Settings.get_setting_value!("anon_download") do
+      file = Files.get_file_by_uuid(uuid)
+
+      if file != nil do
+        previews =
+          Files.get_preview_by_file_and_type(file, get_req_header(conn, "accept")) ++
+          Files.get_previews_by_file(file)
+        case previews do
+          [preview | _] ->
+            ext =
+              case preview.mime_type do
+                "image/jpeg" -> "jpg"
+              end
+            path = "uploads/previews/" <> uuid <> "." <> ext
+            send_file(conn, 200, path)
+          _ ->
+            conn
+            |> put_status(404)
+            |> text("file not found!")
+        end
+      else
+        conn
+        |> put_status(404)
+        |> text("file not found!")
+      end
+    else
+      conn
+      |> send_resp(:forbidden, "Not logged in")
+      |> halt()
+    end
+  end
+
   def download(conn, %{"uuid" => uuid, "realfilename" => _realfilename}) do
     conn = put_resp_header(conn, "Accept-Ranges", "bytes")
     if logged_in?(conn) or Settings.get_setting_value!("anon_download") do
-      file = Qtfile.Files.get_file_by_uuid(uuid)
+      file = Files.get_file_by_uuid(uuid)
 
       if file != nil do
         absolute_path = "uploads/" <> uuid
