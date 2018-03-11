@@ -15,7 +15,7 @@ export default function(room) {
         props: ["role", "uuid", "index", "filesLength", "displayInfo", "displayInfoHere"],
         computed: {
             tagList() {
-                const {metadata: {data: {format: {tags: tags = []} = {}} = {}} = {}}
+                const {metadata: {data: {format: {tags: tags = {}} = {}} = {}} = {}}
                 const list = [];
                 for (let key in tags) {
                     list.push({
