@@ -13,6 +13,7 @@ export default class Room {
         });
         this.role = "user";
         this.filter = "";
+        this.owner = false;
         this.presenceSize = 0;
     }
 
@@ -118,6 +119,10 @@ export default class Room {
                 self.presence.diffState(payload);
             });
         
+            channel.on("owner", payload => {
+                self.owner = payload.body;
+            });
+
             channel.join()
                 .receive("ok", resp => {
                     resolve(channel);

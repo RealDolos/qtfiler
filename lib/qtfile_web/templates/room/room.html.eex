@@ -26,13 +26,17 @@
 
       <template v-if="mod">
         <div :class="['presence-container', 'form-group', 'grow', 'no-shrink', 'scroll-container', { 'presence-container-small': presenceSmall, 'presence-container-big': presenceBig, 'presence-container-medium': presenceMedium }]">
-          <span is="presence" :presence-hidden="presenceHidden" v-on:toggle-presence="togglePresence" :role="role" />
+          <span is="presence" :presence-hidden="presenceHidden" v-on:toggle-presence="togglePresence" :role="role" :owner="owner" />
         </div>
+      </template>
+
+      <template v-if="mod">
+        <span is="settings" />
       </template>
     </div>
 
     <div v-cloak id="file-list-container" class="grow zero-basis scroll-container">
-      <span is="file-list" :role="role" :filter="filter" />
+      <span is="file-list" :role="role" :owner="owner" :filter="filter" />
     </div>
   </div>
 </div>
@@ -40,16 +44,16 @@
 <template id="file-list-template">
   <div id="file-list" class="scroll-content column">
     <template v-for="(upload, index) in uploads">
-      <span is="upload" :wake="wake" :pause="pause" :id="upload.id" :key="upload.id" :role="role" :index="index" />
+      <span is="upload" :wake="wake" :pause="pause" :id="upload.id" :key="upload.id" :role="role" :index="index" :owner="owner" />
     </template>
     <template v-if="filter == ''">
       <template v-for="(file, index) in files">
-        <span is="file" :files-length="filesLength" :uuid="file.uuid" :key="file.uuid" :index="index" :role="role" />
+        <span is="file" :files-length="filesLength" :uuid="file.uuid" :key="file.uuid" :index="index" :role="role" :owner="owner" />
       </template>
     </template>
     <template v-else>
       <template v-for="(file, index) in filteredFiles">
-        <span is="file" :files-length="filteredFilesLength" :uuid="file.uuid" :key="file.uuid" :index="index" :role="role" />
+        <span is="file" :files-length="filteredFilesLength" :uuid="file.uuid" :key="file.uuid" :index="index" :role="role" :owner="owner" />
       </template>
     </template>
   </div>
@@ -107,7 +111,7 @@
     <div v-on:click="togglePresence" class="button">Presences</div>
     <div class="column">
       <template v-for="(user, id) in presences">
-        <div :class="[ { 'collapse': hidden } ]">
+        <div :class="[ { 'container-hide': hidden } ]">
           {{ user.user.name }}/{{ user.user.role }}:
           <div class="column">
             <template v-for="meta in user.metas">
@@ -119,6 +123,21 @@
           </div>
         </div>
       </template>
+    </div>
+  </div>
+</template>
+
+<template id="settings-template">
+  <div class="form-group grow scroll-container" :class="{ 'container-show': show, 'container-hide': hide }">
+    <div class="scroll-content">
+      <div v-on:click="toggle" class="button">Settings</div>
+      <div class="column">
+        <div class="row">
+          <label for="anon-upload">Anonymous upload: </label>
+          <input id="anon-upload" class="mark" type="checkbox" v-model="anonUpload">
+          <div v-on:click="set" class="button">Save</div>
+        </div>
+      </div>
     </div>
   </div>
 </template>

@@ -12,7 +12,7 @@ export default function(room) {
         },
         name: "file",
         template: "#file-template",
-        props: ["role", "uuid", "index", "filesLength"],
+        props: ["role", "uuid", "index", "filesLength", "owner"],
         computed: {
             domId() {
                 return "file-" + this.uuid;
@@ -21,7 +21,7 @@ export default function(room) {
                 return `/get/${this.uuid}/${this.filename}`;
             },
             mod() {
-                return this.role == "mod" || this.role == "admin";
+                return this.role == "mod" || this.role == "admin" || this.owner;
             },
             isOdd() {
                 return (this.index + this.filesLength) % 2;

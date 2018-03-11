@@ -7,7 +7,7 @@ export default function(room) {
     return {
         name: "fileList",
         template: "#file-list-template",
-        props: ["role", "filter"],
+        props: ["role", "filter", "owner"],
         data() {
             return room.fileList;
         },

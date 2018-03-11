@@ -80,7 +80,9 @@ defmodule QtfileWeb.RoomChannel do
         ip_address: socket.assigns.ip_address,
       }
     )
+    owner = room.owner_id == user.id
     push(socket, "role", %{body: user.role})
+    push(socket, "owner", %{body: owner})
     handle_out("files", %{body: files}, socket)
   end
 

@@ -30,7 +30,7 @@ export default new Vue({
     },
     computed: {
         mod() {
-            return this.role == "mod" || this.role == "admin";
+            return this.role == "mod" || this.role == "admin" || this.owner;
         },
         presenceBig() {
             return this.presenceSize == 3;
