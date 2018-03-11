@@ -39,6 +39,7 @@ defmodule QtfileWeb.Router do
     get "/register", UserController, :register_page
     get "/get/:uuid/:realfilename", FileController, :download
     get "/get/:uuid/", FileController, :download_no_filename
+    get "/pget/:uuid", FileController, :download_preview
 
     scope "/" do
       pipe_through :logged_in?

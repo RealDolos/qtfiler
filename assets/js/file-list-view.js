@@ -2,6 +2,7 @@
 
 import file from "./file-view";
 import upload from "./upload-view";
+import lodash from "lodash";
 
 export default function(room) {
     return {
@@ -58,7 +59,10 @@ export default function(room) {
             },
             async pause(id) {
                 return await this.$data.pause(id);
-            }
-        }
+            },
+            displayInfo: lodash.debounce(function(uuid) {
+                this.info = uuid;
+            }, 250)
+         }
     };
 };

@@ -12,8 +12,32 @@ export default function(room) {
         },
         name: "file",
         template: "#file-template",
-        props: ["role", "uuid", "index", "filesLength"],
+        props: ["role", "uuid", "index", "filesLength", "displayInfo", "displayInfoHere"],
         computed: {
+            tagList() {
+                if ((this != null)
+                    && ("metadata" in this)
+                    && (this.metadata != null)
+                    && ("data" in this.metadata)
+                    && (this.metadata.data != null)
+                    && ("format" in this.metadata.data)
+                    && (this.metadata.data.format != null)
+                    && ("tags" in this.metadata.data.format)
+                    && (this.metadata.data.format.tags != null)
+                   ) {
+                    const tags = this.metadata.data.format.tags;
+                    const list = [];
+                    for (let key in tags) {
+                        list.push({
+                            key: key,
+                            value: tags[key]
+                        });
+                    }
+                    return list;
+                } else {
+                    return [];
+                }
+            },
             domId() {
                 return "file-" + this.uuid;
             },
@@ -34,9 +58,33 @@ export default function(room) {
             },
             shrunken_ip() {
                 return this.ip_address.substring(0, 22);
+            },
+            previewLink() {
+                return "/pget/" + this.uuid;
+            },
+            fileType() {
+                if ("mime_type" in this && this.mime_type) {
+                    const type = this.mime_type.split("/")[0];
+                    if (["audio", "video", "image"].includes(type)) {
+                        return type;
+                    } else {
+                        return null;
+                    }
+                } else {
+                    return null;
+                }
+            },
+            image() {
+                return this.fileType == "image";
             }
         },
         methods: {
+            showMyInfo() {
+                this.displayInfo(this.uuid);
+            },
+            hideMyInfo() {
+                this.displayInfo("");
+            },
             async deleteMe() {
                 this.deleteStatus = "waiting";
                 const files = [this.uuid];

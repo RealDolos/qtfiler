@@ -137,8 +137,19 @@ defmodule QtfileWeb.RoomChannel do
   end
 
   def broadcast_new_files(files, room_id) do
-    files = Enum.map(files, &(Qtfile.Files.process_for_browser/1))
     QtfileWeb.Endpoint.broadcast!("room:" <> room_id, "files", %{body: files})
+  end
+
+  def broadcast_new_metadata(metadata, file, room_id) do
+    QtfileWeb.Endpoint.broadcast!(
+      "room:" <> room_id, "metadata", %{file.uuid => metadata}
+    )
+  end
+
+  def broadcast_new_preview(mime_type, file, room_id) do
+    QtfileWeb.Endpoint.broadcast!(
+      "room:" <> room_id, "preview", %{file.uuid => [mime_type]}
+    )
   end
 
   def broadcast_deleted_file(file) do
