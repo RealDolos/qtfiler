@@ -15,27 +15,13 @@ export default function(room) {
         props: ["role", "uuid", "index", "filesLength", "owner", "displayInfo", "displayInfoHere"],
         computed: {
             tagList() {
-                if ((this != null)
-                    && ("metadata" in this)
-                    && (this.metadata != null)
-                    && ("data" in this.metadata)
-                    && (this.metadata.data != null)
-                    && ("format" in this.metadata.data)
-                    && (this.metadata.data.format != null)
-                    && ("tags" in this.metadata.data.format)
-                    && (this.metadata.data.format.tags != null)
-                   ) {
-                    const tags = this.metadata.data.format.tags;
-                    const list = [];
-                    for (let key in tags) {
-                        list.push({
-                            key: key,
-                            value: tags[key]
-                        });
-                    }
-                    return list;
-                } else {
-                    return [];
+                const {metadata: {data: {format: {tags: tags = []} = {}} = {}} = {}}
+                const list = [];
+                for (let key in tags) {
+                    list.push({
+                        key: key,
+                        value: tags[key]
+                    });
                 }
             },
             domId() {
