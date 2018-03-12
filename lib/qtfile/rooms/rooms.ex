@@ -158,7 +158,7 @@ defmodule Qtfile.Rooms do
   def get_setting_by_key_room(setting_key, %Room{} = room) do
     query = from s in Setting,
       select: s,
-      where: s.key == ^setting_key and s.room_id = ^room.id
+      where: s.key == ^setting_key and s.room_id == ^room.id
 
     Repo.one(query)
   end
