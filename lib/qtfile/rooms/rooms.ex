@@ -98,6 +98,26 @@ defmodule Qtfile.Rooms do
         files: Room.default_files(),
         motd: Room.default_motd(),
         secret: :crypto.strong_rand_bytes(16),
+        settings: [
+          %{
+            key: "anon_upload",
+            value: "false",
+            type: "bool",
+            name: "Anonymous upload",
+          },
+          %{
+            key: "anon_download",
+            value: "false",
+            type: "bool",
+            name: "Anonymous download",
+          },
+          %{
+            key: "anon_view",
+            value: "false",
+            type: "bool",
+            name: "Anonymous viewing",
+          },
+        ],
       }
     )
   end
