@@ -6,7 +6,11 @@ defmodule Qtfile.Rooms do
   import Ecto.Query, warn: false
   alias Qtfile.Repo
 
-  alias Qtfile.Rooms.Room
+  alias Qtfile.Rooms.{Room, Setting}
+
+  use Witchcraft
+  import Qtfile.Util
+  alias Algae.Either.{Left, Right}
 
   def generate_room_id() do
     generate_room_id(6)
@@ -149,5 +153,33 @@ defmodule Qtfile.Rooms do
   """
   def change_room(%Room{} = room) do
     Room.changeset(room, %{})
+  end
+
+  def get_setting_by_key_room(setting_key, %Room{} = room) do
+    query = from s in Setting,
+      select: s,
+      where: s.key == ^setting_key and s.room_id = ^room.id
+
+    Repo.one(query)
+  end
+
+  def get_setting_by_key_room!(setting_key, %Room{} = room) do
+    case get_setting_by_key_room(setting_key, room) do
+      nil -> raise "setting doesn't exist"
+      x -> x
+    end
+  end
+
+  def get_setting_value(setting_key, %Room{} = room) do
+    monad Right do
+      setting <-
+        get_setting_by_key(setting_key, room) |> nilToEitherTag(:setting_doesnt_exist)
+      convert_setting(setting) |> tagLeft(:could_not_convert_setting)
+    end
+  end
+
+  def get_setting_value!(setting_key, %Room{} = room) do
+    %Right{right: v} = get_setting_value(setting_key, room)
+    v
   end
 end

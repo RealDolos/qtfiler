@@ -68,4 +68,31 @@ defmodule Qtfile.Util do
   def nilToEitherTag(e, t) do
     e |> nilToEither |> tagLeft(t)
   end
+
+  def convert_setting(%{value: v, type: "int"}) do
+    case Integer.parse(v) do
+      {i, <<>>} -> Right.new(i)
+      _ -> Left.new(:could_not_parse_int)
+    end
+  end
+
+  def convert_setting(%{value: "true", type: "bool"}) do
+    Right.new(true)
+  end
+
+  def convert_setting(%{value: "false", type: "bool"}) do
+    Right.new(false)
+  end
+
+  def convert_setting(%{value: _, type: "bool"}) do
+    Left.new(:could_not_parse_bool)
+  end
+
+  def convert_setting(%{value: _, type: _}) do
+    Left.new(:could_not_recognise_setting_type)
+  end
+
+  def convert_setting(%{}) do
+    Left.new(:invalid_setting)
+  end
 end
