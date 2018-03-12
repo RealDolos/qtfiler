@@ -173,7 +173,7 @@ defmodule Qtfile.Rooms do
   def get_setting_value(setting_key, %Room{} = room) do
     monad Right do
       setting <-
-        get_setting_by_key(setting_key, room) |> nilToEitherTag(:setting_doesnt_exist)
+        get_setting_by_key_room(setting_key, room) |> nilToEitherTag(:setting_doesnt_exist)
       convert_setting(setting) |> tagLeft(:could_not_convert_setting)
     end
   end
