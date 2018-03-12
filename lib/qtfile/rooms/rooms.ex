@@ -178,15 +178,26 @@ defmodule Qtfile.Rooms do
   def get_settings_by_room(%Room{} = room) do
     query = from s in Setting,
       where: s.room_id == ^room.id,
-      select: %{
-        type: s.type,
-        id: s.id,
-        key: s.key,
-        name: s.name,
-        value: s.value,
-      }
+      select: s
 
     Repo.all(query)
+  end
+
+  def process_setting(
+    %Setting{name: name, id: id, type: type, key: key, value: value} = setting
+  ) do
+    %Right{right: value} = convert_setting(setting)
+    %{
+      id: id,
+      type: type,
+      key: key,
+      value: value,
+      name: name,
+    }
+  end
+
+  def get_settings_by_room_for_browser(%Room{} = room) do
+    Enum.map(get_settings_by_room(room), &process_setting/1)
   end
 
   def get_setting_by_key_room(setting_key, %Room{} = room) do
@@ -215,7 +226,8 @@ defmodule Qtfile.Rooms do
   def get_setting_value(setting_key, %Room{} = room) do
     monad Right do
       setting <-
-        get_setting_by_key_room(setting_key, room) |> nilToEitherTag(:setting_doesnt_exist)
+        get_setting_by_key_room(setting_key,
+          room) |> nilToEitherTag(:setting_doesnt_exist)
       convert_setting(setting) |> tagLeft(:could_not_convert_setting)
     end
   end

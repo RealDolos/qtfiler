@@ -146,7 +146,7 @@ defmodule Qtfile.Accounts do
   end
 
   def has_mod_authority(user, room) do
-    user.role == "mod" or user.role == "admin" or (room != nil and user.id == room.owner)
+    user.role == "mod" or user.role == "admin" or (room != nil and user.id == room.owner_id)
   end
 
   defp authenticate_by_username_password_helper(%{hashed_password: hashed_password, user: user}, password) do

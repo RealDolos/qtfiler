@@ -84,7 +84,7 @@ defmodule QtfileWeb.RoomChannel do
     owner = room.owner_id == user.id
     push(socket, "role", %{body: user.role})
     push(socket, "owner", %{body: owner})
-    settings = Qtfile.Rooms.get_settings_by_room(room)
+    settings = Qtfile.Rooms.get_settings_by_room_for_browser(room)
     push(socket, "settings", %{settings: settings})
     handle_out("files", %{body: files}, socket)
   end
@@ -96,7 +96,7 @@ defmodule QtfileWeb.RoomChannel do
 
   def handle_info(:update_settings, socket) do
     {user, room} = get_user_and_room(socket)
-    settings = Qtfile.Rooms.get_settings_by_room(room)
+    settings = Qtfile.Rooms.get_settings_by_room_for_browser(room)
     QtfileWeb.Endpoint.broadcast!(
       "room:" <> room.room_id,
       "deleted", %{settings: settings}
@@ -128,7 +128,7 @@ defmodule QtfileWeb.RoomChannel do
     if Qtfile.Accounts.has_mod_authority(user, room) do
       Enum.map(settings, fn(%{"id" => id, "value" => value}) ->
         setting = Qtfile.Rooms.get_setting_by_id(id)
-        {:ok, _} = Qtfile.Rooms.update_setting(setting, %{value: value})
+        {:ok, _} = Qtfile.Rooms.update_setting(setting, %{value: inspect(value)})
       end)
       send(self(), :update_settings)
       {:reply, {:ok, %{success: true}}, socket}
