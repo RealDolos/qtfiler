@@ -182,4 +182,14 @@ defmodule Qtfile.Rooms do
     %Right{right: v} = get_setting_value(setting_key, room)
     v
   end
+
+  def change_setting(%Setting{} = setting) do
+    Setting.changeset(setting, %{})
+  end
+
+  def create_setting(attrs \\ %{}) do
+    %Setting{}
+    |> Setting.changeset(attrs)
+    |> Repo.insert()
+  end
 end
