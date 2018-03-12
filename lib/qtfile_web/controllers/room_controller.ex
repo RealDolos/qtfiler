@@ -22,9 +22,7 @@ defmodule QtfileWeb.RoomController do
         Logger.error("failed to create room:")
         Logger.error(inspect(e))
         redirect(conn, to: "/")
-
     end
-
   end
 
   def not_found(conn, params) do
