@@ -6,7 +6,7 @@ defmodule Qtfile.IPAddressObfuscation do
       "admin" -> %{data | ip_address: human_readable(
                     denormalise_ip_address(ip_address))}
       "mod" -> %{data | ip_address: encrypt_ip_address(ip_address, user.secret)}
-      "user" -> if room.owner == user.id do
+      "user" -> if room.owner_id == user.id do
         %{data | ip_address:
           encrypt_ip_address(ip_address, :crypto.exor(user.secret, room.secret))
         }
@@ -20,7 +20,7 @@ defmodule Qtfile.IPAddressObfuscation do
     case user.role do
       "admin" -> {:ok, ip_address}
       "mod" -> decrypt_ip_address(ip_address, user.secret)
-      "user" -> if room.owner == user.id do
+      "user" -> if room.owner_id == user.id do
         decrypt_ip_address(ip_address, :crypto.exor(user.secret, room.secret))
       else
         {:error, :insufficient_ip_decryption_permission}

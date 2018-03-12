@@ -110,6 +110,14 @@ defmodule QtfileWeb.RoomChannel do
     end
   end
 
+  def handle_in("settings", %{"settings" => settings}, socket) do
+    {user, room} = get_user_and_room(socket)
+    if Qtfile.Accounts.has_mod_authority(user, room) do
+      Logger.info "saving settings"
+    end
+    {:reply, {:ok, %{success: true}}, socket}
+  end
+
   def handle_in("ban", ban, socket) do
     {user, room} = get_user_and_room(socket)
     ban_e = Qtfile.Bans.preprocess_input_for_database(user, room, ban)

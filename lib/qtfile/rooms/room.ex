@@ -1,7 +1,7 @@
 defmodule Qtfile.Rooms.Room do
   use Ecto.Schema
   import Ecto.Changeset
-  alias Qtfile.Rooms.Room
+  alias Qtfile.Rooms.{Room, Setting}
 
 
   schema "rooms" do
@@ -15,6 +15,7 @@ defmodule Qtfile.Rooms.Room do
     field :room_id, :string
     field :room_name, :string, default: "New Room"
     field :secret, :binary
+    has_many :settings, Setting, foreign_key: :room_id, on_delete: :delete_all
 
     timestamps()
   end

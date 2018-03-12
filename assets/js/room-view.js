@@ -5,6 +5,7 @@ import Room from "./room";
 import Vue from "vue/dist/vue.common.js";
 import fileListView from "./file-list-view";
 import presenceView from "./presence-view";
+import settingsView from "./settings-view";
 const room = new Room(socket);
 
 // A room with a vue
@@ -14,7 +15,8 @@ export default new Vue({
     el: "#room",
     components: {
         fileList: fileListView(room),
-        presence: presenceView(room)
+        presence: presenceView(room),
+        settings: settingsView
     },
     mounted() {
         room.initialiseUploader();
@@ -26,6 +28,12 @@ export default new Vue({
         },
         togglePresence() {
             this.presenceSize = (this.presenceSize + 1) % 4;
+        },
+        saveSettings(settings) {
+            return this.$data.push("settings", settings);
+        },
+        setSettingsCallback(cb) {
+            return this.$data.channel.on("settings", cb);
         }
     },
     computed: {

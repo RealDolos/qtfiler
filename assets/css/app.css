@@ -462,7 +462,7 @@ h1, .register-field > span, .red, .presence {
     visibility: collapse;
 }
 
-.container-show {
+.container-half {
     max-height: 50vh;
 }
 

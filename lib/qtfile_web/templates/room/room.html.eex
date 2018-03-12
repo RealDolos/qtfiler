@@ -31,7 +31,7 @@
       </template>
 
       <template v-if="mod">
-        <span is="settings" />
+        <span is="settings" :save-settings="saveSettings" :set-settings-callback="setSettingsCallback" />
       </template>
     </div>
 
@@ -117,11 +117,11 @@
 <template id="async-button-template">
   <div>
     <div v-show="status == 'ready'" v-on:click="click" class="small delete button">
-      {{ String.fromCodePoint(defaultIcon) }}
+      {{ readyString }}
     </div>
     <div v-show="status == 'waiting'" class="small delete button">⌛</div>
     <div v-show="status == 'failed'" class="small delete button">❌</div>
-    <div v-show="status == 'succeeded'" class="small delete button">✓</div>
+    <div v-show="status == 'succeeded'" v-on:click="click" class="small delete button">✓</div>
   </div>
 </template>
 
@@ -147,15 +147,17 @@
 </template>
 
 <template id="settings-template">
-  <div class="form-group grow scroll-container" :class="{ 'container-show': show, 'container-hide': hide }">
+  <div class="form-group grow scroll-container container-half">
     <div class="scroll-content">
       <div v-on:click="toggle" class="button">Settings</div>
-      <div class="column">
-        <div class="row">
-          <label for="anon-upload">Anonymous upload: </label>
-          <input id="anon-upload" class="mark" type="checkbox" v-model="anonUpload">
-          <div v-on:click="set" class="button">Save</div>
-        </div>
+      <div class="column column-wrap" :class="{ 'container-hide': hidden }">
+        <template v-for="setting in settings">
+          <div :key="setting.key" class="row">
+            <label :for="setting.key">{{ setting.name }}</label>
+            <input :id="setting.key" class="mark" type="checkbox" v-model="setting.value">
+          </div>
+        </template>
+        <span is="async-button" :default-icon="'Save'" :action="save"></span>
       </div>
     </div>
   </div>
