@@ -85,7 +85,7 @@ defmodule QtfileWeb.RoomChannel do
     push(socket, "role", %{body: user.role})
     push(socket, "owner", %{body: owner})
     settings = Qtfile.Rooms.get_settings_by_room(room)
-    push(socket, "settings", %{setting: settings})
+    push(socket, "settings", %{settings: settings})
     handle_out("files", %{body: files}, socket)
   end
 
