@@ -3,6 +3,7 @@ defmodule QtfileWeb.RoomChannel do
   use Phoenix.Channel
   alias QtfileWeb.Presence
   intercept ["files", "presence_diff"]
+  require Qtfile.Rooms
 
   def join("room:" <> room_id, _message, socket) do
     if Qtfile.Rooms.room_exists?(room_id) do
@@ -83,11 +84,23 @@ defmodule QtfileWeb.RoomChannel do
     owner = room.owner_id == user.id
     push(socket, "role", %{body: user.role})
     push(socket, "owner", %{body: owner})
+    settings = Qtfile.Rooms.get_settings_by_room(room)
+    push(socket, "settings", %{setting: settings})
     handle_out("files", %{body: files}, socket)
   end
 
   def handle_info({:deleted, room_id, file_uuid}, socket) do
     QtfileWeb.Endpoint.broadcast!("room:" <> room_id, "deleted", %{body: file_uuid})
+    {:noreply, socket}
+  end
+
+  def handle_info(:update_settings, socket) do
+    {user, room} = get_user_and_room(socket)
+    settings = Qtfile.Rooms.get_settings_by_room(room)
+    QtfileWeb.Endpoint.broadcast!(
+      "room:" <> room.room_id,
+      "deleted", %{settings: settings}
+    )
     {:noreply, socket}
   end
 
@@ -113,9 +126,15 @@ defmodule QtfileWeb.RoomChannel do
   def handle_in("settings", %{"settings" => settings}, socket) do
     {user, room} = get_user_and_room(socket)
     if Qtfile.Accounts.has_mod_authority(user, room) do
-      Logger.info "saving settings"
+      Enum.map(settings, fn(%{"id" => id, "value" => value}) ->
+        setting = Qtfile.Rooms.get_setting_by_id(id)
+        {:ok, _} = Qtfile.Rooms.update_setting(setting, %{value: value})
+      end)
+      send(self(), :update_settings)
+      {:reply, {:ok, %{success: true}}, socket}
+    else
+      {:reply, {:ok, %{success: false, error: "insufficient privileges"}}, socket}
     end
-    {:reply, {:ok, %{success: true}}, socket}
   end
 
   def handle_in("ban", ban, socket) do

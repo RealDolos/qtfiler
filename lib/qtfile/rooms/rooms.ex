@@ -175,10 +175,32 @@ defmodule Qtfile.Rooms do
     Room.changeset(room, %{})
   end
 
+  def get_settings_by_room(%Room{} = room) do
+    query = from s in Setting,
+      where: s.room_id == ^room.id,
+      select: %{
+        type: s.type,
+        id: s.id,
+        key: s.key,
+        name: s.name,
+        value: s.value,
+      }
+
+    Repo.all(query)
+  end
+
   def get_setting_by_key_room(setting_key, %Room{} = room) do
     query = from s in Setting,
       select: s,
       where: s.key == ^setting_key and s.room_id == ^room.id
+
+    Repo.one(query)
+  end
+
+  def get_setting_by_id(id) do
+    query = from s in Setting,
+      select: s,
+      where: s.id == ^id
 
     Repo.one(query)
   end
@@ -203,8 +225,10 @@ defmodule Qtfile.Rooms do
     v
   end
 
-  def change_setting(%Setting{} = setting) do
-    Setting.changeset(setting, %{})
+  def update_setting(%Setting{} = setting, attrs) do
+    setting
+    |> Setting.changeset(attrs)
+    |> Repo.update()
   end
 
   def create_setting(attrs \\ %{}) do
