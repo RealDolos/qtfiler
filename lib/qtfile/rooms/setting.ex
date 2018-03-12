@@ -18,7 +18,13 @@ defmodule Qtfile.Rooms.Setting do
   def changeset(%Setting{} = setting, attrs) do
     setting
     |> cast(attrs, [:name, :key, :value, :type])
-    |> put_assoc(:room, attrs.room)
+    |> fn(setting) ->
+      if Map.has_key?(attrs, :room) do
+        put_assoc(setting, :room, attrs.room)
+      else
+        setting
+      end
+    end.()
     |> validate_required([:name, :key, :value, :type])
   end
 end

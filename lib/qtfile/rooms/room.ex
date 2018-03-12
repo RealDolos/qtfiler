@@ -33,7 +33,14 @@ defmodule Qtfile.Rooms.Room do
     room
     |> cast(attrs, [:room_id, :room_name, :motd, :disabled, :file_ttl, :secret])
     |> validate_required([:room_id, :room_name, :disabled, :file_ttl, :secret])
-    |> put_assoc(:owner, attrs.owner)
+    |> fn(room) ->
+      if Map.has_key?(attrs, :owner) do
+        put_assoc(room, :owner, attrs.owner)
+      else
+        room
+      end
+    end.()
+    |> cast_assoc(:settings)
     |> unique_constraint(:room_id)
     |> unique_constraint(:secret)
   end
