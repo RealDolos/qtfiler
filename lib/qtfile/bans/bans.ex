@@ -155,7 +155,11 @@ defmodule Qtfile.Bans do
     }
   end
 
-  def preprocess_input_for_database(user, room, ban) do
+  def preprocess_input_for_database({:logged_in, user}, room, ban) do
+    preprocess_input_for_database(user, room, ban)
+  end
+
+  def preprocess_input_for_database(%Qtfile.Accounts.User{} = user, room, ban) do
     ban = Map.merge(ban, defaultBan(), fn(_, v1, _) -> v1 end)
     ban_room = if ban["global"] do nil else room end
     can_ban = Qtfile.Accounts.has_mod_authority(user, ban_room)
@@ -174,11 +178,16 @@ defmodule Qtfile.Bans do
             end)
           case processed_ip_bans_e do
             {:ok, processed_ip_bans} ->
+              user =
+                case user_ban["bannee_id"] do
+                  nil -> nil
+                  real_uid -> Qtfile.Accounts.get_user(real_uid)
+                end
               map =
                 %{
                   ip_bans: processed_ip_bans,
                   hell: user_ban["hell"],
-                  bannee: Qtfile.Accounts.get_user!(user_ban["bannee_id"]),
+                  bannee: user,
                 }
               {:ok, map}
             {:error, _} = e -> e
@@ -215,5 +224,9 @@ defmodule Qtfile.Bans do
     else
       {:error, :insufficient_ban_permission}
     end
+  end
+
+  def preprocess_input_for_database(_, _, _) do
+    {:error, :insufficient_ban_permission}
   end
 end

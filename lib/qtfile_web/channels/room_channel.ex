@@ -26,10 +26,13 @@ defmodule QtfileWeb.RoomChannel do
   # end
 
   defp get_user_and_room(socket) do
-    user_id = socket.assigns[:user_id]
     "room:" <> room_id = socket.topic
     room = Qtfile.Rooms.get_room_by_room_id!(room_id)
-    user = Qtfile.Accounts.get_user!(user_id)
+    user =
+      case socket.assigns[:user_id] do
+        {:anonymous, _} = x -> x
+        {:logged_in, user_id} -> {:logged_in, Qtfile.Accounts.get_user(user_id)}
+      end
     {user, room}
   end
 
@@ -75,14 +78,19 @@ defmodule QtfileWeb.RoomChannel do
     files = Enum.map(Qtfile.Files.get_files_by_room_id(room.room_id),
       &(Qtfile.Files.process_for_browser/1))
     push(socket, "presence_state", presence_filter_ips(Presence.list(socket), socket))
-    {:ok, _} = Presence.track(socket, user.id,
+    presence_key = inspect(socket.assigns[:user_id])
+    {:ok, _} = Presence.track(socket, presence_key,
       %{
         online_at: DateTime.utc_now(),
         ip_address: socket.assigns.ip_address,
       }
     )
-    owner = room.owner_id == user.id
-    push(socket, "role", %{body: user.role})
+    {role, owner} =
+      case user do
+        {:anonymous, _} -> {"anon", false}
+        {:logged_in, real_user} -> {real_user.role, room.owner_id == real_user.id}
+      end
+    push(socket, "role", %{body: role})
     push(socket, "owner", %{body: owner})
     settings = Qtfile.Rooms.get_settings_by_room_for_browser(room)
     push(socket, "settings", %{settings: settings})
@@ -158,7 +166,7 @@ defmodule QtfileWeb.RoomChannel do
               "failed to decrypt one of the specified ip addresses"
             _ ->
               Logger.info("error creating ban: ")
-              Logger.info(e)
+              Logger.info(inspect(e))
               "unknown error, please report to an admin"
           end
         {:reply, {:ok, %{success: false, error: e}}, socket}

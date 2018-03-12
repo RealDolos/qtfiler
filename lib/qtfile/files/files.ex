@@ -54,6 +54,7 @@ defmodule Qtfile.Files do
   def process_for_browser(%Qtfile.Files.File{} = file) do
     file
     |> Repo.preload(:previews)
+    |> Repo.preload(:uploader)
     |> Map.from_struct()
     |> process_for_browser()
   end
@@ -87,8 +88,17 @@ defmodule Qtfile.Files do
       ]
     )
     |> Map.put(:room_id, location.room_id)
-    |> Map.put(:uploader, uploader.name)
-    |> Map.put(:uploader_id, uploader.id)
+    |> fn(file) ->
+      if (uploader != nil) do
+        file
+        |> Map.put(:uploader, uploader.name)
+        |> Map.put(:uploader_id, uploader.id)
+      else
+        file
+        |> Map.put(:uploader, "anonymoose")
+        |> Map.put(:uploader_id, -1)        
+      end
+    end.()
     |> Map.put(:previews, previews)
     |> Map.put(:metadata,
       if metadata != nil do

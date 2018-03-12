@@ -31,7 +31,17 @@ defmodule Qtfile.Rooms do
   """
   def list_rooms do
     query = from r in Room,
-      join: o in assoc(r, :owner),
+      left_join: o in assoc(r, :owner),
+      preload: [owner: o],
+      select: r
+    Repo.all(query)
+  end
+
+  def list_rooms_anon do
+    query = from r in Room,
+      join: s in assoc(r, :settings),
+      where: s.key == "anon_view" and s.value == "true",
+      left_join: o in assoc(r, :owner),
       preload: [owner: o],
       select: r
     Repo.all(query)
@@ -41,9 +51,18 @@ defmodule Qtfile.Rooms do
     not (get_room_by_room_id!(room_id) == nil)
   end
 
-  def uploadable_room(room_id) do
+  def uploadable_room(room_id, user_list) do
     case get_room_by_room_id!(room_id) do
-      %{disabled: false} = room -> {:ok, room}
+      %{disabled: false} = room ->
+        case user_list do
+          [] ->
+            if get_setting_value!("anon_upload", room) do
+              {:ok, room}
+            else
+              :error
+            end
+          _ -> {:ok, room}
+        end
       _ -> :error
     end
   end

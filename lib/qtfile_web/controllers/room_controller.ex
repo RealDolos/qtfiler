@@ -3,12 +3,20 @@ defmodule QtfileWeb.RoomController do
   require Logger
 
   def index(conn, %{"room_id" => room_id}) do
-    if Qtfile.Rooms.room_exists?(room_id) do
-      conn
-      |> assign(:room_id, room_id)
-      |> render "room.html"
-    else
-      text conn, "FAILED TO FIND ROM FUCK OF"
+    case Qtfile.Rooms.get_room_by_room_id!(room_id) do
+      nil -> text conn, "FAILED TO FIND ROM FUCK OF"
+      room ->
+        logged_in = not is_nil(get_session(conn, :user_id))
+        allowed = logged_in or Qtfile.Rooms.get_setting_value!("anon_view", room)
+        if allowed do
+          conn
+          |> assign(:room_id, room_id)
+          |> render "room.html"
+        else
+          conn
+          |> send_resp(:forbidden, "Not logged in")
+          |> halt()
+        end
     end
   end
 

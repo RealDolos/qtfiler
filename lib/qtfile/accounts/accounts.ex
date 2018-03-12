@@ -38,6 +38,8 @@ defmodule Qtfile.Accounts do
   """
   def get_user!(id), do: Repo.get!(User, id)
 
+  def get_user(id), do: Repo.get(User, id)
+
   def get_user_by_username(username) do
     query = from u in User,
       select: u,
@@ -145,8 +147,16 @@ defmodule Qtfile.Accounts do
     end
   end
 
-  def has_mod_authority(user, room) do
+  def has_mod_authority(%User{} = user, room) do
     user.role == "mod" or user.role == "admin" or (room != nil and user.id == room.owner_id)
+  end
+
+  def has_mod_authority({:logged_in, real_user}, room) do
+    has_mod_authority(real_user, room)
+  end
+
+  def has_mod_authority(_, _) do
+    false
   end
 
   defp authenticate_by_username_password_helper(%{hashed_password: hashed_password, user: user}, password) do

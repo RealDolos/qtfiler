@@ -1,5 +1,6 @@
 defmodule QtfileWeb.Router do
   use QtfileWeb, :router
+  alias Qtfile.Settings
 
   pipeline :browser do
     plug Plug.Parsers,
@@ -37,15 +38,30 @@ defmodule QtfileWeb.Router do
     get "/", PageController, :index
     get "/login", UserController, :login_page
     get "/register", UserController, :register_page
-    get "/get/:uuid/:realfilename", FileController, :download
-    get "/get/:uuid/", FileController, :download_no_filename
-    get "/pget/:uuid", FileController, :download_preview
+
+    scope "/" do
+      pipe_through :logged_in_or_anon_view?
+
+      get "/rooms", RoomsController, :index
+    end
+
+    scope "/" do
+      pipe_through :logged_in_or_anon_view?
+
+      get "/pget/:uuid", FileController, :download_preview
+    end
+
+    scope "/" do
+      pipe_through :logged_in_or_anon_download?
+
+      get "/get/:uuid/:realfilename", FileController, :download
+      get "/get/:uuid/", FileController, :download_no_filename
+    end
 
     scope "/" do
       pipe_through :logged_in?
 
       get "/new", RoomController, :create_room
-      get "/rooms", RoomsController, :index
     end
   end
 
@@ -56,7 +72,7 @@ defmodule QtfileWeb.Router do
   end
 
   scope "/r", QtfileWeb do
-    pipe_through [:browser, :logged_in?]
+    pipe_through [:browser, :logged_in_or_anon_view?]
 
     get "/", RoomController, :not_found
     get "/:room_id", RoomController, :index
@@ -64,8 +80,7 @@ defmodule QtfileWeb.Router do
 
   scope "/api", QtfileWeb do
     scope "/" do
-      pipe_through :upload
-      pipe_through :logged_in?
+      pipe_through [:upload, :logged_in_or_anon_upload?]
 
       post "/upload", FileController, :upload
     end
@@ -87,15 +102,49 @@ defmodule QtfileWeb.Router do
   #   pipe_through :api
   # end
 
-  defp logged_in?(conn, _) do
-    case get_session(conn, :user_id) do
-      nil ->
-        conn
-        |> send_resp(:forbidden, "Not logged in")
-        |> halt()
-      user_id ->
-        conn
+  defp forbidden_unless(pred, message, conn) do
+    if pred do
+      conn
+    else
+      conn
+      |> send_resp(:forbidden, message)
+      |> halt()
     end
+  end
+
+  defp logged_in_or(pred, conn) do
+    forbidden_unless(
+      case get_session(conn, :user_id) do
+        nil -> false
+        id ->
+          case Qtfile.Accounts.get_user(id) do
+            %Qtfile.Accounts.User{} -> true
+            nil -> false
+          end
+      end or pred,
+      "Not logged in",
+      conn
+    )
+  end
+
+  defp logged_in?(conn, _) do
+    logged_in_or(false, conn)
+  end
+
+  defp logged_in_or_setting(key, conn) do
+    logged_in_or(Settings.get_setting_value!(key), conn)
+  end
+
+  defp logged_in_or_anon_view?(conn, _) do
+    logged_in_or_setting("anon_view", conn)
+  end
+
+  defp logged_in_or_anon_download?(conn, _) do
+    logged_in_or_setting("anon_download", conn)
+  end
+
+  defp logged_in_or_anon_upload?(conn, _) do
+    logged_in_or_setting("anon_upload", conn)
   end
 
   defp is_mod?(conn, _) do

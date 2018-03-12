@@ -1,7 +1,8 @@
 defmodule Qtfile.IPAddressObfuscation do
   import Bitwise
+  alias Qtfile.Accounts.User
 
-  def ip_filter(room, user, %{ip_address: ip_address} = data) do
+  def ip_filter(room, %User{} = user, %{ip_address: ip_address} = data) do
     case user.role do
       "admin" -> %{data | ip_address: human_readable(
                     denormalise_ip_address(ip_address))}
@@ -11,21 +12,45 @@ defmodule Qtfile.IPAddressObfuscation do
           encrypt_ip_address(ip_address, :crypto.exor(user.secret, room.secret))
         }
       else
-          Map.delete(data, :ip_address)
+          ip_filter_default(data)
       end
     end
   end
 
-  def ban_filter(room, user, ip_address) do
+  def ip_filter(room, {:logged_in, user}, data) do
+    ip_filter(room, user, data)
+  end
+
+  def ip_filter(_, _, data) do
+    ip_filter_default(data)
+  end
+
+  def ip_filter_default(data) do
+    Map.delete(data, :ip_address)
+  end
+
+  def ban_filter(room, %User{} = user, ip_address) do
     case user.role do
       "admin" -> {:ok, ip_address}
       "mod" -> decrypt_ip_address(ip_address, user.secret)
       "user" -> if room.owner_id == user.id do
         decrypt_ip_address(ip_address, :crypto.exor(user.secret, room.secret))
       else
-        {:error, :insufficient_ip_decryption_permission}
+        ban_filter_default(ip_address)
       end
     end
+  end
+
+  def ban_filter(room, {:logged_in, user}, ip_address) do
+    ban_filter(room, user, ip_address)
+  end
+
+  def ban_filter(_, _, ip_address) do
+    ban_filter_default(ip_address)
+  end
+
+  def ban_filter_default(ip_address) do
+    {:error, :insufficient_ip_decryption_permission}
   end
 
   def human_readable(ip_address)
