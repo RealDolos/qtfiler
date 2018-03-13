@@ -7,7 +7,7 @@ import fileListView from "./file-list-view";
 import presenceView from "./presence-view";
 import settingsView from "./settings-view";
 const room = new Room(socket);
-
+room.initialise();
 // A room with a vue
 export default new Vue({
     name: "room",
@@ -34,6 +34,9 @@ export default new Vue({
         },
         setSettingsCallback(cb) {
             return this.$data.channel.on("settings", cb);
+        },
+        setUserSettings(settings) {
+            this.settings = settings;
         }
     },
     computed: {

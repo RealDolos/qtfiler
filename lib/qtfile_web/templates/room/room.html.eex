@@ -30,19 +30,17 @@
         </div>
       </template>
 
-      <template v-if="mod">
-        <span is="settings" :save-settings="saveSettings" :set-settings-callback="setSettingsCallback" />
-      </template>
+      <span is="settings" :mod="mod" :set-user-settings="setUserSettings" :save-settings="saveSettings" :set-settings-callback="setSettingsCallback" />
     </div>
 
     <div v-cloak id="file-list-container" class="grow zero-basis scroll-container">
-      <span is="file-list" :role="role" :owner="owner" :filter="filter" />
+      <span is="file-list" :role="role" :owner="owner" :filter="filter" :settings="settings" />
     </div>
   </div>
 </div>
 
 <template id="file-list-template">
-  <div id="file-list" class="scroll-content column">
+  <div id="file-list" class="scroll-content column" :class="{'hovery': hovery}">
     <template v-for="(upload, index) in uploads">
       <span is="upload" :wake="wake" :pause="pause" :id="upload.id" :key="upload.id" :role="role" :index="index" :owner="owner" />
     </template>
@@ -94,7 +92,7 @@
       </div>
     </div>
     <template v-if="displayInfoHere">
-      <div class="row">
+      <div class="row thumbnail">
         <template v-if="image">
           <picture>
             <template v-for="p in previews">
@@ -151,13 +149,28 @@
     <div class="scroll-content">
       <div v-on:click="toggle" class="button">Settings</div>
       <div class="column column-wrap" :class="{ 'container-hide': hidden }">
-        <template v-for="setting in settings">
-          <div :key="setting.key" class="row">
-            <label :for="setting.key">{{ setting.name }}</label>
-            <input :id="setting.key" class="mark" type="checkbox" v-model="setting.value">
+        <template v-if="mod">
+          <div class="column column-wrap">
+            <h3>Room settings</h3>
+            <template v-for="setting in settings">
+              <div :key="setting.key" class="row">
+                <label :for="setting.key">{{ setting.name }}</label>
+                <input :id="setting.key" class="mark" type="checkbox" v-model="setting.value">
+              </div>
+            </template>
+            <span is="async-button" :default-icon="'Save'" :action="save"></span>
           </div>
         </template>
-        <span is="async-button" :default-icon="'Save'" :action="save"></span>
+        <div class="column column-wrap">
+          <h3>User settings</h3>
+          <template v-for="setting in userSettings">
+            <div :key="setting.key" class="row">
+              <label :for="setting.key">{{ setting.name }}</label>
+              <input :id="setting.key" class="mark" type="checkbox" v-model="setting.value">
+            </div>
+          </template>
+          <span is="async-button" :default-icon="'Save'" :action="saveUser"></span>
+        </div>
       </div>
     </div>
   </div>
