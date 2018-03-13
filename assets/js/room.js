@@ -103,6 +103,10 @@ export default class Room {
                 });
             });
 
+            channel.on("new_files", payload => {
+                self.fileList.addNewFiles(payload.body);
+            });
+
             channel.on("metadata", payload => {
                 for (let uuid in payload) {
                     self.fileList.searchFiles(uuid, file => {
@@ -114,11 +118,7 @@ export default class Room {
             channel.on("preview", payload => {
                 for (let uuid in payload) {
                     self.fileList.searchFiles(uuid, file => {
-                        file.previews += payload[uuid].map(mime_type => {
-                            return {
-                                mime_type: mime_type
-                            };
-                        });
+                        file.previews += payload[uuid];
                     });
                 };
             });

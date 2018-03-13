@@ -2,7 +2,7 @@ defmodule QtfileWeb.RoomChannel do
   require Logger
   use Phoenix.Channel
   alias QtfileWeb.Presence
-  intercept ["files", "presence_diff"]
+  intercept ["files", "presence_diff", "new_files"]
   require Qtfile.Rooms
 
   def join("room:" <> room_id, _message, socket) do
@@ -36,13 +36,21 @@ defmodule QtfileWeb.RoomChannel do
     {user, room}
   end
 
-  def handle_out("files", %{body: files}, socket) do
+  def handle_out_files(key, %{body: files}, socket) do
     {user, room} = get_user_and_room(socket)
     new_files = Enum.map(files, fn(file) ->
       Qtfile.IPAddressObfuscation.ip_filter(room, user, file)
     end)
-    push(socket, "files", %{body: new_files})
+    push(socket, key, %{body: new_files})
     {:noreply, socket}
+  end
+  
+  def handle_out("files", data, socket) do
+    handle_out_files("files", data, socket)
+  end
+
+  def handle_out("new_files", data, socket) do
+    handle_out_files("new_files", data, socket)
   end
 
   def handle_out("presence_diff", diff, socket) do
@@ -94,7 +102,15 @@ defmodule QtfileWeb.RoomChannel do
     push(socket, "owner", %{body: owner})
     settings = Qtfile.Rooms.get_settings_by_room_for_browser(room)
     push(socket, "settings", %{settings: settings})
-    handle_out("files", %{body: files}, socket)
+    handle_out("new_files", %{body: files}, socket)
+    push(socket, "preview",
+      Enum.group_by(Enum.map(
+        Qtfile.Files.get_previews_by_room_id(room.room_id), fn({k, v}) ->
+          {k, Qtfile.Files.process_for_browser(v)}
+        end
+      ), fn({k, _}) -> k end, fn({_, v}) -> v end)
+    )
+    {:noreply, socket}
   end
 
   def handle_info({:deleted, room_id, file_uuid}, socket) do
@@ -185,7 +201,7 @@ defmodule QtfileWeb.RoomChannel do
 
   def broadcast_new_preview(mime_type, file, room_id) do
     QtfileWeb.Endpoint.broadcast!(
-      "room:" <> room_id, "preview", %{file.uuid => [mime_type]}
+      "room:" <> room_id, "preview", %{file.uuid => [%{mime_type: mime_type}]}
     )
   end
 

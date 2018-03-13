@@ -51,9 +51,29 @@ defmodule Qtfile.Files do
     Repo.all(query)
   end
 
+  def get_previews_by_room_id(room_id) do
+    query = from p in Preview,
+      join: f in assoc(p, :file),
+      join: r in assoc(f, :location),
+      where: r.room_id == ^room_id,
+      select: {f.uuid, p}
+    Repo.all(query)
+  end
+
+  def process_for_browser(%Qtfile.Files.Preview{} = preview) do
+    preview
+    |> Map.from_struct()
+    |> Qtfile.Util.multiDelete(
+      [
+        :file,
+        :file_id,
+        :__meta__,
+      ]
+    )
+  end
+
   def process_for_browser(%Qtfile.Files.File{} = file) do
     file
-    |> Repo.preload(:previews)
     |> Repo.preload(:uploader)
     |> Map.from_struct()
     |> process_for_browser()
@@ -64,20 +84,8 @@ defmodule Qtfile.Files do
       location: location,
       uploader: uploader,
       metadata: metadata,
-      previews: previews,
     } = file
   ) do
-    previews = Enum.map(previews, fn(preview) ->
-      preview
-      |> Map.from_struct()
-      |> Qtfile.Util.multiDelete(
-        [
-          :file,
-          :file_id,
-          :__meta__,
-        ]
-      )
-    end)
     file
     |> Qtfile.Util.multiDelete(
       [
@@ -99,7 +107,7 @@ defmodule Qtfile.Files do
         |> Map.put(:uploader_id, -1)        
       end
     end.()
-    |> Map.put(:previews, previews)
+    |> Map.delete(:previews)
     |> Map.put(:metadata,
       if metadata != nil do
         metadata
