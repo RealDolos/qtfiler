@@ -43,7 +43,9 @@ defmodule Qtfile.FileProcessing.Thumbnailer do
 
     result = Porcelain.exec("vipsthumbnail",
       [
-        path, "--size", "256", "--linear", "--rotate", "-o",
+        path,
+        "--size", Integer.to_string(Qtfile.Settings.get_setting_value!("thumbsize")),
+        "--linear", "--rotate", "-o",
         output_path <> "[optimize_coding,interlace,strip]",
       ]
     )
