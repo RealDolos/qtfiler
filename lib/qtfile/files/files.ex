@@ -42,7 +42,7 @@ defmodule Qtfile.Files do
     query = from f in File,
       join: r in assoc(f, :location),
       where: r.room_id == ^room_id,
-      order_by: [asc: :expiration_date],
+      order_by: [desc: :expiration_date],
       left_join: o in assoc(r, :owner),
       left_join: u in assoc(f, :uploader),
       left_join: m in assoc(f, :metadata),
