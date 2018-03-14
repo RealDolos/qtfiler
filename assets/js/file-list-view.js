@@ -70,7 +70,7 @@ export default function(room) {
             },
             displayInfo: lodash.debounce(function(uuid) {
                 this.info = uuid;
-            }, 250)
+            }, 125)
          }
     };
 };
