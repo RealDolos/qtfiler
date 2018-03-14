@@ -19,8 +19,14 @@ config :qtfile, QtfileWeb.Endpoint,
   cache_static_manifest: "priv/static/cache_manifest.json"
 
 # Do not print debug messages in production
-config :logger, level: :info
+config :logger,
+  level: :notice,
+  backends: [
+    {ExSyslogger, :syslogger_main}
+  ]
 
+config :logger, :syslogger_main,
+  level: :warning
 # ## SSL Support
 #
 # To get SSL working, you will need to add the `https` key
