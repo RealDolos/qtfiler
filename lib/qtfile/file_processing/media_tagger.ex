@@ -1,6 +1,7 @@
 defmodule Qtfile.FileProcessing.MediaTagger do
   use GenStage
   alias Qtfile.FileProcessing.UploadEvent
+  alias Qtfile.Admin.ThumbRegen
 
   def start_link(args) do
     GenStage.start_link(__MODULE__, args, name: __MODULE__)
@@ -9,7 +10,7 @@ defmodule Qtfile.FileProcessing.MediaTagger do
   def init([]) do
     {:producer_consumer, {},
      dispatcher: GenStage.BroadcastDispatcher,
-     subscribe_to: [UploadEvent],
+     subscribe_to: [UploadEvent, ThumbRegen],
     }
   end
 

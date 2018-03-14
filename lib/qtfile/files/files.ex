@@ -19,7 +19,14 @@ defmodule Qtfile.Files do
 
   """
   def list_files do
-    Repo.all(File)
+    query = from f in File,
+      join: r in assoc(f, :location),
+      join: o in assoc(r, :owner),
+      left_join: u in assoc(f, :uploader),
+      left_join: m in assoc(f, :metadata),
+      preload: [location: {r, owner: o}, uploader: u, metadata: m],
+      select: f
+    Repo.all(query)
   end
 
   @doc """
@@ -43,7 +50,7 @@ defmodule Qtfile.Files do
       join: r in assoc(f, :location),
       where: r.room_id == ^room_id,
       order_by: [asc: :expiration_date],
-      left_join: o in assoc(r, :owner),
+      join: o in assoc(r, :owner),
       left_join: u in assoc(f, :uploader),
       left_join: m in assoc(f, :metadata),
       preload: [location: {r, owner: o}, uploader: u, metadata: m],

@@ -69,6 +69,8 @@ defmodule QtfileWeb.Router do
     pipe_through [:browser, :logged_in?, :is_admin?]
     get "/settings", AdminController, :settings
     post "/settings", AdminController, :set_settings
+    get "/control", AdminController, :control
+    post "/thumb-regen", AdminController, :thumb_regen
   end
 
   scope "/r", QtfileWeb do
