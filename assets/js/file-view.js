@@ -76,6 +76,9 @@ export default function(room) {
             },
             image() {
                 return this.fileType == "image";
+            },
+            hasPreviews() {
+                return this.previews.length > 0;
             }
         },
         methods: {
