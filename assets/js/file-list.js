@@ -224,4 +224,10 @@ export default class FileList {
         const file = File.create(data);
         this.files.unshift(file);
     }
+
+    addNewFiles(data) {
+        this.files = data.map(data => {
+            return File.create(data);
+        });
+    }
 }

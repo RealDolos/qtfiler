@@ -2,7 +2,8 @@ defmodule QtfileWeb.RoomChannel do
   require Logger
   use Phoenix.Channel
   alias QtfileWeb.Presence
-  intercept ["files", "presence_diff"]
+  intercept ["files", "presence_diff", "new_files"]
+  require Qtfile.Rooms
 
   def join("room:" <> room_id, _message, socket) do
     if Qtfile.Rooms.room_exists?(room_id) do
@@ -25,20 +26,31 @@ defmodule QtfileWeb.RoomChannel do
   # end
 
   defp get_user_and_room(socket) do
-    user_id = socket.assigns[:user_id]
     "room:" <> room_id = socket.topic
     room = Qtfile.Rooms.get_room_by_room_id!(room_id)
-    user = Qtfile.Accounts.get_user!(user_id)
+    user =
+      case socket.assigns[:user_id] do
+        {:anonymous, _} = x -> x
+        {:logged_in, user_id} -> {:logged_in, Qtfile.Accounts.get_user(user_id)}
+      end
     {user, room}
   end
 
-  def handle_out("files", %{body: files}, socket) do
+  def handle_out_files(key, %{body: files}, socket) do
     {user, room} = get_user_and_room(socket)
     new_files = Enum.map(files, fn(file) ->
       Qtfile.IPAddressObfuscation.ip_filter(room, user, file)
     end)
-    push(socket, "files", %{body: new_files})
+    push(socket, key, %{body: new_files})
     {:noreply, socket}
+  end
+  
+  def handle_out("files", data, socket) do
+    handle_out_files("files", data, socket)
+  end
+
+  def handle_out("new_files", data, socket) do
+    handle_out_files("new_files", data, socket)
   end
 
   def handle_out("presence_diff", diff, socket) do
@@ -74,18 +86,45 @@ defmodule QtfileWeb.RoomChannel do
     files = Enum.map(Qtfile.Files.get_files_by_room_id(room.room_id),
       &(Qtfile.Files.process_for_browser/1))
     push(socket, "presence_state", presence_filter_ips(Presence.list(socket), socket))
-    {:ok, _} = Presence.track(socket, user.id,
+    presence_key = inspect(socket.assigns[:user_id])
+    {:ok, _} = Presence.track(socket, presence_key,
       %{
         online_at: DateTime.utc_now(),
         ip_address: socket.assigns.ip_address,
       }
     )
-    push(socket, "role", %{body: user.role})
-    handle_out("files", %{body: files}, socket)
+    {role, owner} =
+      case user do
+        {:anonymous, _} -> {"anon", false}
+        {:logged_in, real_user} -> {real_user.role, room.owner_id == real_user.id}
+      end
+    push(socket, "role", %{body: role})
+    push(socket, "owner", %{body: owner})
+    settings = Qtfile.Rooms.get_settings_by_room_for_browser(room)
+    push(socket, "settings", %{settings: settings})
+    handle_out("new_files", %{body: files}, socket)
+    push(socket, "preview",
+      Enum.group_by(Enum.map(
+        Qtfile.Files.get_previews_by_room_id(room.room_id), fn({k, v}) ->
+          {k, Qtfile.Files.process_for_browser(v)}
+        end
+      ), fn({k, _}) -> k end, fn({_, v}) -> v end)
+    )
+    {:noreply, socket}
   end
 
   def handle_info({:deleted, room_id, file_uuid}, socket) do
     QtfileWeb.Endpoint.broadcast!("room:" <> room_id, "deleted", %{body: file_uuid})
+    {:noreply, socket}
+  end
+
+  def handle_info(:update_settings, socket) do
+    {user, room} = get_user_and_room(socket)
+    settings = Qtfile.Rooms.get_settings_by_room_for_browser(room)
+    QtfileWeb.Endpoint.broadcast!(
+      "room:" <> room.room_id,
+      "deleted", %{settings: settings}
+    )
     {:noreply, socket}
   end
 
@@ -105,6 +144,20 @@ defmodule QtfileWeb.RoomChannel do
       {:reply, {:ok, %{results: results}}, socket}
     else
       {:reply, :error, socket}
+    end
+  end
+
+  def handle_in("settings", %{"settings" => settings}, socket) do
+    {user, room} = get_user_and_room(socket)
+    if Qtfile.Accounts.has_mod_authority(user, room) do
+      Enum.map(settings, fn(%{"id" => id, "value" => value}) ->
+        setting = Qtfile.Rooms.get_setting_by_id(id)
+        {:ok, _} = Qtfile.Rooms.update_setting(setting, %{value: inspect(value)})
+      end)
+      send(self(), :update_settings)
+      {:reply, {:ok, %{success: true}}, socket}
+    else
+      {:reply, {:ok, %{success: false, error: "insufficient privileges"}}, socket}
     end
   end
 
@@ -129,7 +182,7 @@ defmodule QtfileWeb.RoomChannel do
               "failed to decrypt one of the specified ip addresses"
             _ ->
               Logger.info("error creating ban: ")
-              Logger.info(e)
+              Logger.info(inspect(e))
               "unknown error, please report to an admin"
           end
         {:reply, {:ok, %{success: false, error: e}}, socket}
@@ -148,7 +201,7 @@ defmodule QtfileWeb.RoomChannel do
 
   def broadcast_new_preview(mime_type, file, room_id) do
     QtfileWeb.Endpoint.broadcast!(
-      "room:" <> room_id, "preview", %{file.uuid => [mime_type]}
+      "room:" <> room_id, "preview", %{file.uuid => [%{mime_type: mime_type}]}
     )
   end
 

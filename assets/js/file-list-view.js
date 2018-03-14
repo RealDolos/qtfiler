@@ -8,7 +8,7 @@ export default function(room) {
     return {
         name: "fileList",
         template: "#file-list-template",
-        props: ["role", "filter"],
+        props: ["role", "filter", "owner", "settings"],
         data() {
             return room.fileList;
         },
@@ -18,6 +18,14 @@ export default function(room) {
         },
         
         computed: {
+            hovery() {
+                for (let setting of this.settings) {
+                    if (setting.key == "hover") {
+                        return setting.value;
+                    }
+                }
+                return false;
+            },
             filteredFiles() {
                 var bools = [];
                 var filter2 = this.filter.split(" ");

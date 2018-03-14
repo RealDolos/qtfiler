@@ -4,5 +4,5 @@
     <span class="room-owner">Owner</span>
 </div>
 <div id="room-container">
-    <%= print_all_rooms() %>
+    <%= print_all_rooms(@logged_in) %>
 </div>

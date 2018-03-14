@@ -7,13 +7,23 @@ export default class Room {
         this.room_id = window.config.room_id;
         this.fileList = new FileList(this.room_id);
         this.presence = new Presence();
-        const self = this;
-        Room.createChannel(socket, this.room_id, this).then(channel => {
-            self.channel = channel;
-        });
+        this.createChannel(socket)
         this.role = "user";
         this.filter = "";
+        this.owner = false;
         this.presenceSize = 0;
+        this.settings = [];
+    }
+
+    initialise() {
+        return new Promise((resolve, reject) => {
+            return this.channel.join()
+                .receive("ok", resp => {
+                    resolve(this.channel);
+                })
+                .receive("error", reject)
+            ;
+        })
     }
 
     push(method, data) {
@@ -92,58 +102,54 @@ export default class Room {
         }, true);
     }
 
-    static createChannel(socket, room_id, self) {
-        return new Promise((resolve, reject) => {
-            const channel = socket.channel("room:" + room_id, {});
+    createChannel(socket) {
+        const channel = socket.channel("room:" + this.room_id, {});
+        this.channel = channel;
 
-            channel.on("files", payload => {
-                payload.body.forEach(file => {
-                    self.fileList.addFile(file);
+        channel.on("files", payload => {
+            payload.body.forEach(file => {
+                this.fileList.addFile(file);
+            });
+        });
+
+        channel.on("new_files", payload => {
+                this.fileList.addNewFiles(payload.body);
+        });
+        
+        channel.on("metadata", payload => {
+            for (let uuid in payload) {
+                this.fileList.searchFiles(uuid, file => {
+                    file.metadata.data = payload[uuid];
                 });
-            });
-
-            channel.on("metadata", payload => {
-                for (let uuid in payload) {
-                    self.fileList.searchFiles(uuid, file => {
-                        file.metadata.data = payload[uuid];
-                    });
-                };
-            });
-
-            channel.on("preview", payload => {
-                for (let uuid in payload) {
-                    self.fileList.searchFiles(uuid, file => {
-                        file.previews += payload[uuid].map(mime_type => {
-                            return {
-                                mime_type: mime_type
-                            };
-                        });
-                    });
-                };
-            });
+            };
+        });
         
-            channel.on("role", payload => {
-                self.role = payload.body;
-            });
-            
-            channel.on("deleted", payload => {
-                self.fileList.removeFile(payload.body);
-            });
-
-            channel.on("presence_state", payload => {
-                self.presence.syncState(payload);
-            });
-
-            channel.on("presence_diff", payload => {
-                self.presence.diffState(payload);
-            });
+        channel.on("preview", payload => {
+            for (let uuid in payload) {
+                this.fileList.searchFiles(uuid, file => {
+                        file.previews += payload[uuid];
+                });
+            };
+        });
         
-            channel.join()
-                .receive("ok", resp => {
-                    resolve(channel);
-                })
-                .receive("error", reject)
-            ;
+        channel.on("role", payload => {
+            this.role = payload.body;
+        });
+        
+        channel.on("deleted", payload => {
+            this.fileList.removeFile(payload.body);
+        });
+        
+        channel.on("presence_state", payload => {
+            this.presence.syncState(payload);
+        });
+        
+        channel.on("presence_diff", payload => {
+            this.presence.diffState(payload);
+        });
+        
+        channel.on("owner", payload => {
+            this.owner = payload.body;
         });
     }
 }

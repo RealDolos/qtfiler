@@ -1,5 +1,17 @@
-<% user_id = Plug.Conn.get_session(@conn, :user_id) %>
-<% logged_in? = user_id != nil %>
+<%
+    user_id =
+      case Plug.Conn.get_session(@conn, :user_id) do
+        nil -> {:anonymous, Base.encode64(:crypto.strong_rand_bytes(16))}
+        real_user_id -> {:logged_in, real_user_id}
+     end
+%>
+<%
+    logged_in? =
+      case user_id do
+        {:logged_in, _} -> true
+        _ -> false
+      end
+%>
 <% ip_address = Qtfile.Util.get_ip_address(@conn) %>
 
 <!DOCTYPE html>
@@ -10,9 +22,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
-    <%= if logged_in? do %>
-        <%= tag :meta, name: "channel_token", content: Phoenix.Token.sign(@conn, Application.get_env(:qtfile, :token_secret_key_base), {user_id, ip_address}, max_age: 31557600), id: "channel_token" %>
-    <% end %>
+    <%= tag :meta, name: "channel_token", content: Phoenix.Token.sign(@conn, Application.get_env(:qtfile, :token_secret_key_base), {user_id, ip_address}, max_age: 31557600), id: "channel_token" %>
 
     <title><%= title() %></title>
     <link rel="stylesheet" href="<%= static_path(@conn, "/css/app.css") %>">

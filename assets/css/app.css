@@ -458,8 +458,17 @@ h1, .register-field > span, .red, .presence {
     max-height: 75vh;
 }
 
-.collapse {
+.container-hide {
     visibility: collapse;
+}
+
+.container-half {
+    max-height: 50vh;
+}
+
+.hovery .file-container .thumbnail {
+    position: absolute;
+    background: var(--upload-bg);
 }
 
 .button, .custom-file-upload, button {

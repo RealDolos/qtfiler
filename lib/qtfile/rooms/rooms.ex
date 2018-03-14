@@ -6,7 +6,11 @@ defmodule Qtfile.Rooms do
   import Ecto.Query, warn: false
   alias Qtfile.Repo
 
-  alias Qtfile.Rooms.Room
+  alias Qtfile.Rooms.{Room, Setting}
+
+  use Witchcraft
+  import Qtfile.Util
+  alias Algae.Either.{Left, Right}
 
   def generate_room_id() do
     generate_room_id(6)
@@ -27,7 +31,17 @@ defmodule Qtfile.Rooms do
   """
   def list_rooms do
     query = from r in Room,
-      join: o in assoc(r, :owner),
+      left_join: o in assoc(r, :owner),
+      preload: [owner: o],
+      select: r
+    Repo.all(query)
+  end
+
+  def list_rooms_anon do
+    query = from r in Room,
+      join: s in assoc(r, :settings),
+      where: s.key == "anon_view" and s.value == "true",
+      left_join: o in assoc(r, :owner),
       preload: [owner: o],
       select: r
     Repo.all(query)
@@ -37,9 +51,18 @@ defmodule Qtfile.Rooms do
     not (get_room_by_room_id!(room_id) == nil)
   end
 
-  def uploadable_room(room_id) do
+  def uploadable_room(room_id, user_list) do
     case get_room_by_room_id!(room_id) do
-      %{disabled: false} = room -> {:ok, room}
+      %{disabled: false} = room ->
+        case user_list do
+          [] ->
+            if get_setting_value!("anon_upload", room) do
+              {:ok, room}
+            else
+              :error
+            end
+          _ -> {:ok, room}
+        end
       _ -> :error
     end
   end
@@ -94,6 +117,26 @@ defmodule Qtfile.Rooms do
         files: Room.default_files(),
         motd: Room.default_motd(),
         secret: :crypto.strong_rand_bytes(16),
+        settings: [
+          %{
+            key: "anon_upload",
+            value: "false",
+            type: "bool",
+            name: "Anonymous upload",
+          },
+          %{
+            key: "anon_download",
+            value: "false",
+            type: "bool",
+            name: "Anonymous download",
+          },
+          %{
+            key: "anon_view",
+            value: "false",
+            type: "bool",
+            name: "Anonymous viewing",
+          },
+        ],
       }
     )
   end
@@ -149,5 +192,79 @@ defmodule Qtfile.Rooms do
   """
   def change_room(%Room{} = room) do
     Room.changeset(room, %{})
+  end
+
+  def get_settings_by_room(%Room{} = room) do
+    query = from s in Setting,
+      where: s.room_id == ^room.id,
+      select: s
+
+    Repo.all(query)
+  end
+
+  def process_setting(
+    %Setting{name: name, id: id, type: type, key: key, value: value} = setting
+  ) do
+    %Right{right: value} = convert_setting(setting)
+    %{
+      id: id,
+      type: type,
+      key: key,
+      value: value,
+      name: name,
+    }
+  end
+
+  def get_settings_by_room_for_browser(%Room{} = room) do
+    Enum.map(get_settings_by_room(room), &process_setting/1)
+  end
+
+  def get_setting_by_key_room(setting_key, %Room{} = room) do
+    query = from s in Setting,
+      select: s,
+      where: s.key == ^setting_key and s.room_id == ^room.id
+
+    Repo.one(query)
+  end
+
+  def get_setting_by_id(id) do
+    query = from s in Setting,
+      select: s,
+      where: s.id == ^id
+
+    Repo.one(query)
+  end
+
+  def get_setting_by_key_room!(setting_key, %Room{} = room) do
+    case get_setting_by_key_room(setting_key, room) do
+      nil -> raise "setting doesn't exist"
+      x -> x
+    end
+  end
+
+  def get_setting_value(setting_key, %Room{} = room) do
+    monad Right do
+      setting <-
+        get_setting_by_key_room(setting_key,
+          room) |> nilToEitherTag(:setting_doesnt_exist)
+      convert_setting(setting) |> tagLeft(:could_not_convert_setting)
+    end
+  end
+
+  def get_setting_value!(setting_key, %Room{} = room) do
+    %Right{right: v} = get_setting_value(setting_key, room)
+    v
+  end
+
+  def update_setting(%Setting{} = setting, attrs) do
+    setting
+    |> Setting.changeset(attrs)
+    |> Repo.update()
+  end
+
+  def create_setting(attrs \\ %{}) do
+    %Setting{}
+    |> Setting.changeset(attrs)
+    |> Repo.insert()
   end
 end

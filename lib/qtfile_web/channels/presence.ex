@@ -75,17 +75,33 @@ defmodule QtfileWeb.Presence do
   alias Qtfile.Repo
 
   def fetch(_topic, entries) do
+    uids = Enum.flat_map(Map.keys(entries), fn(uid) ->
+      case Qtfile.Util.TermParser.parse!(uid) do
+        {:logged_in, real_uid} -> [real_uid]
+        {:anonymous, _} -> []
+      end
+    end)
+
     query =
       from u in User,
-      where: u.id in ^Map.keys(entries),
+      where: u.id in ^uids,
       select: {u.id, %{role: u.role, name: u.name}}
 
-    users = query |> Repo.all |> Enum.map(fn({id, data}) ->
-      {Integer.to_string(id), data}
+    real_users = query |> Repo.all |> Enum.map(fn({id, data}) ->
+      {id, data}
     end) |> Enum.into(%{})
 
     for {key, %{metas: metas}} <- entries, into: %{} do
-      {key, %{metas: metas, user: users[key]}}
+      data =
+        case Qtfile.Util.TermParser.parse!(key) do
+          {:logged_in, real_id} -> real_users[real_id]
+          {:anonymous, fake_id} ->
+            %{
+              role: "anon",
+              name: "anon_" <> fake_id,
+            }
+        end
+      {key, %{metas: metas, user: data}}
     end
   end
 end

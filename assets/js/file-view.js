@@ -12,20 +12,11 @@ export default function(room) {
         },
         name: "file",
         template: "#file-template",
-        props: ["role", "uuid", "index", "filesLength", "displayInfo", "displayInfoHere"],
+        props: ["role", "uuid", "index", "filesLength", "owner", "displayInfo", "displayInfoHere"],
         computed: {
             tagList() {
-                if ((this != null)
-                    && ("metadata" in this)
-                    && (this.metadata != null)
-                    && ("data" in this.metadata)
-                    && (this.metadata.data != null)
-                    && ("format" in this.metadata.data)
-                    && (this.metadata.data.format != null)
-                    && ("tags" in this.metadata.data.format)
-                    && (this.metadata.data.format.tags != null)
-                   ) {
-                    const tags = this.metadata.data.format.tags;
+                if (this.metadata != null) {
+                    const {data: {format: {tags: tags = {}} = {}} = {}} = this.metadata;
                     const list = [];
                     for (let key in tags) {
                         list.push({
@@ -45,7 +36,7 @@ export default function(room) {
                 return `/get/${this.uuid}/${this.filename}`;
             },
             mod() {
-                return this.role == "mod" || this.role == "admin";
+                return this.role == "mod" || this.role == "admin" || this.owner;
             },
             isOdd() {
                 return (this.index + this.filesLength) % 2;

@@ -33,7 +33,13 @@ defmodule Qtfile.Files.File do
       :ip_address,
       :expiration_date
     ])
-    |> put_assoc(:uploader, attrs.uploader)
+    |> fn(file) ->
+      if Map.has_key?(attrs, :uploader) do
+        put_assoc(file, :uploader, attrs.uploader)
+      else
+        file
+      end
+    end.()
     |> put_assoc(:location, attrs.location)
     |> unique_constraint(:uuid)
   end

@@ -22,9 +22,18 @@ defmodule QtfileWeb.FileController do
   end
 
   defp validate_upload(room_id, user_id, ip_address) do
-    case Qtfile.Rooms.uploadable_room(room_id) do
+    user_list =
+      case user_id do
+        nil -> []
+        real_user_id ->
+          case Qtfile.Accounts.get_user(real_user_id) do
+            nil -> []
+            user -> [user]
+          end
+      end
+    case Qtfile.Rooms.uploadable_room(room_id, user_list) do
       {:ok, room} = r ->
-        case Qtfile.Bans.get_bans_for([Qtfile.Accounts.get_user!(user_id), ip_address], room) do
+        case Qtfile.Bans.get_bans_for(user_list ++ [ip_address], room) do
           [] -> r
           _ -> :error
         end
@@ -56,22 +65,29 @@ defmodule QtfileWeb.FileController do
 
   defp upload_data(conn, room, filename, content_type, uuid, hash, size) do
     uploader_id = get_session(conn, :user_id)
-    uploader = Qtfile.Accounts.get_user!(uploader_id)
     ip_address = Qtfile.Util.get_ip_address(conn)
     %{file_ttl: file_ttl} = room
     expiration_date = DateTime.from_unix!(DateTime.to_unix(DateTime.utc_now()) + file_ttl)
       
-    %{
-      uuid: uuid,
-      filename: filename,
-      mime_type: content_type,
-      location: room,
-      size: size,
-      uploader: uploader,
-      ip_address: ip_address,
-      expiration_date: expiration_date,
-      hash: hash,
-    }
+    data =
+      %{
+        uuid: uuid,
+        filename: filename,
+        mime_type: content_type,
+        location: room,
+        size: size,
+        ip_address: ip_address,
+        expiration_date: expiration_date,
+        hash: hash,
+      }
+    case uploader_id do
+      nil -> data
+      real_uid ->
+        case Qtfile.Accounts.get_user(real_uid) do
+          nil -> data
+          real_user -> Map.put(data, :uploader, real_user)
+        end
+    end
   end
 
   defp new_upload(conn, unparsed_size) do
@@ -174,18 +190,50 @@ defmodule QtfileWeb.FileController do
       room)
   end
 
-  defp logged_in?(conn) do
-    case get_session(conn, :user_id) do
-      nil -> false
-      _ -> true
+  defp filter_downloadable(conn, uuid) do
+    filter_setting("anon_download", conn, uuid)
+  end
+
+  defp filter_viewable(conn, uuid) do
+    filter_setting("anon_view", conn, uuid)
+  end
+
+  defp filter_setting(key, conn, uuid) do
+    logged_in =
+      case get_session(conn, :user_id) do
+        nil -> false
+        id ->
+          case Qtfile.Accounts.get_user(id) do
+            %Qtfile.Accounts.User{} -> true
+            _ -> false
+          end
+      end
+
+    file = Files.get_file_by_uuid(uuid)
+
+    unless logged_in ||
+    (file != nil && Qtfile.Rooms.get_setting_value!(key, file.location)) do
+      conn = conn
+      |> send_resp(:forbidden, "Not logged in")
+      |> halt()
+      {conn, nil}
+    else
+      unless file != nil do
+        conn = conn
+        |> put_status(404)
+        |> text("file not found!")
+        {conn, nil}
+      else
+        {conn, file}
+      end
     end
   end
 
   def download_preview(conn, %{"uuid" => uuid}) do
-    if logged_in?(conn) or Settings.get_setting_value!("anon_download") do
-      file = Files.get_file_by_uuid(uuid)
-
-      if file != nil do
+    {conn, result} = filter_viewable(conn, uuid)
+    case result do
+      nil -> conn
+      file ->
         previews =
           Files.get_preview_by_file_and_type(file, get_req_header(conn, "accept")) ++
           Files.get_previews_by_file(file)
@@ -202,24 +250,15 @@ defmodule QtfileWeb.FileController do
             |> put_status(404)
             |> text("file not found!")
         end
-      else
-        conn
-        |> put_status(404)
-        |> text("file not found!")
-      end
-    else
-      conn
-      |> send_resp(:forbidden, "Not logged in")
-      |> halt()
     end
   end
 
   def download(conn, %{"uuid" => uuid, "realfilename" => _realfilename}) do
     conn = put_resp_header(conn, "Accept-Ranges", "bytes")
-    if logged_in?(conn) or Settings.get_setting_value!("anon_download") do
-      file = Files.get_file_by_uuid(uuid)
-
-      if file != nil do
+    {conn, result} = filter_downloadable(conn, uuid)
+    case result do
+      nil -> conn
+      file ->
         absolute_path = "uploads/" <> uuid
 
         mime_type = file.mime_type
@@ -280,15 +319,6 @@ defmodule QtfileWeb.FileController do
           else
             x -> send_file(conn, 200, absolute_path)
           end
-      else
-        conn
-        |> put_status(404)
-        |> text("file not found!")
-      end
-    else
-      conn
-      |> send_resp(:forbidden, "Not logged in")
-      |> halt()
     end
   end
 
