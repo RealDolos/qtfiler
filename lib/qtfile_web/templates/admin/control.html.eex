@@ -1,0 +1,6 @@
+<div class="column">
+  <form method="post" action="/admin/thumb-regen">
+    <input type="hidden" name="_csrf_token" value="<%= Plug.CSRFProtection.get_csrf_token() %>" />
+    <input type="submit" value="Regenerate thumbnails">
+  </form>
+</div>

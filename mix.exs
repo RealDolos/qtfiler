@@ -52,6 +52,7 @@ defmodule Qtfile.Mixfile do
       {:okasaki, "~> 1.0"},
       {:porcelain, "~> 2.0"},
       {:poison, "~> 3.1"},
+      {:ex_syslogger, "~> 1.4", only: :prod},
     ]
   end
 

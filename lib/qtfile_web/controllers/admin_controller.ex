@@ -28,4 +28,14 @@ defmodule QtfileWeb.AdminController do
     |> put_status(response_code)
     |> render("settings.html")
   end
+
+  def control(conn, _params) do
+    render(conn, "control.html")
+  end
+
+  def thumb_regen(conn, _params) do
+    :ok = Qtfile.Admin.ControlEvent.thumb_regen()
+    conn
+    |> redirect(to: "/admin/control")
+  end
 end
