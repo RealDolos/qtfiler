@@ -469,6 +469,9 @@ h1, .register-field > span, .red, .presence {
 .hovery .file-container .thumbnail {
     position: absolute;
     background: var(--upload-bg);
+    left: var(--x);
+    top: var(--y);
+    overflow: hidden;
 }
 
 .button, .custom-file-upload, button {

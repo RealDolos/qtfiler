@@ -12,7 +12,7 @@ export default function(room) {
         },
         name: "file",
         template: "#file-template",
-        props: ["role", "uuid", "index", "filesLength", "owner", "displayInfo", "displayInfoHere"],
+        props: ["styleVars", "role", "uuid", "index", "filesLength", "owner", "displayInfo", "displayInfoHere"],
         computed: {
             tagList() {
                 if (this.metadata != null) {

@@ -59,9 +59,19 @@ export default function(room) {
             },
             filteredFilesLength() {
                 return this.filteredFiles.length;
+            },
+            styleVars() {
+                return {
+                    '--x': this.mouse.x + "px",
+                    '--y': this.mouse.y + "px",
+                };
             }
         },
         methods: {
+            mouseMove(e) {
+                this.mouse.x = e.pageX + 1;
+                this.mouse.y = e.pageY + 1;
+            },
             async wake() {
                 return await this.$data.wakeUploader();
             },
