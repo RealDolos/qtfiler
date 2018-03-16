@@ -69,8 +69,8 @@ export default function(room) {
         },
         methods: {
             mouseMove(e) {
-                this.mouse.x = e.pageX + 1;
-                this.mouse.y = e.pageY + 1;
+                this.mouse.x = e.pageX - 100;
+                this.mouse.y = e.pageY - 100;
             },
             async wake() {
                 return await this.$data.wakeUploader();
