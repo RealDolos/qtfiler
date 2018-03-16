@@ -40,18 +40,18 @@
 </div>
 
 <template id="file-list-template">
-  <div id="file-list"  v-on:mousemove="mouseMove" class="scroll-content column" :class="{'hovery': hovery}">
+  <div id="file-list"  :style="styleVars" v-on:mousemove="mouseMove" class="scroll-content column" :class="{'hovery': hovery}">
     <template v-for="(upload, index) in uploads">
       <span is="upload" :wake="wake" :pause="pause" :id="upload.id" :key="upload.id" :role="role" :index="index" :owner="owner" />
     </template>
     <template v-if="filter == ''">
       <template v-for="(file, index) in files">
-        <span is="file" :style-vars="styleVars" :display-info-here="info == file.uuid" :display-info="displayInfo" :files-length="filesLength" :uuid="file.uuid" :key="file.uuid" :index="index" :role="role" :owner="owner" />
+        <span is="file" :display-info-here="info == file.uuid" :display-info="displayInfo" :files-length="filesLength" :uuid="file.uuid" :key="file.uuid" :index="index" :role="role" :owner="owner" />
       </template>
     </template>
     <template v-else>
       <template v-for="(file, index) in filteredFiles">
-        <span is="file" :style-vars="styleVars" :display-info-here="info == file.uuid" :display-info="displayInfo" :files-length="filteredFilesLength" :uuid="file.uuid" :key="file.uuid" :index="index" :role="role" :owner="owner" />
+        <span is="file" :display-info-here="info == file.uuid" :display-info="displayInfo" :files-length="filteredFilesLength" :uuid="file.uuid" :key="file.uuid" :index="index" :role="role" :owner="owner" />
       </template>
     </template>
   </div>
@@ -92,7 +92,7 @@
       </div>
     </div>
     <template v-if="displayInfoHere">
-      <div class="row thumbnail" :style="styleVars">
+      <div class="row thumbnail">
         <template v-if="image">
           <template v-if="hasPreviews">
             <picture>
