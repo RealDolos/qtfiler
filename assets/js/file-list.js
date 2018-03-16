@@ -12,6 +12,10 @@ export default class FileList {
         this.current = null;
         this.currentID = "";
         this.info = "";
+        this.mouse = {
+            x: 0,
+            y: 0
+        };
     }
 
     sleep(time) {
