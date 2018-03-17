@@ -9,6 +9,7 @@ defmodule Qtfile.FileProcessing.Supervisor do
     MediaTagger,
     Thumbnailer,
     RoomPreviewInformer,
+    VideoPreviewGenerator,
   }
 
   def start_link() do
@@ -24,6 +25,7 @@ defmodule Qtfile.FileProcessing.Supervisor do
       MetadataGenerator,
       RoomMetadataInformer,
       Thumbnailer,
+      VideoPreviewGenerator,
       RoomPreviewInformer,
     ]
 
