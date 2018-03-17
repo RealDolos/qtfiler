@@ -242,6 +242,8 @@ defmodule QtfileWeb.FileController do
             ext =
               case preview.mime_type do
                 "image/jpeg" -> "jpg"
+                "video/webm" -> "webm"
+                "video/mp4" -> "mp4"
               end
             path = "uploads/previews/" <> uuid <> "." <> ext
             send_file(conn, 200, path)
