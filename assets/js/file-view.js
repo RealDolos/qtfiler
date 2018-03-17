@@ -65,9 +65,6 @@ export default function(room) {
                     return null;
                 }
             },
-            image() {
-                return this.fileType == "image";
-            },
             hasPreviews() {
                 return this.previews.length > 0;
             }

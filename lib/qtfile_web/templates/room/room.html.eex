@@ -93,14 +93,21 @@
     </div>
     <template v-if="displayInfoHere">
       <div class="row thumbnail">
-        <template v-if="image">
-          <template v-if="hasPreviews">
+        <template v-if="hasPreviews">
+          <template v-if="fileType == 'image'">
             <picture>
               <template v-for="p in previews">
                 <source :srcset="previewLink" :type="p.mime_type" />
               </template>
               <img src="previewLink" />
             </picture>
+          </template>
+          <template v-if="fileType == 'video'">
+            <video autoplay>
+              <template v-for="p in previews">
+                <source :src="previewLink" :type="p.mime_type" />
+              </template>
+            </video>
           </template>
         </template>
         <div class="column column-wrap">
