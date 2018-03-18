@@ -34,7 +34,7 @@ defmodule Qtfile.FileProcessing.VideoPreviewGenerator do
         ext: "mp4",
         type: "mp4",
         codec: "libx264",
-        extra_options: []
+        extra_options: ["-movflags", "+faststart"]
       ],
     ]
   end
@@ -63,13 +63,12 @@ defmodule Qtfile.FileProcessing.VideoPreviewGenerator do
     path = "uploads/" <> file.uuid
     output_path = "uploads/previews/" <> file.uuid <> "." <> ext
 
-    result = Porcelain.exec("ffmpeg", extra_options ++
+    result = Porcelain.exec("ffmpeg",
       [
         "-i", path, "-map_metadata", "-1", "-an", "-sn", "-map", "0:v", "-c:v", codec,
         "-crf", "23", "-b:v", "64k", "-f", ext,
         "-vf", "scale=w=256:h=256:force_original_aspect_ratio=decrease", "-t", "15",
-        output_path
-      ]
+      ] ++ extra_options ++ [output_path]
     )
 
     0 = result.status
