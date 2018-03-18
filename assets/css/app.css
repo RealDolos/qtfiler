@@ -40,13 +40,12 @@
 }
 
 body {
-    font-size: 16px;
     color: var(--general-text);
     background: var(--dark-background);
 }
 
 .body-smaller {
-    font-size: 14px;
+    font-size: 0.875em;
 }
 
 .content-container {
@@ -64,7 +63,7 @@ body {
 .navigation {
     width: 100%;
     position: relative;
-    font-size: 25px;
+    font-size: 1.5625em;
     line-height: 100px;
 }
 
@@ -103,7 +102,7 @@ body {
 }
 
 .huge-text {
-    font-size: 24px;
+    font-size: 1.5em;
     text-align: center;
     padding: 20px;
 }
@@ -262,7 +261,7 @@ html {
     border-radius: 2px;
     padding-left: 2px;
     padding-right: 2px;
-    font-size: 11px;
+    font-size: 0.6875em;
     top: 50%;
     margin-left: 5px;
     display: block;
@@ -294,7 +293,7 @@ html {
 
 #loading-message {
     margin: auto;
-    font-size: 36px;
+    font-size: 2.25em;
     text-align: center;
 }
 
@@ -335,7 +334,7 @@ html {
     width: 40%;
     max-width: 300px;
     color: var(--input-color);
-    font-size: 18px;
+    font-size: 1.125em;
 }
 
 .login-field input {
@@ -376,7 +375,7 @@ main .room, main .room-list {
 .room-list {
     padding-top: 5px;
     padding-bottom: 5px;
-    font-size: 18px;
+    font-size: 1.125em;
 }
 
 .room-list > .room-id {
@@ -459,7 +458,7 @@ h1, .register-field > span, .red, .presence {
     display: block;
     cursor: pointer;
     color: var(--upload-text);
-    font-size: 15px;
+    font-size: 0.9375em;
     font-weight: bold;
     padding: 11px 23px;
     text-decoration: none;
@@ -494,7 +493,7 @@ h1, .register-field > span, .red, .presence {
 }
 
 .file-expiration {
-    font-size: 10px;
+    font-size: 0.625em;
     color: var(--expire-text);
     margin: auto 6px auto 6px;
     display: block;
