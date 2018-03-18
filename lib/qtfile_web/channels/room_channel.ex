@@ -4,6 +4,9 @@ defmodule QtfileWeb.RoomChannel do
   alias QtfileWeb.Presence
   intercept ["files", "presence_diff", "new_files"]
   require Qtfile.Rooms
+  alias Qtfile.Files
+  alias Files.{File, Preview}
+  alias Qtfile.Rooms.Room
 
   def join("room:" <> room_id, _message, socket) do
     if Qtfile.Rooms.room_exists?(room_id) do
@@ -199,9 +202,17 @@ defmodule QtfileWeb.RoomChannel do
     )
   end
 
-  def broadcast_new_preview(mime_type, file, room_id) do
+  def broadcast_new_preview(
+    %Preview{
+      file: %File{
+        uuid: file_uuid,
+        location: %Room{
+          room_id: room_id,
+        },
+      },
+    } = preview) do
     QtfileWeb.Endpoint.broadcast!(
-      "room:" <> room_id, "preview", %{file.uuid => [%{mime_type: mime_type}]}
+      "room:" <> room_id, "preview", %{file_uuid => [Files.process_for_browser(preview)]}
     )
   end
 
