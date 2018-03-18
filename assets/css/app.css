@@ -321,10 +321,6 @@ html {
     padding-left: 10px;
 }
 
-main .room, main .room-list {
-    text-align: center;
-}
-
 .room-list {
     padding-top: 5px;
     padding-bottom: 5px;
