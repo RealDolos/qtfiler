@@ -18,6 +18,14 @@ defmodule Qtfile.FileProcessing.VideoPreviewGenerator do
     true
   end
 
+  defp tag_selector({:media, :image, %{mime_type: "image/gif"}}) do
+    true
+  end
+
+  defp tag_selector({:media, :image, %{mime_type: "image/apng"}}) do
+    true
+  end
+
   defp tag_selector(_) do
     false
   end
