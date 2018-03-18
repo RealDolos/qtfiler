@@ -78,6 +78,7 @@ defmodule Qtfile.FileProcessing.VideoPreviewGenerator do
       %{
         file: file,
         mime_type: "video/" <> type,
+        type: "video_thumbnail",
       }
     )
 

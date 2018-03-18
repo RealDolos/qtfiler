@@ -55,6 +55,7 @@ defmodule Qtfile.FileProcessing.Thumbnailer do
       %{
         file: file,
         mime_type: "image/jpeg",
+        type: "image_thumbnail",
       }
     )
     thumbnail
