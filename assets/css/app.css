@@ -352,19 +352,19 @@ main .room, main .room-list {
     text-align: center;
 }
 
-.room > .room-id {
+.room-id {
     width: 10%;
     min-width: 100px;
 }
 
-.room > .room-name {
+.room-name {
     width: 50%;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-.room > .room-owner {
+.room-owner {
     width: 15%;
     white-space: nowrap;
     overflow: hidden;
