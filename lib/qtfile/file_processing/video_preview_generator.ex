@@ -33,13 +33,11 @@ defmodule Qtfile.FileProcessing.VideoPreviewGenerator do
   defp video_types() do
     [
       [
-        ext: "webm",
         type: "webm",
         codec: "libvpx",
         extra_options: []
       ],
       [
-        ext: "mp4",
         type: "mp4",
         codec: "libx264",
         extra_options: ["-movflags", "+faststart"]
@@ -64,17 +62,21 @@ defmodule Qtfile.FileProcessing.VideoPreviewGenerator do
     {:noreply, video_previews, {}}
   end
 
+  defp preview_type do
+    "video_thumbnail"
+  end
+
   defp generate_video_preview(
-    file, ext: ext, type: type, codec: codec, extra_options: extra_options
+    file, type: type, codec: codec, extra_options: extra_options
   ) do
 
     path = "uploads/" <> file.uuid
-    output_path = "uploads/previews/" <> file.uuid <> "." <> ext
+    output_path = "uploads/previews/" <> file.uuid <> "^" <> preview_type
 
     result = Porcelain.exec("ffmpeg",
       [
         "-i", path, "-map_metadata", "-1", "-an", "-sn", "-map", "0:v", "-c:v", codec,
-        "-crf", "23", "-b:v", "64k", "-f", ext,
+        "-crf", "23", "-b:v", "64k", "-f", type, "-nostdin", "-y",
         "-vf", "scale=w=256:h=256:force_original_aspect_ratio=decrease", "-t", "15",
       ] ++ extra_options ++ [output_path]
     )
@@ -85,7 +87,7 @@ defmodule Qtfile.FileProcessing.VideoPreviewGenerator do
       %{
         file: file,
         mime_type: "video/" <> type,
-        type: "video_thumbnail",
+        type: preview_type,
       }
     )
 

@@ -363,14 +363,7 @@ defmodule QtfileWeb.FileController do
 
         case preview do
           {:found, preview} ->
-            ext =
-              case preview.mime_type do
-                "image/jpeg" -> "jpg"
-                "video/webm" -> "webm"
-                "video/mp4" -> "mp4"
-              end
-
-            path = "uploads/previews/" <> uuid <> "." <> ext
+            path = "uploads/previews/" <> uuid <> "^" <> type
             send_file(conn, 200, path)
           :not_found ->
             conn

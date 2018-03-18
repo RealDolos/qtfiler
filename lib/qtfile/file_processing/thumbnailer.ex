@@ -45,25 +45,32 @@ defmodule Qtfile.FileProcessing.Thumbnailer do
     {:noreply, thumbnails, {}}
   end
 
+  defp preview_type do
+    "image_thumbnail"
+  end
+
   defp thumbnail(file) do
     path = "uploads/" <> file.uuid
-    output_path = "previews/" <> file.uuid <> ".jpg"
+    output_path = "previews/" <> file.uuid <> "^" <> preview_type
+    output_path_ext = output_path <> ".jpg"
 
     result = Porcelain.exec("vipsthumbnail",
       [
         path,
         "--size", Integer.to_string(Qtfile.Settings.get_setting_value!("thumbsize")),
         "--linear", "--rotate", "-o",
-        output_path <> "[optimize_coding,interlace,strip]",
+        output_path_ext <> "[optimize_coding,interlace,strip]",
       ]
     )
 
     0 = result.status
+    :ok = :file.rename("uploads/" <> output_path_ext, "uploads/" <> output_path)
+
     {:ok, thumbnail} = Qtfile.Files.add_preview(
       %{
         file: file,
         mime_type: "image/jpeg",
-        type: "image_thumbnail",
+        type: preview_type,
       }
     )
     thumbnail
