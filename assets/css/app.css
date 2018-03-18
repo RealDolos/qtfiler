@@ -299,12 +299,6 @@ html {
     max-width: 800px;
 }
 
-.register-field input:focus, .login-field input:focus {
-    border-color: var(--input-underline);
-    background: var(--input-background);
-    color: var(--input-text);
-}
-
 .login-button {
     margin-left: 30%;
 }
