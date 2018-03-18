@@ -321,40 +321,36 @@ html {
     padding-left: 10px;
 }
 
-.room-list {
+#room-list {
     padding-top: 5px;
     padding-bottom: 5px;
     font-size: 1.1em;
     text-align: center;
+    display: grid;
+    grid-template-columns: 10fr 50fr 15fr;
 }
 
 #room-id-heading {
-    width: 10%;
     min-width: 100px;
 }
 
 #room-name-heading {
-    width: 50%;
 }
 
 #room-owner-heading {
-    width: 15%;
 }
 
 .room-id {
-    width: 10%;
     min-width: 100px;
 }
 
 .room-name {
-    width: 50%;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
 .room-owner {
-    width: 15%;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
