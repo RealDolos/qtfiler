@@ -281,9 +281,6 @@ html {
 .form-input {
     padding-top: 15px;
     padding-left: 10px;
-}
-
-.register-field input, .login-field input {
     background: var(--lighter-dark-background);
     border-style: none;
     border-bottom-style: solid;
