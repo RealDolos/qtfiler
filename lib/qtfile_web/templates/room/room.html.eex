@@ -25,7 +25,7 @@
       </template>
 
       <template v-if="mod">
-        <div :class="['presence-container', 'form-group', 'grow', 'no-shrink', 'scroll-container', { 'presence-container-small': presenceSmall, 'presence-container-big': presenceBig, 'presence-container-medium': presenceMedium }]">
+        <div :class="['presence-container', 'form-group', 'grow', 'scroll-container', { 'presence-container-small': presenceSmall, 'presence-container-big': presenceBig, 'presence-container-medium': presenceMedium }]">
           <span is="presence" :presence-hidden="presenceHidden" v-on:toggle-presence="togglePresence" :role="role" :owner="owner" />
         </div>
       </template>
