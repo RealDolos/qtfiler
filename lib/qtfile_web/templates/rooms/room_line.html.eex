@@ -1,5 +1,3 @@
-<div class="room">
-    <span class="room-id"> <a href="<%= room_path(QtfileWeb.Endpoint, :index, @room_id) %>" class="room-id"><%= @room_id %></a></span>
-    <span class="room-name"> <%= @room_name %></span>
-    <span class="room-owner"> <%= @room_owner %></span>
-</div>
+<span class="room-id"> <a href="<%= room_path(QtfileWeb.Endpoint, :index, @room_id) %>" class="room-id-link"><%= @room_id %></a></span>
+<span class="room-name"> <%= @room_name %></span>
+<span class="room-owner"> <%= @room_owner %></span>

@@ -6,9 +6,9 @@
       <template>
         <div class="form-group">
           <label for="upload-button" class="custom-file-upload">
-            <i class="fa fa-cloud-upload"></i>Upload
+            Upload
           </label>
-          <input multiple type="file" id="upload-button" class="button"/>
+          <input multiple type="file" id="upload-button" class="hidden"/>
         </div>
       </template>
 
@@ -19,13 +19,13 @@
       </template>
 
       <template>
-        <div class="form-group">
-          <input v-model="filter" placeholder="Filter">
+        <div class="form-group grow-double row">
+          <input id="filter" class="grow" v-model="filter" placeholder="Filter">
         </div>
       </template>
 
       <template v-if="mod">
-        <div :class="['presence-container', 'form-group', 'grow', 'no-shrink', 'scroll-container', { 'presence-container-small': presenceSmall, 'presence-container-big': presenceBig, 'presence-container-medium': presenceMedium }]">
+        <div :class="['presence-container', 'form-group', 'grow', 'scroll-container', { 'presence-container-small': presenceSmall, 'presence-container-big': presenceBig, 'presence-container-medium': presenceMedium }]">
           <span is="presence" :presence-hidden="presenceHidden" v-on:toggle-presence="togglePresence" :role="role" :owner="owner" />
         </div>
       </template>
@@ -40,7 +40,7 @@
 </div>
 
 <template id="file-list-template">
-  <div id="file-list"  :style="styleVars" v-on:mousemove="mouseMove" class="scroll-content column" :class="{'hovery': hovery}">
+  <div id="file-list"  :style="styleVars" v-on:mousemove="mouseMove" class="scroll-content" :class="{'hovery': hovery}">
     <template v-for="(upload, index) in uploads">
       <span is="upload" :wake="wake" :pause="pause" :id="upload.id" :key="upload.id" :role="role" :index="index" :owner="owner" />
     </template>
