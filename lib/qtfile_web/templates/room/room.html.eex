@@ -19,8 +19,8 @@
       </template>
 
       <template>
-        <div class="form-group">
-          <input id="filter" v-model="filter" placeholder="Filter">
+        <div class="form-group grow-double row">
+          <input id="filter" class="grow" v-model="filter" placeholder="Filter">
         </div>
       </template>
 
