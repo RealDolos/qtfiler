@@ -48,7 +48,7 @@ defmodule QtfileWeb.Router do
     scope "/" do
       pipe_through :logged_in_or_anon_view?
 
-      get "/pget/:uuid", FileController, :download_preview
+      get "/pget/:uuid/:type", FileController, :download_preview
     end
 
     scope "/" do

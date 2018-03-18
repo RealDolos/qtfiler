@@ -50,9 +50,6 @@ export default function(room) {
             shrunken_ip() {
                 return this.ip_address.substring(0, 22);
             },
-            previewLink() {
-                return "/pget/" + this.uuid;
-            },
             fileType() {
                 if ("mime_type" in this && this.mime_type) {
                     const type = this.mime_type.split("/")[0];
@@ -65,8 +62,11 @@ export default function(room) {
                     return null;
                 }
             },
-            hasPreviews() {
-                return this.previews.length > 0;
+            imageThumbPreviewLink() {
+                return "/pget/" + this.uuid + "/image_thumbnail";
+            },
+            videoThumbPreviewLink() {
+                return "/pget/" + this.uuid + "/video_thumbnail";
             }
         },
         methods: {
