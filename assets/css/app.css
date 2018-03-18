@@ -325,31 +325,24 @@ main .room, main .room-list {
     text-align: center;
 }
 
-.room-list  * {
-    text-align: center;
-}
-
 .room-list {
     padding-top: 5px;
     padding-bottom: 5px;
     font-size: 1.1em;
+    text-align: center;
 }
 
-.room-list > .room-id {
+#room-id-heading {
     width: 10%;
     min-width: 100px;
 }
 
-.room-list > .room-name {
+#room-name-heading {
     width: 50%;
 }
 
-.room-list > .room-owner {
+#room-owner-heading {
     width: 15%;
-}
-
-.room * {
-    text-align: center;
 }
 
 .room-id {
