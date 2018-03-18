@@ -20,7 +20,7 @@
 
       <template>
         <div class="form-group">
-          <input v-model="filter" placeholder="Filter">
+          <input id="filter" v-model="filter" placeholder="Filter">
         </div>
       </template>
 

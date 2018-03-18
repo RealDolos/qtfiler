@@ -470,7 +470,7 @@ h1, .register-field > span, .red, .presence {
     background: var(--lighter-dark-background);
 }
 
-#file-dropzone input {
+#filter {
     border-style: solid;
     border-radius: 3px;
     border-color: var(--filter-border);
