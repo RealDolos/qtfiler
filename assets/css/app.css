@@ -39,27 +39,7 @@
     --upload-text: #e8e8e8;
 }
 
-@open-sans {
-    font-family: "Open Sans";
-    src: url("/font/OpenSans-Regular.ttf")
-}
-
-* {
-    padding: 0px;
-    margin: 0px;
-}
-
-a {
-    /* color: #4458ED; */
-    color: var(--new-link);
-}
-
-a:visited {
-    color: var(--visited-link);
-}
-
 body {
-    font-family: Open Sans;
     font-size: 16px;
     color: var(--general-text);
     background: var(--dark-background);
@@ -352,7 +332,6 @@ html {
     border-style: none;
     border-bottom-style: solid;
     border-color: var(--lighter-dark-background);
-    transition: ease-in-out 0.2s;
     width: 40%;
     max-width: 300px;
     color: var(--input-color);
@@ -368,7 +347,6 @@ html {
     border-color: var(--input-underline);
     background: var(--input-background);
     color: var(--input-text);
-    transition: ease-in-out 0.2s;
 }
 
 .login button {
@@ -392,7 +370,6 @@ main .room, main .room-list {
 }
 
 .room-list  * {
-    display: inline-block;
     text-align: center;
 }
 
@@ -417,7 +394,6 @@ main .room, main .room-list {
 
 .room * {
     text-align: center;
-    display: inline-block;
 }
 
 .room > .room-id {
@@ -483,27 +459,16 @@ h1, .register-field > span, .red, .presence {
     display: block;
     cursor: pointer;
     color: var(--upload-text);
-    font-family: Arial;
     font-size: 15px;
     font-weight: bold;
     padding: 11px 23px;
     text-decoration: none;
-    transition: 0.1s;
     text-align: center;
-}
-
-button:hover, .custom-file-upload:hover, #delete-button:hover {
-    filter: brightness(120%);
-    transition: 0.1s;
 }
 
 .delete.button {
     background: transparent;
     border-style: none;
-}
-
-#upload-button, #delete-button, .custom-file-upload {
-    vertical-align: middle;
 }
 
 #delete-button {
@@ -513,7 +478,6 @@ button:hover, .custom-file-upload:hover, #delete-button:hover {
 .small.delete.button, .mark{
     margin: 1px 3px 1px 3px;
     padding: 0;
-    vertical-align: middle;
     display: block;
 }
 
