@@ -437,7 +437,7 @@ h1, .register-field > span, .red, .presence {
     background: var(--del-button);
 }
 
-.small.delete.button, .mark{
+.small.delete.button, .mark {
     margin: 1px 3px 1px 3px;
     padding: 0;
     display: block;
