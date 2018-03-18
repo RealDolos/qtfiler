@@ -93,28 +93,28 @@
     </div>
     <template v-if="displayInfoHere">
       <div class="row thumbnail">
-        <template v-if="hasPreviews">
-          <template v-if="fileType == 'image'">
-            <picture>
-              <template v-for="p in previews">
-                <source :srcset="previewLink" :type="p.mime_type" />
-              </template>
-              <img src="previewLink" />
-            </picture>
-          </template>
-          <template v-if="fileType == 'video'">
-            <video autoplay>
-              <template v-for="p in previews">
-                <source :src="previewLink" :type="p.mime_type" />
-              </template>
-            </video>
-          </template>
+        <template v-if="videoPreviews.length > 0">
+          <video autoplay loop>
+            <template v-for="p in videoPreviews">
+              <source :src="videoThumbPreviewLink" :type="p.mime_type" />
+            </template>
+          </video>
         </template>
-        <div class="column column-wrap">
-          <template v-for="t in tagList">
-            <p>{{ t.key }}: {{ t.value }}</p>
-          </template>
-        </div>
+        <template v-if="imagePreviews.length > 0">
+          <picture>
+            <template v-for="p in imagePreviews">
+              <source :srcset="imageThumbPreviewLink" :type="p.mime_type" />
+            </template>
+            <img src="imageThumbPreviewLink" />
+          </picture>
+        </template>
+        <template v-if="tagList.length > 0">
+          <div class="column column-wrap">
+            <template v-for="t in tagList">
+              <p>{{ t.key }}: {{ t.value }}</p>
+            </template>
+          </div>
+        </template>
       </div>
     </template>
   </div>

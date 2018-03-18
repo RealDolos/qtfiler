@@ -127,7 +127,7 @@ export default class Room {
         channel.on("preview", payload => {
             for (let uuid in payload) {
                 this.fileList.searchFiles(uuid, file => {
-                        file.previews += payload[uuid];
+                    file.previews = file.previews.concat(payload[uuid]);
                 });
             };
         });

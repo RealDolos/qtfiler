@@ -229,28 +229,146 @@ defmodule QtfileWeb.FileController do
     end
   end
 
-  def download_preview(conn, %{"uuid" => uuid}) do
+  defp compare_mime_type({type1, subtype1, params1}, {type2, subtype2, params2}) do
+    case compare_type(type1, type2) do
+      {:not_eq, r} -> r
+      :eq ->
+        case compare_type(subtype1, subtype2) do
+          {:not_eq, r} -> r
+          :eq -> compare_mime_type_params(params1, params2)
+        end
+    end
+  end
+
+  defp compare_type(a, b) do
+    case {a, b} do
+      {"*", "*"} -> :eq
+      {_, "*"} -> {:not_eq, true}
+      {"*", _} -> {:not_eq, false}
+      {x, y} -> if x == y do
+        :eq
+      else
+        {:not_eq, false}
+      end
+    end
+  end
+
+  defp compare_mime_type_params(a, b) do
+    [{q1, rest1}, {q2, rest2}] = Enum.map([a, b], &get_quality/1)
+    if q1 == q2 do
+      rest1 == rest2
+    else
+      q1 >= q2
+    end
+  end
+
+  defp get_quality(params) do
+    case params do
+      [{"q", v_str} | rest] ->
+        case Float.parse(v_str) do
+          {v, ""} -> {v, rest}
+          _ -> {1.0, rest}
+        end
+      x -> {1.0, x}
+    end
+  end
+
+  def match_type(a, b) do
+    case {a, b} do
+      {"*", _} -> true
+      {_, "*"} -> true
+      {x, y} -> x == y
+    end
+  end
+
+  defp match_mime_type({type1, subtype1, _}, {type2, subtype2, _}) do
+    if match_type(type1, type2) do
+      match_type(subtype1, subtype2)
+    else
+      false
+    end
+  end
+
+  defp process_mime_type(m) do
+    [x, y_original] = String.split(m, "/")
+    [y | params_original] = String.split(y_original, ";")
+
+    params = Enum.map(params_original, fn(param) ->
+      [k, v] = String.split(param, "=")
+      {k, v}
+    end)
+
+    {x, y, params}
+  end
+
+  defp find_right_preview(mime_types, previews) do
+    sorted_mime_types = Enum.sort(mime_types, &compare_mime_type/2)
+
+    linear_search(fn(m1) ->
+      r =
+        linear_search(fn({m2, p}) ->
+          if match_mime_type(m1, m2) do
+            {:ok, p}
+          else
+            :error
+          end
+        end, previews)
+
+      case r do
+        {:found, p} -> {:ok, p}
+        :not_found -> :error
+      end
+    end, sorted_mime_types)
+  end
+
+  defp linear_search(test, [x | xs]) do
+    case test.(x) do
+      {:ok, v} -> {:found, v}
+      :error -> linear_search(test, xs)
+    end
+  end
+
+  defp linear_search(_, []) do
+    :not_found
+  end
+
+  def download_preview(conn, %{"uuid" => uuid, "type" => type}) do
     {conn, result} = filter_viewable(conn, uuid)
+
     case result do
       nil -> conn
       file ->
-        previews =
-          Files.get_preview_by_file_and_type(file, get_req_header(conn, "accept")) ++
-          Files.get_previews_by_file(file)
-        case previews do
-          [preview | _] ->
-            ext =
-              case preview.mime_type do
-                "image/jpeg" -> "jpg"
-                "video/webm" -> "webm"
-                "video/mp4" -> "mp4"
+        mime_types =
+          Enum.flat_map(get_req_header(conn, "accept"), fn(header) ->
+            Enum.map(String.split(header, ","), &process_mime_type/1)
+          end)
+
+        previews = Files.get_previews_by_file_type(file, type)
+
+        preview =
+          case mime_types do
+            [] ->
+              case previews do
+                [p | ps] -> {:found, p}
+                [] -> :not_found
               end
-            path = "uploads/previews/" <> uuid <> "." <> ext
+            _ ->
+              processed_previews =
+                Enum.map(previews, fn(p) ->
+                  {process_mime_type(p.mime_type), p}
+                end)
+
+              find_right_preview(mime_types, processed_previews)
+          end
+
+        case preview do
+          {:found, preview} ->
+            path = "uploads/previews/" <> uuid <> "^" <> type
             send_file(conn, 200, path)
-          _ ->
+          :not_found ->
             conn
-            |> put_status(404)
-            |> text("file not found!")
+            |> put_status(406)
+            |> text("cannot provide file in requested format")
         end
     end
   end
