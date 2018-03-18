@@ -279,7 +279,7 @@ html {
     text-align: center;
 }
 
-.register-field input, .login-field input, span.info {
+.form-input {
     position: relative;
     padding-top: 15px;
     padding-left: 10px;
@@ -462,7 +462,7 @@ h1, .register-field > span, .red, .presence {
     text-decoration: none
 }
 
-.register-form h1 {
+.register-title {
     padding-left: 10px;
 }
 
