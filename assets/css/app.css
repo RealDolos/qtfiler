@@ -45,7 +45,7 @@ body {
 }
 
 .body-smaller {
-    font-size: 0.875em;
+    font-size: 0.9em;
 }
 
 .content-container {
@@ -63,7 +63,7 @@ body {
 .navigation {
     width: 100%;
     position: relative;
-    font-size: 1.5625em;
+    font-size: 1.6em;
     line-height: 100px;
 }
 
@@ -224,7 +224,7 @@ html {
     border-radius: 2px;
     padding-left: 2px;
     padding-right: 2px;
-    font-size: 0.6875em;
+    font-size: 0.7em;
     top: 50%;
     margin-left: 5px;
     display: block;
@@ -256,7 +256,7 @@ html {
 
 #loading-message {
     margin: auto;
-    font-size: 2.25em;
+    font-size: 2.3em;
     text-align: center;
 }
 
@@ -297,7 +297,7 @@ html {
     width: 40%;
     max-width: 300px;
     color: var(--input-color);
-    font-size: 1.125em;
+    font-size: 1.1em;
 }
 
 .login-field input {
@@ -338,7 +338,7 @@ main .room, main .room-list {
 .room-list {
     padding-top: 5px;
     padding-bottom: 5px;
-    font-size: 1.125em;
+    font-size: 1.1em;
 }
 
 .room-list > .room-id {
@@ -421,7 +421,7 @@ h1, .register-field > span, .red, .presence {
     display: block;
     cursor: pointer;
     color: var(--upload-text);
-    font-size: 0.9375em;
+    font-size: 0.9em;
     font-weight: bold;
     padding: 11px 23px;
     text-decoration: none;
@@ -456,7 +456,7 @@ h1, .register-field > span, .red, .presence {
 }
 
 .file-expiration {
-    font-size: 0.625em;
+    font-size: 0.6em;
     color: var(--expire-text);
     margin: auto 6px auto 6px;
     display: block;
