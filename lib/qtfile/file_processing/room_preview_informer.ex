@@ -1,6 +1,6 @@
 defmodule Qtfile.FileProcessing.RoomPreviewInformer do
   use GenStage
-  alias Qtfile.FileProcessing.Thumbnailer
+  alias Qtfile.FileProcessing.{Thumbnailer, VideoPreviewGenerator}
 
   def start_link(args) do
     GenStage.start_link(__MODULE__, args, name: __MODULE__)
@@ -8,7 +8,7 @@ defmodule Qtfile.FileProcessing.RoomPreviewInformer do
 
   def init([]) do
     {:consumer, {},
-     subscribe_to: [Thumbnailer],
+     subscribe_to: [Thumbnailer, VideoPreviewGenerator],
     }
   end
 
