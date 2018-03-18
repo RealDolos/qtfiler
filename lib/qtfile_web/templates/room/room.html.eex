@@ -40,7 +40,7 @@
 </div>
 
 <template id="file-list-template">
-  <div id="file-list"  :style="styleVars" v-on:mousemove="mouseMove" class="scroll-content column" :class="{'hovery': hovery}">
+  <div id="file-list"  :style="styleVars" v-on:mousemove="mouseMove" class="scroll-content" :class="{'hovery': hovery}">
     <template v-for="(upload, index) in uploads">
       <span is="upload" :wake="wake" :pause="pause" :id="upload.id" :key="upload.id" :role="role" :index="index" :owner="owner" />
     </template>
