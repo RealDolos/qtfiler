@@ -93,19 +93,19 @@
     </div>
     <template v-if="displayInfoHere">
       <div class="row thumbnail">
-        <template v-if="previews.length > 0">
+        <template v-if="videoPreviews.length > 0">
           <video autoplay loop>
-            <template v-for="p in previews">
+            <template v-for="p in videoPreviews">
               <source :src="videoThumbPreviewLink" :type="p.mime_type" />
             </template>
           </video>
         </template>
-        <template v-if="previews.length > 0">
+        <template v-if="imagePreviews.length > 0">
           <picture>
-            <template v-for="p in previews">
+            <template v-for="p in imagePreviews">
               <source :srcset="imageThumbPreviewLink" :type="p.mime_type" />
             </template>
-            <img src="previewLink" />
+            <img src="imageThumbPreviewLink" />
           </picture>
         </template>
         <template v-if="tagList.length > 0">

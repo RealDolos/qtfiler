@@ -67,6 +67,16 @@ export default function(room) {
             },
             videoThumbPreviewLink() {
                 return "/pget/" + this.uuid + "/video_thumbnail";
+            },
+            videoPreviews() {
+                return this.previews.filter(preview => {
+                    return preview.type == "video_thumbnail";
+                });
+            },
+            imagePreviews() {
+                return this.previews.filter(preview => {
+                    return preview.type == "image_thumbnail";
+                });
             }
         },
         methods: {
