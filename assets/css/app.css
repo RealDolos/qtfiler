@@ -472,6 +472,7 @@ h1, .register-field > span, .red, .presence {
     left: var(--x);
     top: var(--y);
     overflow: hidden;
+    z-index: 1;
 }
 
 .button, .custom-file-upload, button {
