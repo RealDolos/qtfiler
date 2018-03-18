@@ -184,7 +184,7 @@ html {
     flex-basis: auto;
 }
 
-.zero-basis {
+.zero-basis, .wrapped, body, .container, main {
     flex-basis: 0;
 }
 
