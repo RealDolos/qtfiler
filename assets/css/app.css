@@ -305,15 +305,15 @@ html {
     color: var(--input-text);
 }
 
-.login button {
+.login-button {
     margin-left: 30%;
 }
 
-.register button {
+.register-button {
     margin-left: 10%;
 }
 
-.login button, .register button {
+.form-button {
     margin-top: 1%;
 }
 

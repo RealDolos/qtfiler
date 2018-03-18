@@ -23,7 +23,7 @@
 </div>
 
 <div class="register">
-    <%= submit "Register", class: "form-input" %>
+    <%= submit "Register", class: "form-input form-button register-button" %>
 </div>
 <% end %>
 
