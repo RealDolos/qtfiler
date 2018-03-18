@@ -14,6 +14,14 @@ defmodule Qtfile.FileProcessing.Thumbnailer do
     }
   end
 
+  defp tag_selector({:media, :image, %{mime_type: "image/gif"}}) do
+    false
+  end
+
+  defp tag_selector({:media, :image, %{mime_type: "image/apng"}}) do
+    false
+  end
+
   defp tag_selector({:media, :image, _}) do
     true
   end
