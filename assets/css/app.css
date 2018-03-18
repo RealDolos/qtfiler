@@ -42,6 +42,7 @@
 body {
     color: var(--general-text);
     background: var(--dark-background);
+    font-family: sans-serif;
 }
 
 .body-smaller {
