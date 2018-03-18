@@ -294,7 +294,7 @@ html {
     font-size: 1.1em;
 }
 
-.login-field input {
+.login-input {
     width: 90%;
     max-width: 800px;
 }

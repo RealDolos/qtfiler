@@ -1,14 +1,12 @@
 <%= form_for @conn, user_path(@conn, :login), [method: :post, as: :user], fn(f) -> %>
 <div class="login-form">
-    <div class="login-field">
-        <div class="login-field">
-            <%= text_input f, :username, placeholder: "Username", class: "form-input" %>
-        </div>
+  <div class="login-field">
+    <%= text_input f, :username, placeholder: "Username", class: "login-input form-input" %>
+  </div>
 
-        <div class="login-field">
-            <%= password_input f, :password, placeholder: "Password", class: "form-input" %>
-        </div>
-    </div>
+  <div class="login-field">
+    <%= password_input f, :password, placeholder: "Password", class: "login-input form-input" %>
+  </div>
 </div>
 <div class="login">
     <%= submit "Login", class: "form-input form-button login-button" %>
