@@ -6,9 +6,9 @@
       <template>
         <div class="form-group">
           <label for="upload-button" class="custom-file-upload">
-            <i class="fa fa-cloud-upload"></i>Upload
+            Upload
           </label>
-          <input multiple type="file" id="upload-button" class="button"/>
+          <input multiple type="file" id="upload-button" class="hidden"/>
         </div>
       </template>
 
