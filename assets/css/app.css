@@ -56,14 +56,12 @@ html {
 }
 
 .nav-container {
-    width: 100%;
     border-color: var(--lighter-dark-background);
     border-bottom: 2px solid var(--border-color);
     background-color: var(--lighter-dark-background);
 }
 
 .navigation {
-    width: 100%;
     font-size: 1.6em;
     line-height: 100px;
 }
@@ -97,7 +95,6 @@ html {
 
 .user-profile {
     text-align: center;
-    width: 100%;
 }
 
 .huge-text {
@@ -179,7 +176,6 @@ html {
 
 .scroll-content {
     min-height: 100%;
-    width: 100%;
 }
 
 .auto-basis {
