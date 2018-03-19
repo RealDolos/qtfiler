@@ -219,14 +219,25 @@ html {
     display: inline-block;
 }
 
+.file-right, .file-left {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: baseline;
+}
+
 .file-right {
     text-align: right;
     flex: 1 1 auto;
+    justify-content: flex-end;
+    align-content: flex-end;
 }
 
 .file-left {
     text-align: left;
     flex: 4.2 1 auto;
+    justify-content: flex-start;
+    align-content: flex-start;
 }
 
 [v-cloak] {
