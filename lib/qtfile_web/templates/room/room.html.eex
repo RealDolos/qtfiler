@@ -1,5 +1,5 @@
-<div id="file-dropzone" class="wrapped column grow">
-  <div id="room" class="grow column">
+<div id="file-dropzone">
+  <div id="room" class="grow zero-basis column">
     <div v-if="false" id="dim-screen"><div id="loading-message">Loading</div></div>
 
     <div v-cloak class="control-bar row">
