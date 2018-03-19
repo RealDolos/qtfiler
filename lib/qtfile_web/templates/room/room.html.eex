@@ -72,7 +72,7 @@
 <template id="file-template">
   <div :id="domId" class="file-container" :class="{ 'file-odd': phase }">
     <div class="row row-spaced">
-      <div v-on:mouseenter="showMyInfo" v-on:mouseleave="hideMyInfo">
+      <div class="file-left" v-on:mouseenter="showMyInfo" v-on:mouseleave="hideMyInfo">
         <a target="_blank" :href="link" class="file-link" :data-hash-sha1="hash">{{ filename }}</a>
         <span class="file-uploader">{{ uploader }}</span>
         <template v-if="mod">
@@ -82,7 +82,7 @@
           </div>
         </template>
       </div>
-      <div>
+      <div class="file-right">
         <span class="file-expiration">{{ formattedExpirationDate }}</span>
         <template v-if="mod">
           <div class="container">

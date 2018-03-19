@@ -219,6 +219,16 @@ html {
     display: inline-block;
 }
 
+.file-right {
+    text-align: right;
+    flex: 1 1 auto;
+}
+
+.file-left {
+    text-align: left;
+    flex: 4.2 1 auto;
+}
+
 [v-cloak] {
     visibility: hidden;
 }
