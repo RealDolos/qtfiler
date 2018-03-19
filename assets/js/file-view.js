@@ -12,7 +12,7 @@ export default function(room) {
         },
         name: "file",
         template: "#file-template",
-        props: ["role", "uuid", "index", "filesLength", "owner", "displayInfo", "displayInfoHere"],
+        props: ["role", "uuid", "phase", "owner", "displayInfo", "displayInfoHere"],
         computed: {
             tagList() {
                 if (this.metadata != null) {
@@ -37,12 +37,6 @@ export default function(room) {
             },
             mod() {
                 return this.role == "mod" || this.role == "admin" || this.owner;
-            },
-            isOdd() {
-                return (this.index + this.filesLength) % 2;
-            },
-            isEven() {
-                return (this.index + this.filesLength + 1) % 2;
             },
             formattedExpirationDate() {
                 return (new Date(this.expiration_date)).toLocaleString();

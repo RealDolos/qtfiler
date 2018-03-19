@@ -396,10 +396,6 @@ html {
     align-content: center;
 }
 
-.file-even {
-    background: var(--lighter-dark-background);
-}
-
 .file-odd {
     background: var(--odd-file);
 }
