@@ -215,6 +215,15 @@ html {
     display: inline-block;
 }
 
+.file-main {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    align-content: flex-start;
+}
+
 .file-right, .file-left {
     display: flex;
     flex-direction: row;
@@ -224,14 +233,14 @@ html {
 
 .file-right {
     text-align: right;
-    flex: 1 1 auto;
+    flex: 1 0 0;
     justify-content: flex-end;
     align-content: flex-end;
 }
 
 .file-left {
     text-align: left;
-    flex: 4.2 1 auto;
+    flex: 4.2 0 0;
     justify-content: flex-start;
     align-content: flex-start;
 }
