@@ -72,18 +72,20 @@
 <template id="file-template">
   <div :id="domId" class="file-container" :class="{ 'file-odd': phase }">
     <div class="row row-spaced">
-      <div class="row grow-double" v-on:mouseenter="showMyInfo" v-on:mouseleave="hideMyInfo">
+      <div v-on:mouseenter="showMyInfo" v-on:mouseleave="hideMyInfo">
         <a target="_blank" :href="link" class="file-link" :data-hash-sha1="hash">{{ filename }}</a>
-        <div class="row row-right">
-          <span class="file-uploader">{{ uploader }}</span>
-          <template v-if="mod"><span class="file-uploader">{{ ip_address }}</span></template>
-          <template v-if="mod"><span is="async-button" :default-icon="128683" :action="banUploader"></span></template>
-        </div>
+        <span class="file-uploader">{{ uploader }}</span>
+        <template v-if="mod">
+          <div class="container">
+            <span class="file-uploader">{{ ip_address }}</span>
+            <span is="async-button" :default-icon="128683" :action="banUploader"></span>
+          </div>
+        </template>
       </div>
-      <div class="row row-right grow">
+      <div>
         <span class="file-expiration">{{ formattedExpirationDate }}</span>
         <template v-if="mod">
-          <div class="row row-centre">
+          <div class="container">
             <input class="mark" type="checkbox" v-model="marked">
             <span is="async-button" :default-icon="128465" :action="deleteMe"></span>
             <span is="async-button" :default-icon="128683" :action="banMe"></span>
@@ -122,7 +124,7 @@
 
 
 <template id="async-button-template">
-  <div>
+  <div class="container">
     <div v-show="status == 'ready'" v-on:click="click" class="small delete button">
       {{ readyString }}
     </div>

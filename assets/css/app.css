@@ -203,7 +203,7 @@ html {
     text-decoration: none;
     color: var(--file-link);
     font-weight: 500;
-    display: block;
+    display: inline-block;
 }
 
 .file-uploader {
@@ -216,7 +216,7 @@ html {
     padding-right: 2px;
     font-size: 0.7em;
     margin-left: 5px;
-    display: block;
+    display: inline-block;
 }
 
 [v-cloak] {
@@ -389,7 +389,7 @@ html {
 .small.delete.button, .mark {
     margin: 1px 3px 1px 3px;
     padding: 0;
-    display: block;
+    display: inline-block;
 }
 
 .row-centre {
@@ -404,7 +404,7 @@ html {
     font-size: 0.6em;
     color: var(--expire-text);
     margin: auto 6px auto 6px;
-    display: block;
+    display: inline-block;
 }
 
 .nav-text {
