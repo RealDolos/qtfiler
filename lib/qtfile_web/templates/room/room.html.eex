@@ -1,8 +1,8 @@
-<div id="file-dropzone">
-  <div id="room" class="grow zero-basis column">
+<div id="file-dropzone" class="container">
+  <div id="room" class="container">
     <div v-if="false" id="dim-screen"><div id="loading-message">Loading</div></div>
 
-    <div v-cloak class="control-bar row">
+    <div v-cloak class="control-bar row row-centre">
       <template>
         <div class="form-group">
           <label for="upload-button" class="custom-file-upload">
@@ -25,7 +25,7 @@
       </template>
 
       <template v-if="mod">
-        <div :class="['presence-container', 'form-group', 'grow', 'scroll-container', { 'presence-container-small': presenceSmall, 'presence-container-big': presenceBig, 'presence-container-medium': presenceMedium }]">
+        <div class="presence-container form-group scroll-container" :class="{ 'presence-container-small': presenceSmall, 'presence-container-big': presenceBig, 'presence-container-medium': presenceMedium }">
           <span is="presence" :presence-hidden="presenceHidden" v-on:toggle-presence="togglePresence" :role="role" :owner="owner" />
         </div>
       </template>
@@ -33,14 +33,14 @@
       <span is="settings" :mod="mod" :set-user-settings="setUserSettings" :save-settings="saveSettings" :set-settings-callback="setSettingsCallback" />
     </div>
 
-    <div v-cloak id="file-list-container" class="grow zero-basis scroll-container">
+    <div v-cloak id="file-list-container" class="wrapped scroll-container">
       <span is="file-list" :role="role" :owner="owner" :filter="filter" :settings="settings" />
     </div>
   </div>
 </div>
 
 <template id="file-list-template">
-  <div id="file-list"  :style="styleVars" v-on:mousemove="mouseMove" class="scroll-content" :class="{'hovery': hovery}">
+  <div id="file-list" v-on:mousemove="mouseMove" class="scroll-content" :class="{ 'hovery': hovery, 'not-hovery': !hovery }">
     <template v-for="(upload, index) in uploads">
       <span is="upload" :wake="wake" :pause="pause" :id="upload.id" :key="upload.id" :role="role" :index="index" :owner="owner" />
     </template>
@@ -70,31 +70,33 @@
 </template>
 
 <template id="file-template">
-  <div :id="domId" class="file-container" :class="{ 'file-odd': phase }">
-    <div class="row row-spaced">
+  <div :id="domId" class="file-container" :class="{ 'file-odd': phase, 'info-displayed': displayInfoHere }">
+    <div class="file-main">
       <div class="file-left" v-on:mouseenter="showMyInfo" v-on:mouseleave="hideMyInfo">
         <a target="_blank" :href="link" class="file-link" :data-hash-sha1="hash">{{ filename }}</a>
         <span class="file-uploader">{{ uploader }}</span>
         <template v-if="mod">
-          <div class="container">
-            <span class="file-uploader">{{ ip_address }}</span>
-            <span is="async-button" :default-icon="128683" :action="banUploader"></span>
-          </div>
+          <span class="file-uploader">{{ ip_address }}</span>
+        </template>
+        <template v-if="mod">
+          <span is="async-button" :default-icon="128683" :action="banUploader"></span>
         </template>
       </div>
       <div class="file-right">
         <span class="file-expiration">{{ formattedExpirationDate }}</span>
         <template v-if="mod">
-          <div class="container">
-            <input class="mark" type="checkbox" v-model="marked">
-            <span is="async-button" :default-icon="128465" :action="deleteMe"></span>
-            <span is="async-button" :default-icon="128683" :action="banMe"></span>
-          </div>
+          <input class="mark" type="checkbox" v-model="marked">
+        </template>
+        <template v-if="mod">
+          <span is="async-button" :default-icon="128465" :action="deleteMe"></span>
+        </template>
+        <template v-if="mod">
+          <span is="async-button" :default-icon="128683" :action="banMe"></span>
         </template>
       </div>
     </div>
     <template v-if="displayInfoHere">
-      <div class="row thumbnail">
+      <div class="row row-top" id="thumbnail">
         <template v-if="videoPreviews.length > 0">
           <video autoplay loop>
             <template v-for="p in videoPreviews">
@@ -124,22 +126,28 @@
 
 
 <template id="async-button-template">
-  <div class="container">
-    <div v-show="status == 'ready'" v-on:click="click" class="small delete button">
+  <span v-on:click="click" class="small delete button">
+    <template v-if="status == 'ready'">
       {{ readyString }}
-    </div>
-    <div v-show="status == 'waiting'" class="small delete button">⌛</div>
-    <div v-show="status == 'failed'" class="small delete button">❌</div>
-    <div v-show="status == 'succeeded'" v-on:click="click" class="small delete button">✓</div>
-  </div>
+    </template>
+    <template v-else-if="status == 'waiting'">
+      ⌛
+    </template>
+    <template v-else-if="status == 'failed'">
+      ❌
+    </template>
+    <template v-else-if="status == 'succeeded'">
+      ✓
+    </template>
+  </span>
 </template>
 
 <template id="presence-template">
-  <div class="scroll-content presence">
+  <div class="scroll-content presence column">
     <div v-on:click="togglePresence" class="button">Presences</div>
-    <div class="column">
+    <div class="column column-wrap" :class="{ 'container-hide': hidden }">
       <template v-for="(user, id) in presences">
-        <div :class="[ { 'container-hide': hidden } ]">
+        <div class="row row-top">
           {{ user.user.name }}/{{ user.user.role }}:
           <div class="column">
             <template v-for="meta in user.metas">
@@ -156,8 +164,8 @@
 </template>
 
 <template id="settings-template">
-  <div class="form-group grow scroll-container container-half">
-    <div class="scroll-content">
+  <div class="form-group scroll-container container-half">
+    <div class="scroll-content column">
       <div v-on:click="toggle" class="button">Settings</div>
       <div class="column column-wrap" :class="{ 'container-hide': hidden }">
         <template v-if="mod">
