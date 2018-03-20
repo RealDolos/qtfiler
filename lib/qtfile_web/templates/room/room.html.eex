@@ -135,11 +135,11 @@
 </template>
 
 <template id="presence-template">
-  <div class="scroll-content presence">
+  <div class="scroll-content presence column">
     <div v-on:click="togglePresence" class="button">Presences</div>
-    <div class="column">
+    <div class="column column-wrap" :class="[ { 'container-hide': hidden } ]">
       <template v-for="(user, id) in presences">
-        <div :class="[ { 'container-hide': hidden } ]">
+        <div class="row">
           {{ user.user.name }}/{{ user.user.role }}:
           <div class="column">
             <template v-for="meta in user.metas">
@@ -157,7 +157,7 @@
 
 <template id="settings-template">
   <div class="form-group grow scroll-container container-half">
-    <div class="scroll-content">
+    <div class="scroll-content column">
       <div v-on:click="toggle" class="button">Settings</div>
       <div class="column column-wrap" :class="{ 'container-hide': hidden }">
         <template v-if="mod">
