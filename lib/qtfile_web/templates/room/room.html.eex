@@ -25,7 +25,7 @@
       </template>
 
       <template v-if="mod">
-        <div :class="['presence-container', 'form-group', 'grow', 'scroll-container', { 'presence-container-small': presenceSmall, 'presence-container-big': presenceBig, 'presence-container-medium': presenceMedium }]">
+        <div class="presence-container form-group grow scroll-container" :class="{ 'presence-container-small': presenceSmall, 'presence-container-big': presenceBig, 'presence-container-medium': presenceMedium }">
           <span is="presence" :presence-hidden="presenceHidden" v-on:toggle-presence="togglePresence" :role="role" :owner="owner" />
         </div>
       </template>
@@ -137,7 +137,7 @@
 <template id="presence-template">
   <div class="scroll-content presence column">
     <div v-on:click="togglePresence" class="button">Presences</div>
-    <div class="column column-wrap" :class="[ { 'container-hide': hidden } ]">
+    <div class="column column-wrap" :class="{ 'container-hide': hidden }">
       <template v-for="(user, id) in presences">
         <div class="row">
           {{ user.user.name }}/{{ user.user.role }}:
