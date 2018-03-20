@@ -127,12 +127,20 @@
 
 <template id="async-button-template">
   <div>
-    <div v-show="status == 'ready'" v-on:click="click" class="small delete button">
-      {{ readyString }}
-    </div>
-    <div v-show="status == 'waiting'" class="small delete button">⌛</div>
-    <div v-show="status == 'failed'" class="small delete button">❌</div>
-    <div v-show="status == 'succeeded'" v-on:click="click" class="small delete button">✓</div>
+    <template v-if="status == 'ready'">
+      <div v-on:click="click" class="small delete button">
+        {{ readyString }}
+      </div>
+    </template>
+    <template v-else-if="status == 'waiting'">
+      <div class="small delete button">⌛</div>
+    </template>
+    <template v-else-if="status == 'failed'">
+      <div class="small delete button">❌</div>
+    </template>
+    <template v-else-if="status == 'succeeded'">
+      <div v-on:click="click" class="small delete button">✓</div>
+    </template>
   </div>
 </template>
 
