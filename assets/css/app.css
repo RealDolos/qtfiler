@@ -220,6 +220,9 @@ html {
     padding-left: 2px;
     padding-right: 2px;
     font-size: 0.7em;
+}
+
+.file-uploader-container {
     margin-left: 5px;
     display: inline-block;
 }
