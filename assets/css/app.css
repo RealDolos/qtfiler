@@ -197,6 +197,8 @@ html {
 .wrapped, body, .container, main {
     min-height: 0;
     max-height: none;
+    min-width: 0;
+    max-width: none;
 }
 
 .file-container {
