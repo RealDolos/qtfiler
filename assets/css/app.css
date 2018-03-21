@@ -190,6 +190,11 @@ html {
     flex-basis: 0;
 }
 
+.wrapped, body, .container, main {
+    min-height: 0;
+    max-height: none;
+}
+
 .file-container {
     padding-top: 8px;
     padding-bottom: 8px;
