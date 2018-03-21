@@ -10,7 +10,7 @@
   </div>
 
   <%= if Mix.env == :dev do %>
-    <div class="red grow-double">THIS IS A DEV VERSION OF THE SITE. PLEASE DO NOT USE. PASSWORDS ARE SAVED IN PLAINTEXT IN DEV ENVIRONMENT</div>
+    <div class="red grow-double" id="debug-message">THIS IS A DEV VERSION OF THE SITE. PLEASE DO NOT USE. PASSWORDS ARE SAVED IN PLAINTEXT IN DEV ENVIRONMENT</div>
   <%= end %>
 </div>
 

@@ -120,6 +120,10 @@ html {
     align-content: flex-start;
 }
 
+#debug-message {
+    margin: 10px;
+}
+
 .column-wrap {
     flex-wrap: wrap;
     align-content: stretch;
