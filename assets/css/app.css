@@ -261,6 +261,15 @@ html {
     align-content: flex-start;
 }
 
+.file-mod-controls {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: baseline;
+    align-content: flex-start;
+}
+
 [v-cloak] {
     visibility: hidden;
 }
