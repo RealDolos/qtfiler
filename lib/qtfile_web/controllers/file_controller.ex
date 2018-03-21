@@ -400,8 +400,8 @@ defmodule QtfileWeb.FileController do
         end
 
         disposition = if nice_file do "inline" else "attachment" end
-        filename = "\"" <> URI.encode(file.filename) <> "\""
-        conn = put_resp_header(conn, "Content-Disposition", disposition <> "; filename=" <> filename)
+        filename = "\"" <> URI.encode(file.filename, &URI.char_unreserved?/1) <> "\""
+        conn = put_resp_header(conn, "Content-Disposition", disposition <> "; filename*=" <> filename)
 
         ranges = get_req_header(conn, "range")
 

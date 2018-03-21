@@ -33,7 +33,7 @@ export default function(room) {
                 return "file-" + this.uuid;
             },
             link() {
-                return `/get/${this.uuid}/${this.filename}`;
+                return `/get/${encodeURIComponent(this.uuid)}/${encodeURIComponent(this.filename)}`;
             },
             mod() {
                 return this.role == "mod" || this.role == "admin" || this.owner;
@@ -57,10 +57,10 @@ export default function(room) {
                 }
             },
             imageThumbPreviewLink() {
-                return "/pget/" + this.uuid + "/image_thumbnail";
+                return "/pget/" + encodeURIComponent(this.uuid) + "/image_thumbnail";
             },
             videoThumbPreviewLink() {
-                return "/pget/" + this.uuid + "/video_thumbnail";
+                return "/pget/" + encodeURIComponent(this.uuid) + "/video_thumbnail";
             },
             videoPreviews() {
                 return this.previews.filter(preview => {
