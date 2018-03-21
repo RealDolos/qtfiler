@@ -451,9 +451,12 @@ html {
 }
 
 .small.delete.button, .mark, .button-container {
-    margin: 1px 3px 1px 3px;
     padding: 0;
     display: inline-block;
+}
+
+.small.delete.button, .mark {
+    margin: 1px 3px 1px 3px;
 }
 
 .row-centre {
