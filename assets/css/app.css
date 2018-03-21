@@ -240,6 +240,14 @@ html {
     align-content: flex-start;
 }
 
+.file-main, .file-left, .file-right, .file-link, .file-uploader-container,
+.file-expiration, .file-mod-controls, .file-uploader {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: wrap;
+    min-width: 0;
+}
+
 .file-right, .file-left {
     display: flex;
     flex-direction: row;
