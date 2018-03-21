@@ -111,7 +111,7 @@ html {
     box-sizing: border-box;
 }
 
-.column, body, html {
+.column, body, html, .container, main {
     display: flex;
     flex-direction: column;
     flex-wrap: nowrap;
@@ -142,7 +142,7 @@ html {
     justify-content: space-between;
 }
 
-.grow, .wrapped, body {
+.grow, .wrapped, body, .container, main {
     flex-grow: 1;
 }
 
@@ -182,7 +182,7 @@ html {
     flex-basis: auto;
 }
 
-.zero-basis, .wrapped, body {
+.zero-basis, .wrapped, body, .container, main {
     flex-basis: 0;
 }
 
@@ -453,8 +453,4 @@ html {
 
 .hidden {
     display: none;
-}
-
-.container, main, #file-dropzone {
-    display: contents;
 }
