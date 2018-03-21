@@ -243,14 +243,14 @@ html {
 
 .file-right {
     text-align: right;
-    flex: 1 0 0;
+    flex-grow: 1;
     justify-content: flex-end;
     align-content: flex-end;
 }
 
 .file-left {
     text-align: left;
-    flex: 4.2 0 0;
+    flex-grow: 4.2;
     justify-content: flex-start;
     align-content: flex-start;
 }
