@@ -33,7 +33,7 @@
       <span is="settings" :mod="mod" :set-user-settings="setUserSettings" :save-settings="saveSettings" :set-settings-callback="setSettingsCallback" />
     </div>
 
-    <div v-cloak id="file-list-container" class="grow zero-basis scroll-container">
+    <div v-cloak id="file-list-container" class="wrapped scroll-container">
       <span is="file-list" :role="role" :owner="owner" :filter="filter" :settings="settings" />
     </div>
   </div>
