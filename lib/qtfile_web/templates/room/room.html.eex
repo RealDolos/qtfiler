@@ -1,5 +1,5 @@
 <div id="file-dropzone" class="container">
-  <div id="room" class="wrapped column">
+  <div id="room" class="container">
     <div v-if="false" id="dim-screen"><div id="loading-message">Loading</div></div>
 
     <div v-cloak class="control-bar row">
