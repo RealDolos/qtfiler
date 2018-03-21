@@ -373,7 +373,8 @@ html {
 }
 
 .container-hide {
-    visibility: collapse;
+    /*visibility: collapse; doesn't work in chrome yet*/
+    display: none;
 }
 
 .container-half {
