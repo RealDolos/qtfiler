@@ -149,7 +149,7 @@
     <div v-on:click="togglePresence" class="button">Presences</div>
     <div class="column column-wrap" :class="{ 'container-hide': hidden }">
       <template v-for="(user, id) in presences">
-        <div class="row">
+        <div class="row row-top">
           {{ user.user.name }}/{{ user.user.role }}:
           <div class="column">
             <template v-for="meta in user.metas">
