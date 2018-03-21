@@ -126,7 +126,7 @@
 
 
 <template id="async-button-template">
-  <div>
+  <div class="button-container">
     <template v-if="status == 'ready'">
       <div v-on:click="click" class="small delete button">
         {{ readyString }}
