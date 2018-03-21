@@ -74,7 +74,7 @@
     <div class="file-main">
       <div class="file-left" v-on:mouseenter="showMyInfo" v-on:mouseleave="hideMyInfo">
         <a target="_blank" :href="link" class="file-link" :data-hash-sha1="hash">{{ filename }}</a>
-        <div class="row file-uploader-container">
+        <div class="file-uploader-container">
           <span class="file-uploader">{{ uploader }}</span>
           <template v-if="mod">
             <span class="file-uploader">{{ ip_address }}</span>
