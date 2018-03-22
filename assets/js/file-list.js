@@ -93,7 +93,7 @@ export default class FileList {
             "&size=" + encodeURIComponent(upload.file.size);
 
         if (upload.file.type) {
-            query += "&content_type=" + upload.file.type;
+            query += "&content_type=" + encodeURIComponent(upload.file.type);
         }
 
         return new Promise((resolve, reject) => {
