@@ -74,24 +74,24 @@
     <div class="file-main">
       <div class="file-left" v-on:mouseenter="showMyInfo" v-on:mouseleave="hideMyInfo">
         <a target="_blank" :href="link" class="file-link" :data-hash-sha1="hash">{{ filename }}</a>
-        <div class="file-uploader-container">
-          <span class="file-uploader">{{ uploader }}</span>
-          <template v-if="mod">
-            <span class="file-uploader">{{ ip_address }}</span>
-          </template>
-          <template v-if="mod">
-            <span is="async-button" :default-icon="128683" :action="banUploader"></span>
-          </template>
-        </div>
+        <span class="file-uploader">{{ uploader }}</span>
+        <template v-if="mod">
+          <span class="file-uploader">{{ ip_address }}</span>
+        </template>
+        <template v-if="mod">
+          <span is="async-button" :default-icon="128683" :action="banUploader"></span>
+        </template>
       </div>
       <div class="file-right">
         <span class="file-expiration">{{ formattedExpirationDate }}</span>
         <template v-if="mod">
-          <div class="file-mod-controls">
-            <input class="mark" type="checkbox" v-model="marked">
-            <span is="async-button" :default-icon="128465" :action="deleteMe"></span>
+          <input class="mark" type="checkbox" v-model="marked">
+        </template>
+        <template v-if="mod">
+          <span is="async-button" :default-icon="128465" :action="deleteMe"></span>
+        </template>
+        <template v-if="mod">
             <span is="async-button" :default-icon="128683" :action="banMe"></span>
-          </div>
         </template>
       </div>
     </div>

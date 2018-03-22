@@ -226,15 +226,6 @@ body, html, .container, main {
     padding-left: 2px;
     padding-right: 2px;
     font-size: 0.7em;
-}
-
-.file-uploader-container {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    align-items: baseline;
-    align-content: flex-start;
     margin-left: 5px;
 }
 
@@ -247,8 +238,7 @@ body, html, .container, main {
     align-content: flex-start;
 }
 
-.file-main, .file-left, .file-right, .file-link, .file-uploader-container,
-.file-expiration, .file-mod-controls, .file-uploader {
+.file-main, .file-left, .file-right, .file-link, .file-expiration, .file-uploader {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: normal;
@@ -274,15 +264,6 @@ body, html, .container, main {
     flex-grow: 4.2;
     justify-content: flex-start;
     align-content: flex-start;
-}
-
-.file-mod-controls {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-    align-items: baseline;
-    align-content: flex-end;
 }
 
 [v-cloak] {
