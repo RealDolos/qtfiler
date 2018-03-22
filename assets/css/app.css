@@ -232,36 +232,40 @@ body, html, .container, main {
 .file-main {
     display: flex;
     flex-direction: row;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     justify-content: space-between;
     align-items: baseline;
     align-content: flex-start;
 }
 
-.file-main, .file-left, .file-right, .file-link, .file-expiration, .file-uploader {
+.file-container, .file-main, .file-left, .file-right, .file-link, .file-expiration, .file-uploader {
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: normal;
+    white-space: nowrap;
     min-width: 0;
+}
+
+.file-container, .file-main, .file-right, .file-left {
+    height: 1.62em;
 }
 
 .file-right, .file-left {
     display: flex;
     flex-direction: row;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     align-items: baseline;
 }
 
 .file-right {
     text-align: right;
-    flex-grow: 1;
     justify-content: flex-end;
     align-content: flex-end;
+    flex: 0 0 140px;
 }
 
 .file-left {
     text-align: left;
-    flex-grow: 4.2;
+    flex: 1 1 0;
     justify-content: flex-start;
     align-content: flex-start;
 }
