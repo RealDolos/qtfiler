@@ -409,12 +409,13 @@ body, html, .container, main {
 }
 
 .hovery .file-container #thumbnail {
-    position: absolute;
+    position: fixed;
     background: var(--upload-bg);
-    left: var(--x);
-    top: var(--y);
+    transform: translate(var(--x), var(--y));
     overflow: hidden;
     z-index: 1;
+    top: 0;
+    left: 0;
 }
 
 .button, .custom-file-upload, button {
