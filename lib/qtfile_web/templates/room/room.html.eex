@@ -96,7 +96,7 @@
       </div>
     </div>
     <template v-if="displayInfoHere">
-      <div class="row row-top thumbnail">
+      <div class="row row-top" id="thumbnail">
         <template v-if="videoPreviews.length > 0">
           <video autoplay loop>
             <template v-for="p in videoPreviews">

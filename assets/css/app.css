@@ -408,7 +408,7 @@ body, html, .container, main {
     max-height: 50vh;
 }
 
-.hovery .file-container .thumbnail {
+.hovery .file-container #thumbnail {
     position: absolute;
     background: var(--upload-bg);
     left: var(--x);
