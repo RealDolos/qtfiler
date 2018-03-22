@@ -280,9 +280,9 @@ body, html, .container, main {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    justify-content: flex-start;
+    justify-content: flex-end;
     align-items: baseline;
-    align-content: flex-start;
+    align-content: flex-end;
 }
 
 [v-cloak] {
