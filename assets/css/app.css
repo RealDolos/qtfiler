@@ -436,12 +436,9 @@ body, html, .container, main {
     background: var(--del-button);
 }
 
-.small.delete.button, .mark, .button-container {
+.small.delete.button, .mark {
     padding: 0;
     display: inline-block;
-}
-
-.small.delete.button, .mark {
     margin: 1px 3px 1px 3px;
 }
 
