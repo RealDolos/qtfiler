@@ -448,9 +448,9 @@ body {
     display: block;
     cursor: pointer;
     color: var(--upload-text);
-    font-size: 0.9em;
+    font-size: 0.79em;
     font-weight: bold;
-    padding: 11px 23px;
+    padding: 5px 8px;
     text-decoration: none;
     text-align: center;
 }
