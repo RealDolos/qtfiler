@@ -64,13 +64,18 @@ export default function(room) {
         methods: {
             mouseMove(e) {
                 let target = e.target;
+
                 while (true) {
                     if (target == e.currentTarget) {
                         return;
                     } else {
                         if (target.classList.contains("file-container")) {
-                            target.style.setProperty("--x", (e.clientX + 1) + "px");
-                            target.style.setProperty("--y", (e.clientY + 1) + "px");
+                            const thumb = target.firstChild.nextElementSibling;
+
+                            if (thumb) {
+                                thumb.style.setProperty("transform", `translate(${e.clientX + 1}px, ${e.clientY + 1}px)`);
+                            }
+
                             return;
                         } else {
                             target = target.parentElement;

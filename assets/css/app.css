@@ -423,7 +423,6 @@ body {
 .hovery .file-container #thumbnail {
     position: fixed;
     background: var(--upload-bg);
-    transform: translate(var(--x), var(--y));
     overflow: hidden;
     z-index: 1;
     top: 0;
