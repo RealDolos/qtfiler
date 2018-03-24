@@ -59,7 +59,6 @@ html {
     border-color: var(--lighter-dark-background);
     border-bottom: 2px solid var(--border-color);
     background-color: var(--lighter-dark-background);
-    width: 100%;
 }
 
 .navigation {
@@ -115,7 +114,7 @@ html {
     flex-direction: column;
     flex-wrap: nowrap;
     justify-content: flex-start;
-    align-items: flex-start;
+    align-items: stretch;
     align-content: flex-start;
 }
 
@@ -198,7 +197,6 @@ html {
     max-height: none;
     min-width: 0;
     max-width: none;
-    width: 100%;
 }
 
 body, html, .container, main {
@@ -383,7 +381,6 @@ body, html, .container, main {
 }
 
 .control-bar {
-    width: 100%;
 }
 
 body {
