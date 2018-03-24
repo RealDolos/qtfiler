@@ -68,6 +68,8 @@ html {
 
 #room {
     background: var(--dark-background);
+    padding-left: 8px;
+    padding-right: 8px;
 }
 
 .header-icon {
@@ -285,7 +287,12 @@ body, html, .container, main {
 }
 
 .form-group {
-    margin: 10px;
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
+
+.form-group + .form-group {
+    margin-left: 8px;
 }
 
 #dim-screen {
