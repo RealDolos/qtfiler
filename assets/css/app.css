@@ -449,7 +449,7 @@ body {
 }
 
 .row-centre {
-    align-content: center;
+    align-items: center;
 }
 
 .file-odd {

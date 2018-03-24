@@ -2,7 +2,7 @@
   <div id="room" class="container">
     <div v-if="false" id="dim-screen"><div id="loading-message">Loading</div></div>
 
-    <div v-cloak class="control-bar row">
+    <div v-cloak class="control-bar row row-centre">
       <template>
         <div class="form-group">
           <label for="upload-button" class="custom-file-upload">
