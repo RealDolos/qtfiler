@@ -418,6 +418,10 @@ body, html, .container, main {
     left: 0;
 }
 
+.not-hovery .info-displayed {
+    height: auto;
+}
+
 .button, .custom-file-upload, button {
     background: var(--upload-bg);
     border-radius: 3px;
