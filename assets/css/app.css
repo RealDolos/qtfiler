@@ -107,11 +107,9 @@ html {
 
 #file-list-container {
     overflow-x: hidden;
-    will-change: transform;
 }
 
 #file-list {
-    will-change: scroll-position;
 }
 
 .column, body, html, .container, main {
@@ -183,10 +181,12 @@ html {
 
 .scroll-container {
     overflow-y: auto;
+    will-change: transform;
 }
 
 .scroll-content {
     min-height: 100%;
+    will-change: scroll-position;
 }
 
 .auto-basis {
