@@ -47,7 +47,7 @@ defmodule Qtfile.FileProcessing.VideoPreviewGenerator do
 
   def handle_events(tagged_files, _from, {}) do
     video_previews = Enum.flat_map(video_types(), fn(params) ->
-      Enum.flat_map(tagged_files, fn({:media, :video, file}) ->
+      Enum.flat_map(tagged_files, fn({:media, _, file}) ->
         try do
           [generate_video_preview(file, params)]
         rescue
