@@ -194,11 +194,14 @@ html {
     flex-basis: 0;
 }
 
-body, html, .container, main {
+.wrapped, body, .container, main {
     min-height: 0;
     max-height: none;
     min-width: 0;
     max-width: none;
+}
+
+body, html, .container, main {
     overflow: hidden;
 }
 
