@@ -421,7 +421,7 @@ body {
 }
 
 .hovery .file-container #thumbnail {
-    position: fixed;
+    position: absolute;
     background: var(--upload-bg);
     overflow: hidden;
     z-index: 1;

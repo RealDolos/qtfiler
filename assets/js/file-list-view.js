@@ -77,7 +77,12 @@ export default function(room) {
                             const thumb = target.firstChild.nextElementSibling;
 
                             if (thumb) {
-                                thumb.style.setProperty("transform", `translate(${e.clientX + 1}px, ${e.clientY + 1}px)`);
+                                const rect = e.currentTarget.getBoundingClientRect();
+
+                                thumb.style.setProperty(
+                                    "transform",
+                                    `translate(${e.clientX + 1 - rect.left}px, ${e.clientY + 1 - rect.top}px)`
+                                );
                             }
 
                             return;
