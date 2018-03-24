@@ -63,6 +63,10 @@ export default function(room) {
         },
         methods: {
             mouseMove(e) {
+                if (!this.hovery) {
+                    return;
+                }
+
                 let target = e.target;
 
                 while (true) {
