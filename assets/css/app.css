@@ -107,6 +107,7 @@ html {
 }
 
 #file-list-container {
+    overflow-x: hidden;
 }
 
 .column, body, html, .container, main {
