@@ -83,7 +83,6 @@
         </template>
       </div>
       <div class="file-right">
-        |
         <span class="file-expiration">{{ formattedExpirationDate }}</span>
         <template v-if="mod">
           <input class="mark" type="checkbox" v-model="marked">
