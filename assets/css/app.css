@@ -59,6 +59,7 @@ html {
     border-color: var(--lighter-dark-background);
     border-bottom: 2px solid var(--border-color);
     background-color: var(--lighter-dark-background);
+    width: 100%;
 }
 
 .navigation {
@@ -68,8 +69,6 @@ html {
 
 #room {
     background: var(--dark-background);
-    margin-left: 10px;
-    margin-right: 10px;
 }
 
 .header-icon {
@@ -108,7 +107,6 @@ html {
 }
 
 #file-list-container {
-    box-sizing: border-box;
 }
 
 .column, body, html, .container, main {
@@ -116,7 +114,7 @@ html {
     flex-direction: column;
     flex-wrap: nowrap;
     justify-content: flex-start;
-    align-items: stretch;
+    align-items: flex-start;
     align-content: flex-start;
 }
 
@@ -199,6 +197,7 @@ html {
     max-height: none;
     min-width: 0;
     max-width: none;
+    width: 100%;
 }
 
 body, html, .container, main {
@@ -382,6 +381,11 @@ body, html, .container, main {
 }
 
 .control-bar {
+    width: 100%;
+}
+
+body {
+    margin: 0;
 }
 
 .presence-container-medium {
