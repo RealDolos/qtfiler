@@ -82,16 +82,19 @@
           <span is="async-button" :default-icon="128683" :action="banUploader"></span>
         </template>
       </div>
-      <span class="file-expiration">{{ formattedExpirationDate }}</span>
-      <template v-if="mod">
-        <input class="mark" type="checkbox" v-model="marked">
-      </template>
-      <template v-if="mod">
-        <span is="async-button" :default-icon="128465" :action="deleteMe"></span>
-      </template>
-      <template v-if="mod">
-        <span is="async-button" :default-icon="128683" :action="banMe"></span>
-      </template>
+      <div class="file-right">
+        |
+        <span class="file-expiration">{{ formattedExpirationDate }}</span>
+        <template v-if="mod">
+          <input class="mark" type="checkbox" v-model="marked">
+        </template>
+        <template v-if="mod">
+          <span is="async-button" :default-icon="128465" :action="deleteMe"></span>
+        </template>
+        <template v-if="mod">
+          <span is="async-button" :default-icon="128683" :action="banMe"></span>
+        </template>
+      </div>
     </div>
     <template v-if="displayInfoHere">
       <div class="row row-top" id="thumbnail">

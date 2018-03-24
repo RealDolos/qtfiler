@@ -237,19 +237,19 @@ body, html, .container, main {
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
-    justify-content: flex-start;
+    justify-content: space-between;
     align-items: baseline;
     align-content: flex-start;
 }
 
-.file-container, .file-main, .file-left, .file-link, .file-expiration, .file-uploader {
+.file-container, .file-main, .file-left, .file-right, .file-link, .file-expiration, .file-uploader {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     min-width: 0;
 }
 
-.file-container, .file-main, .file-left {
+.file-container, .file-main, .file-left, .file-right {
     height: 1.62em;
     min-height: 0;
 }
@@ -261,7 +261,18 @@ body, html, .container, main {
     align-items: baseline;
     justify-content: flex-start;
     align-content: flex-start;
-    flex: 1 1 0;
+    flex-grow: 1;
+    text-align: left;
+}
+
+.file-right {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: baseline;
+    justify-content: flex-end;
+    align-content: flex-end;
+    text-align: right;
 }
 
 [v-cloak] {
