@@ -6,12 +6,11 @@ exports.config = {
             joinTo: {
                 // "js/uploader.js": "js/uploader.js",
                 "js/room-view.js": [
+                    "js/memoize.js",
                     "js/uploader.js",
                     "js/room.js",
                     "js/socket.js",
-                    "js/file-list.js",
                     "js/upload.js",
-                    "js/file.js",
                     "js/file-list-view.js",
                     "js/upload-view.js",
                     "js/file-view.js",

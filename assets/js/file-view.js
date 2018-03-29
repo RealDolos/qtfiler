@@ -8,19 +8,31 @@ const VALID_TYPES = Object.freeze(new Set(["audio", "video", "image"]));
 export default function(room) {
   return {
     data() {
-      return room.fileList.searchFiles(this.uuid, file => file);
+      // only stuff that will NOT change, ever
+      return {
+        uuid: this.file.uuid,
+        sortId: this.file.sortId,
+        filename: this.file.filename,
+        uploader: this.file.uploader,
+        tagList: this.makeTagList()
+      };
     },
     name: "file",
     template: "#file-template",
-    props: ["role", "uuid", "phase", "owner", "displayInfo", "displayInfoHere"],
+    props: [
+      "role",
+      "owner",
+      "displayInfo",
+      "displayInfoHere",
+      "file"
+    ],
+    mounted() {
+      // setup filtering
+      this.removed = false;
+      this.parent = this.$el.parentElement;
+      this.applyFilter(true);
+    },
     computed: {
-      tagList() {
-        if (this.metadata === null) {
-          return [];
-        }
-        const {data: {format: {tags = {}} = {}} = {}} = this.metadata | {};
-        return Object.entries(tags);
-      },
       domId() {
         return `file-${this.uuid}`;
       },
@@ -31,7 +43,7 @@ export default function(room) {
         return this.role === "mod" || this.role === "admin" || this.owner;
       },
       formattedExpirationDate() {
-        return (new Date(this.expiration_date)).toLocaleString();
+        return (new Date(this.file.expiration_date)).toLocaleString();
       },
       shrunken_ip() {
         return this.ip_address.substring(0, SHRUNK_LIMIT);
@@ -53,15 +65,30 @@ export default function(room) {
         return `/pget/${encodeURIComponent(this.uuid)}/video_thumbnail`;
       },
       videoPreviews() {
-        return this.previews.filter(
+        return this.file.previews.filter(
           preview => preview.type === "video_thumbnail");
       },
       imagePreviews() {
-        return this.previews.filter(
+        return this.file.previews.filter(
           preview => preview.type === "image_thumbnail");
       }
     },
     methods: {
+      applyFilter(removeOnly) {
+        const filtered = this.$parent.isFiltered(this);
+        if (!filtered) {
+          if (!this.removed) {
+            this.parent.removeChild(this.$el);
+            this.removed = true;
+          }
+          return;
+        }
+        if (removeOnly) {
+          return;
+        }
+        this.parent.appendChild(this.$el);
+        this.removed = false;
+      },
       showMyInfo() {
         this.displayInfo(this.uuid);
       },
@@ -81,16 +108,22 @@ export default function(room) {
           new Date().setFullYear(new Date().getFullYear() + 10)
         );
         const ban = {
-          file_bans: [
-            {
-              hash: this.hash
-            }
-          ],
+          file_bans: [{
+            hash: this.file.hash
+          }],
           reason: "quick ban",
           end: Math.round(date.getTime() / 1000)
         };
         const result = await room.ban(ban);
         return result;
+      },
+
+      makeTagList() {
+        if (this.file.metadata === null) {
+          return [];
+        }
+        const {data: {format: {tags = {}} = {}} = {}} = this.file.metadata;
+        return Object.entries(tags);
       },
 
       async banUploader() {
@@ -101,11 +134,11 @@ export default function(room) {
         const ban = {
           user_bans: [
             {
-              bannee_id: this.uploader_id,
+              bannee_id: this.file.uploader_id,
               hell: false,
               ip_bans: [
                 {
-                  ip_address: this.ip_address
+                  ip_address: this.file.ip_address
                 }
               ]
             }
