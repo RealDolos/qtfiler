@@ -6,6 +6,55 @@ import lodash from "lodash";
 
 const DISPLAY_THROTTLE = 125;
 
+function ok(actual, expected) {
+  return actual.toUpperCase().includes(expected);
+}
+
+function not(actual, expected) {
+  return !actual.toUpperCase().includes(expected);
+}
+
+function toFilter(e) {
+  e = e.toUpperCase().trim();
+  if (!e) {
+    return null;
+  }
+
+  const pred = e[0] !== "-";
+  const check = pred ? ok : not;
+  if (!pred) {
+    e = e.slice(1); // chop off that leading "-"
+  }
+
+  let [type, ...rest] = e.split(":");
+  if (!rest.length) {
+    rest = type;
+    type = "FILE";
+  }
+  else {
+    rest = rest.join(":");
+  }
+
+  switch (type) {
+  case "USER":
+    return f => check(f.uploader, rest);
+
+  case "FILE":
+    // fall through
+
+  case "NAME":
+    // fall through
+
+  case "FILENAME":
+    return f => check(f.filename, rest);
+
+  default:
+    /* unknown tag, rejoin and match against name */
+    rest = `${type}:${rest}`;
+    return f => check(f.filename, rest);
+  }
+}
+
 export default function(room) {
   return {
     name: "fileList",
@@ -30,31 +79,10 @@ export default function(room) {
       },
 
       filteredFiles() {
-        const bools = [];
-        const filter2 = this.filter.split(" ");
-        for (let i = 0; i < filter2.length; i++) {
-          if (filter2[i][0] === "-") {
-            bools[i] = false;
-            filter2[i] = filter2[i].substring(1);
-          }
-          else {
-            bools[i] = true;
-          }
-        }
-        return this.files.filter(f => {
-          for (let i = 0; i < filter2.length; i++) {
-            if (filter2[i].search("user:") >= 0) { //checks if filtering by user
-              if (!((f.uploader.toUpperCase().search(filter2[i].substring(5).toUpperCase()) === 0) === bools[i])) {
-                return 0;
-              }
-            }
-            else if (!(f.filename.toUpperCase().search(filter2[i].toUpperCase()) >= 0 === bools[i])) {
-              return 0;
-            }
-          }
-
-          return 1;
-        });
+        const filters = this.filter.split(" ").map(toFilter).filter(e => e);
+        return filters.length ?
+          this.files.filter(f => filters.every(fn => fn(f))) :
+          this.files.slice();
       },
       filesLength() {
         return this.files.length;
