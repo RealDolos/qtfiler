@@ -113,7 +113,7 @@
         <template v-if="tagList.length > 0">
           <div class="column column-wrap">
             <template v-for="t in tagList">
-              <p>{{ t.key }}: {{ t.value }}</p>
+              <div>{{ t.key }}: {{ t.value }}</div>
             </template>
           </div>
         </template>
