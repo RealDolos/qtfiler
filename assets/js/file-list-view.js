@@ -4,83 +4,85 @@ import file from "./file-view";
 import upload from "./upload-view";
 import lodash from "lodash";
 
+const DISPLAY_THROTTLE = 125;
+
 export default function(room) {
-    return {
-        name: "fileList",
-        template: "#file-list-template",
-        props: ["role", "filter", "owner", "settings"],
-        data() {
-            return room.fileList;
-        },
-        components: {
-            file: file(room),
-            upload: upload(room)
-        },
-        
-        computed: {
-            hovery() {
-                for (let setting of this.settings) {
-                    if (setting.key == "hover") {
-                        return setting.value;
-                    }
-                }
-                return false;
-            },
-            filteredFiles() {
-                var bools = [];
-                var filter2 = this.filter.split(" ");
-                for(var i = 0; i < filter2.length; i++) {
-                    if(filter2[i][0] == "-") {
-                        bools[i] = false;
-                        filter2[i] = filter2[i].substring(1);
-                    }
-                    else {
-                        bools[i] = true;
-                    }
-                }
-                return this.files.filter((f) => {
-                    for(var i = 0; i < filter2.length; i++) {
-                        if(filter2[i].search("user:") >= 0) { //checks if filtering by user
-                            if(!((f.uploader.toUpperCase().search(filter2[i].substring(5).toUpperCase()) == 0) == bools[i])) {
-                                return 0;
-                            }
-                          }
-                          else {
-                              if(!(f.filename.toUpperCase().search(filter2[i].toUpperCase()) >= 0 == bools[i])) {
-                                  return 0;
-                              }
-                          }
-                      }
-                    
-                    return 1;});
-            },
-            filesLength() {
-                return this.files.length;
-            },
-            filteredFilesLength() {
-                return this.filteredFiles.length;
-            },
-            styleVars() {
-                return {
-                    '--x': this.mouse.x + "px",
-                    '--y': this.mouse.y + "px",
-                };
+  return {
+    name: "fileList",
+    template: "#file-list-template",
+    props: ["role", "filter", "owner", "settings"],
+    data() {
+      return room.fileList;
+    },
+    components: {
+      file: file(room),
+      upload: upload(room)
+    },
+
+    computed: {
+      hovery() {
+        for (const setting of this.settings) {
+          if (setting.key === "hover") {
+            return setting.value;
+          }
+        }
+        return false;
+      },
+
+      filteredFiles() {
+        const bools = [];
+        const filter2 = this.filter.split(" ");
+        for (let i = 0; i < filter2.length; i++) {
+          if (filter2[i][0] === "-") {
+            bools[i] = false;
+            filter2[i] = filter2[i].substring(1);
+          }
+          else {
+            bools[i] = true;
+          }
+        }
+        return this.files.filter(f => {
+          for (let i = 0; i < filter2.length; i++) {
+            if (filter2[i].search("user:") >= 0) { //checks if filtering by user
+              if (!((f.uploader.toUpperCase().search(filter2[i].substring(5).toUpperCase()) === 0) === bools[i])) {
+                return 0;
+              }
             }
-        },
-        methods: {
-            mouseMove(e) {
-                this.mouse.x = e.pageX + 1;
-                this.mouse.y = e.pageY + 1;
-            },
-            async wake() {
-                return await this.$data.wakeUploader();
-            },
-            async pause(id) {
-                return await this.$data.pause(id);
-            },
-            displayInfo: lodash.debounce(function(uuid) {
-                this.info = uuid;
-            }, 125)
-         }
-    };
-};
+            else if (!(f.filename.toUpperCase().search(filter2[i].toUpperCase()) >= 0 === bools[i])) {
+              return 0;
+            }
+          }
+
+          return 1;
+        });
+      },
+      filesLength() {
+        return this.files.length;
+      },
+      filteredFilesLength() {
+        return this.filteredFiles.length;
+      },
+      styleVars() {
+        return {
+          "--x": `${this.mouse.x}px`,
+          "--y": `${this.mouse.y}px`,
+        };
+      }
+    },
+    methods: {
+      mouseMove(e) {
+        this.mouse.x = e.pageX + 1;
+        this.mouse.y = e.pageY + 1;
+      },
+      async wake() {
+        return await this.$data.wakeUploader();
+      },
+      async pause(id) {
+        return await this.$data.pause(id);
+      },
+      displayInfo: lodash.debounce(function(uuid) {
+        this.info = uuid;
+      }, DISPLAY_THROTTLE)
+    }
+  };
+}
