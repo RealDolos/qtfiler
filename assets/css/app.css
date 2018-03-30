@@ -191,11 +191,15 @@ html {
 }
 
 .file-container {
+    display: none;
     padding-top: 8px;
     padding-bottom: 8px;
     padding-left: 4px;
     padding-right: 3px;
     background-color: var(--lighter-dark-background);
+}
+.file-container.filtered {
+    display: block;
 }
 
 .file-link {

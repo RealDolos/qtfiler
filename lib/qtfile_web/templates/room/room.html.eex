@@ -20,7 +20,7 @@
 
       <template>
         <div class="form-group grow-double row">
-          <input id="filter" class="grow" v-model="filter" placeholder="Filter">
+          <input id="filter" class="grow" v-model="filter" placeholder="Filter" @input="debounceFilter">
         </div>
       </template>
 
@@ -33,8 +33,8 @@
       <span is="settings" :mod="mod" :set-user-settings="setUserSettings" :save-settings="saveSettings" :set-settings-callback="setSettingsCallback" />
     </div>
 
-    <div v-cloak id="file-list-container" class="grow zero-basis scroll-container">
-      <span is="file-list" :role="role" :owner="owner" :filter="filter" :settings="settings" />
+    <div v-cloak id="fiee-list-container" class="grow zero-basis scroll-container">
+      <span is="file-list" :role="role" ref="filelist" :owner="owner" :settings="settings" />
     </div>
   </div>
 </div>
@@ -44,15 +44,8 @@
     <template v-for="(upload, index) in uploads">
       <span is="upload" :wake="wake" :pause="pause" :id="upload.id" :key="upload.id" :role="role" :index="index" :owner="owner" />
     </template>
-    <template v-if="filter == ''">
       <template v-for="(file, index) in files">
-        <span is="file" :display-info-here="info == file.uuid" :phase="((index + filesLength) % 2) != 0" :display-info="displayInfo" :uuid="file.uuid" :key="file.uuid" :role="role" :owner="owner" />
-      </template>
-    </template>
-    <template v-else>
-      <template v-for="(file, index) in filteredFiles">
-        <span is="file" :display-info-here="info == file.uuid" :phase="((index + filteredFilesLength) % 2) != 0" :display-info="displayInfo" :uuid="file.uuid" :key="file.uuid" :role="role" :owner="owner" />
-      </template>
+        <span is="file" :display-info-here="info == file.uuid" :display-info="displayInfo" :uuid="file.uuid" :key="file.uuid" :role="role" :owner="owner" />
     </template>
   </div>
 </template>
@@ -70,7 +63,7 @@
 </template>
 
 <template id="file-template">
-  <div :id="domId" class="file-container" :class="{ 'file-odd': phase }">
+  <div :id="domId" class="file-container" :class="[{'filtered': filtered}]">
     <div class="row row-spaced">
       <div class="file-left" v-on:mouseenter="showMyInfo" v-on:mouseleave="hideMyInfo">
         <a target="_blank" :href="link" class="file-link" :data-hash-sha1="hash">{{ filename }}</a>

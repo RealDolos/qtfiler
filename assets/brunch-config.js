@@ -9,6 +9,7 @@ exports.config = {
                     "js/uploader.js",
                     "js/room.js",
                     "js/socket.js",
+                    "js/memoize.js",
                     "js/file-list.js",
                     "js/upload.js",
                     "js/file.js",
