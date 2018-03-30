@@ -56,14 +56,12 @@ html {
 }
 
 .nav-container {
-    width: 100%;
     border-color: var(--lighter-dark-background);
     border-bottom: 2px solid var(--border-color);
     background-color: var(--lighter-dark-background);
 }
 
 .navigation {
-    width: 100%;
     font-size: 1.6em;
     line-height: 100px;
 }
@@ -97,7 +95,6 @@ html {
 
 .user-profile {
     text-align: center;
-    width: 100%;
 }
 
 .huge-text {
@@ -114,13 +111,17 @@ html {
     box-sizing: border-box;
 }
 
-.column, body, html {
+.column, body, html, .container, main {
     display: flex;
     flex-direction: column;
     flex-wrap: nowrap;
     justify-content: flex-start;
     align-items: stretch;
     align-content: flex-start;
+}
+
+#debug-message {
+    margin: 10px;
 }
 
 .column-wrap {
@@ -137,6 +138,10 @@ html {
     align-content: flex-start;
 }
 
+.row-top {
+    align-items: flex-start;
+}
+
 .row-right {
     justify-content: flex-end;
 }
@@ -145,7 +150,7 @@ html {
     justify-content: space-between;
 }
 
-.grow, .wrapped, body {
+.grow, .wrapped, body, .container, main {
     flex-grow: 1;
 }
 
@@ -179,15 +184,22 @@ html {
 
 .scroll-content {
     min-height: 100%;
-    width: 100%;
 }
 
 .auto-basis {
     flex-basis: auto;
 }
 
-.zero-basis, .wrapped, body {
+.zero-basis, .wrapped, body, .container, main {
     flex-basis: 0;
+}
+
+body, html, .container, main {
+    min-height: 0;
+    max-height: none;
+    min-width: 0;
+    max-width: none;
+    overflow: hidden;
 }
 
 .file-container {
@@ -203,7 +215,6 @@ html {
     text-decoration: none;
     color: var(--file-link);
     font-weight: 500;
-    display: inline-block;
 }
 
 .file-uploader {
@@ -215,8 +226,33 @@ html {
     padding-left: 2px;
     padding-right: 2px;
     font-size: 0.7em;
+}
+
+.file-uploader-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: baseline;
+    align-content: flex-start;
     margin-left: 5px;
-    display: inline-block;
+}
+
+.file-main {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    align-content: flex-start;
+}
+
+.file-main, .file-left, .file-right, .file-link, .file-uploader-container,
+.file-expiration, .file-mod-controls, .file-uploader {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: normal;
+    min-width: 0;
 }
 
 .file-right, .file-left {
@@ -228,16 +264,25 @@ html {
 
 .file-right {
     text-align: right;
-    flex: 1 1 auto;
+    flex-grow: 1;
     justify-content: flex-end;
     align-content: flex-end;
 }
 
 .file-left {
     text-align: left;
-    flex: 4.2 1 auto;
+    flex-grow: 4.2;
     justify-content: flex-start;
     align-content: flex-start;
+}
+
+.file-mod-controls {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    align-items: baseline;
+    align-content: flex-end;
 }
 
 [v-cloak] {
@@ -368,7 +413,8 @@ html {
 }
 
 .container-hide {
-    visibility: collapse;
+    /*visibility: collapse; doesn't work in chrome yet*/
+    display: none;
 }
 
 .container-half {
@@ -407,10 +453,13 @@ html {
     background: var(--del-button);
 }
 
-.small.delete.button, .mark {
-    margin: 1px 3px 1px 3px;
+.small.delete.button, .mark, .button-container {
     padding: 0;
     display: inline-block;
+}
+
+.small.delete.button, .mark {
+    margin: 1px 3px 1px 3px;
 }
 
 .row-centre {
@@ -425,7 +474,6 @@ html {
     font-size: 0.6em;
     color: var(--expire-text);
     margin: auto 6px auto 6px;
-    display: inline-block;
 }
 
 .nav-text {
@@ -448,8 +496,4 @@ html {
 
 .hidden {
     display: none;
-}
-
-.container, main, #file-dropzone {
-    display: contents;
 }
