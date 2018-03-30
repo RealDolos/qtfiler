@@ -40,7 +40,7 @@
 </div>
 
 <template id="file-list-template">
-  <div id="file-list"  :style="styleVars" v-on:mousemove="mouseMove" class="scroll-content" :class="{'hovery': hovery}">
+  <div id="file-list" v-on:mousemove="mouseMove" class="scroll-content" :class="{ 'hovery': hovery, 'not-hovery': !hovery }">
     <template v-for="(upload, index) in uploads">
       <span is="upload" :wake="wake" :pause="pause" :id="upload.id" :key="upload.id" :role="role" :index="index" :owner="owner" />
     </template>
@@ -70,33 +70,33 @@
 </template>
 
 <template id="file-template">
-  <div :id="domId" class="file-container" :class="{ 'file-odd': phase }">
+  <div :id="domId" class="file-container" :class="{ 'file-odd': phase, 'info-displayed': displayInfoHere }">
     <div class="file-main">
       <div class="file-left" v-on:mouseenter="showMyInfo" v-on:mouseleave="hideMyInfo">
         <a target="_blank" :href="link" class="file-link" :data-hash-sha1="hash">{{ filename }}</a>
-        <div class="file-uploader-container">
-          <span class="file-uploader">{{ uploader }}</span>
-          <template v-if="mod">
-            <span class="file-uploader">{{ ip_address }}</span>
-          </template>
-          <template v-if="mod">
-            <span is="async-button" :default-icon="128683" :action="banUploader"></span>
-          </template>
-        </div>
+        <span class="file-uploader">{{ uploader }}</span>
+        <template v-if="mod">
+          <span class="file-uploader">{{ ip_address }}</span>
+        </template>
+        <template v-if="mod">
+          <span is="async-button" :default-icon="128683" :action="banUploader"></span>
+        </template>
       </div>
       <div class="file-right">
         <span class="file-expiration">{{ formattedExpirationDate }}</span>
         <template v-if="mod">
-          <div class="file-mod-controls">
-            <input class="mark" type="checkbox" v-model="marked">
-            <span is="async-button" :default-icon="128465" :action="deleteMe"></span>
+          <input class="mark" type="checkbox" v-model="marked">
+        </template>
+        <template v-if="mod">
+          <span is="async-button" :default-icon="128465" :action="deleteMe"></span>
+        </template>
+        <template v-if="mod">
             <span is="async-button" :default-icon="128683" :action="banMe"></span>
-          </div>
         </template>
       </div>
     </div>
     <template v-if="displayInfoHere">
-      <div class="row row-top thumbnail">
+      <div class="row row-top" id="thumbnail">
         <template v-if="videoPreviews.length > 0">
           <video autoplay loop>
             <template v-for="p in videoPreviews">
@@ -126,22 +126,20 @@
 
 
 <template id="async-button-template">
-  <div class="button-container">
+  <span v-on:click="click" class="small delete button">
     <template v-if="status == 'ready'">
-      <div v-on:click="click" class="small delete button">
-        {{ readyString }}
-      </div>
+      {{ readyString }}
     </template>
     <template v-else-if="status == 'waiting'">
-      <div class="small delete button">⌛</div>
+      ⌛
     </template>
     <template v-else-if="status == 'failed'">
-      <div class="small delete button">❌</div>
+      ❌
     </template>
     <template v-else-if="status == 'succeeded'">
-      <div v-on:click="click" class="small delete button">✓</div>
+      ✓
     </template>
-  </div>
+  </span>
 </template>
 
 <template id="presence-template">
