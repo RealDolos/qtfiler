@@ -1,6 +1,8 @@
-<div id="room-list">
-  <span id="room-id-heading">id</span>
-  <span id="room-name-heading">Room</span>
-  <span id="room-owner-heading">Owner</span>
-  <%= print_all_rooms(@logged_in) %>
+<div id="room-list-container" class="scroll-container">
+  <div id="room-list" class="scroll-content">
+    <span id="room-id-heading">id</span>
+    <span id="room-name-heading">Room</span>
+    <span id="room-owner-heading">Owner</span>
+    <%= print_all_rooms(@logged_in) %>
+  </div>
 </div>

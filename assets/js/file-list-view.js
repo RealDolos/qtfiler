@@ -63,17 +63,23 @@ export default function(room) {
         },
         methods: {
             mouseMove(e) {
-                let target = e.target;
-                while (true) {
-                    if (target == e.currentTarget) {
-                        return;
-                    } else {
+                if (this.hovery) {
+                    let target = e.target;
+
+                    for (let target = e.target; target != e.currentTarget; target = target.parentElement) {
                         if (target.classList.contains("file-container")) {
-                            target.style.setProperty("--x", (e.clientX + 1) + "px");
-                            target.style.setProperty("--y", (e.clientY + 1) + "px");
-                            return;
-                        } else {
-                            target = target.parentElement;
+                            const thumb = target.firstChild.nextElementSibling;
+
+                            if (thumb) {
+                                const rect = e.currentTarget.getBoundingClientRect();
+                                
+                                thumb.style.setProperty(
+                                    "transform",
+                                    `translate(${e.clientX + 1 - rect.left}px, ${e.clientY + 1 - rect.top}px)`
+                                );
+                            }
+
+                            break;
                         }
                     }
                 }

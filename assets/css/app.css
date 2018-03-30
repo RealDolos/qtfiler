@@ -62,14 +62,14 @@ html {
 }
 
 .navigation {
-    font-size: 1.6em;
+    font-size: 1.62em;
     line-height: 100px;
 }
 
 #room {
     background: var(--dark-background);
-    margin-left: 10px;
-    margin-right: 10px;
+    padding-left: 8px;
+    padding-right: 8px;
 }
 
 .header-icon {
@@ -108,7 +108,10 @@ html {
 }
 
 #file-list-container {
-    box-sizing: border-box;
+    overflow-x: hidden;
+}
+
+#file-list {
 }
 
 .column, body, html, .container, main {
@@ -180,10 +183,12 @@ html {
 
 .scroll-container {
     overflow-y: auto;
+    will-change: transform;
 }
 
 .scroll-content {
     min-height: 100%;
+    will-change: scroll-position;
 }
 
 .auto-basis {
@@ -194,11 +199,14 @@ html {
     flex-basis: 0;
 }
 
-body, html, .container, main {
+.wrapped, body, .container, main {
     min-height: 0;
     max-height: none;
     min-width: 0;
     max-width: none;
+}
+
+body, html, .container, main {
     overflow: hidden;
 }
 
@@ -229,6 +237,7 @@ body, html, .container, main {
     font-size: 0.7em;
     margin-left: 5px;
     display: inline-block;
+    flex-shrink: 4;
 }
 
 .file-main {
@@ -247,29 +256,30 @@ body, html, .container, main {
     min-width: 0;
 }
 
-.file-container, .file-main, .file-right, .file-left {
+.file-container, .file-main, .file-left, .file-right {
     height: 1.62em;
+    min-height: 0;
 }
 
-.file-right, .file-left {
+.file-left {
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
     align-items: baseline;
+    justify-content: flex-start;
+    align-content: flex-start;
+    flex: 1 0 0;
+    text-align: left;
 }
 
 .file-right {
-    text-align: right;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: baseline;
     justify-content: flex-end;
     align-content: flex-end;
-    flex: 0 0 180px;
-}
-
-.file-left {
-    text-align: left;
-    flex: 1 0 0;
-    justify-content: flex-start;
-    align-content: flex-start;
+    text-align: right;
 }
 
 [v-cloak] {
@@ -277,7 +287,12 @@ body, html, .container, main {
 }
 
 .form-group {
-    margin: 10px;
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
+
+.form-group + .form-group {
+    margin-left: 8px;
 }
 
 #dim-screen {
@@ -391,6 +406,10 @@ body, html, .container, main {
 .control-bar {
 }
 
+body {
+    margin: 0;
+}
+
 .presence-container-medium {
     max-height: 50vh;
 }
@@ -416,6 +435,7 @@ body, html, .container, main {
     z-index: 1;
     top: 0;
     left: 0;
+    will-change: transform;
 }
 
 .not-hovery .info-displayed {
@@ -429,9 +449,9 @@ body, html, .container, main {
     display: block;
     cursor: pointer;
     color: var(--upload-text);
-    font-size: 0.9em;
+    font-size: 0.79em;
     font-weight: bold;
-    padding: 11px 23px;
+    padding: 5px 8px;
     text-decoration: none;
     text-align: center;
 }
@@ -452,7 +472,7 @@ body, html, .container, main {
 }
 
 .row-centre {
-    align-content: center;
+    align-items: center;
 }
 
 .file-odd {
