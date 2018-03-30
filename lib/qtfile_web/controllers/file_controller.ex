@@ -364,7 +364,9 @@ defmodule QtfileWeb.FileController do
         case preview do
           {:found, preview} ->
             path = "uploads/previews/" <> uuid <> "^" <> type
-            send_file(conn, 200, path)
+            conn
+            |> put_resp_content_type(preview.mime_type)
+            |> send_file(200, path)
           :not_found ->
             conn
             |> put_status(406)
@@ -400,8 +402,8 @@ defmodule QtfileWeb.FileController do
         end
 
         disposition = if nice_file do "inline" else "attachment" end
-        filename = "\"" <> URI.encode(file.filename) <> "\""
-        conn = put_resp_header(conn, "Content-Disposition", disposition <> "; filename=" <> filename)
+        filename = "\"" <> URI.encode(file.filename, &URI.char_unreserved?/1) <> "\""
+        conn = put_resp_header(conn, "Content-Disposition", disposition <> "; filename*=" <> filename)
 
         ranges = get_req_header(conn, "range")
 
