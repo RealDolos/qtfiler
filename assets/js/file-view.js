@@ -8,11 +8,14 @@ const VALID_TYPES = Object.freeze(new Set(["audio", "video", "image"]));
 export default function(room) {
   return {
     data() {
-      return room.fileList.searchFiles(this.uuid, file => file);
+      // XXX sort out the uuid mess!
+      const rv = Object.assign({}, room.fileList.searchFiles(this.uuid));
+      delete rv.uuid;
+      return rv;
     },
     name: "file",
     template: "#file-template",
-    props: ["role", "uuid", "phase", "owner", "displayInfo", "displayInfoHere"],
+    props: ["role", "uuid", "owner", "displayInfo", "displayInfoHere"],
     computed: {
       tagList() {
         if (this.metadata === null) {

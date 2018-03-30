@@ -2,12 +2,22 @@
 /* globals XMLHttpRequest */
 
 import Upload from "./upload";
-import File from "./file";
+
+function createFileData(data) {
+  return Object.assign(data, {
+    marked: false,
+    filtered: true,
+    deleteStatus: "ready",
+    banStatus: "ready",
+    previews: [],
+  });
+}
 
 export default class FileList {
   constructor(room_id) {
     this.uploads = [];
     this.files = [];
+    this.uuids = new Map();
     this.status = 0;
     this.room_id = room_id;
     this.current = null;
@@ -50,9 +60,10 @@ export default class FileList {
 
   getNextUpload() {
     for (const upload of this.uploads) {
-      if (!upload.paused) {
-        return upload;
+      if (upload.paused) {
+        continue;
       }
+      return upload;
     }
     return null;
   }
@@ -65,7 +76,7 @@ export default class FileList {
         this.current = null;
 
         if (result.done) {
-          this.uploads.shift();
+          this.completeUpload(upload.id);
         }
         else if ("offset" in result) {
           upload.uploaded = result.offset;
@@ -152,21 +163,14 @@ export default class FileList {
     await this.wakeUploader();
   }
 
-  static search(idKey, items, id, cont) {
-    for (let i = 0; i < items.length; i++) {
-      if (items[i][idKey] === id) {
-        return cont(items[i], i);
-      }
-    }
-    return null;
-  }
-
   searchUploads(id, cont) {
-    return FileList.search("id", this.uploads, id, cont);
+    const upload = this.uploads.find(e => e.id === id) || null;
+    return cont ? cont(upload, 0) : upload;
   }
 
   searchFiles(id, cont) {
-    return FileList.search("uuid", this.files, id, cont);
+    const file = this._uuids.get(id) || null;
+    return cont ? cont(file, 0) : file;
   }
 
   setFileDeletionFailed(uuids) {
@@ -207,32 +211,47 @@ export default class FileList {
   }
 
   progressUpload(id, uploaded, total) {
-    this.searchUploads(id, upload => {
-      upload.uploaded = uploaded;
-      upload.total = total;
-    });
+    const u = this.uploads.find(e => e.id === id);
+    if (!u) {
+      return;
+    }
+    u.uploaded = uploaded;
+    u.total = total;
   }
 
   completeUpload(id) {
-    this.searchUploads(id, (upload, i) => {
-      this.uploads.splice(i, 1);
-    });
+    const idx = this.uploads.findIndex(e => e.id === id);
+    if (idx < 0) {
+      return;
+    }
+    this.uploads.splice(idx, 1);
   }
 
   removeFile(uuid) {
-    this.searchFiles(uuid, (file, i) => {
-      this.files.splice(i, 1);
-    });
+    const file = this._uuids.get(uuid);
+    if (!file) {
+      return;
+    }
+    const idx = this.files.indexOf(file);
+    if (idx < 0) {
+      return;
+    }
+    this._uuids.delete(uuid);
+    this.files.splice(idx, 1);
   }
 
   addFile(data) {
-    const file = File.create(data);
-    this.files.unshift(file);
+    createFileData(data);
+    this.files.unshift(data);
+    this._uuids.set(data.uuid, data);
   }
 
   addNewFiles(data) {
-    this.files = data.map(data => {
-      return File.create(data);
+    this._uuids = new Map();
+    data.forEach(data => {
+      createFileData(data);
+      this._uuids.set(data.uuid, data);
     });
+    this.files = data;
   }
 }

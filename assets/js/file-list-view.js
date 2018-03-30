@@ -29,39 +29,10 @@ export default function(room) {
         return false;
       },
 
-      filteredFiles() {
-        const bools = [];
-        const filter2 = this.filter.split(" ");
-        for (let i = 0; i < filter2.length; i++) {
-          if (filter2[i][0] === "-") {
-            bools[i] = false;
-            filter2[i] = filter2[i].substring(1);
-          }
-          else {
-            bools[i] = true;
-          }
-        }
-        return this.files.filter(f => {
-          for (let i = 0; i < filter2.length; i++) {
-            if (filter2[i].search("user:") >= 0) { //checks if filtering by user
-              if (!((f.uploader.toUpperCase().search(filter2[i].substring(5).toUpperCase()) === 0) === bools[i])) {
-                return 0;
-              }
-            }
-            else if (!(f.filename.toUpperCase().search(filter2[i].toUpperCase()) >= 0 === bools[i])) {
-              return 0;
-            }
-          }
-
-          return 1;
-        });
-      },
       filesLength() {
         return this.files.length;
       },
-      filteredFilesLength() {
-        return this.filteredFiles.length;
-      },
+
       styleVars() {
         return {
           "--x": `${this.mouse.x}px`,
