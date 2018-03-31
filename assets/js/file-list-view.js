@@ -90,17 +90,29 @@ export default function(room) {
       filteredFilesLength() {
         return this.filteredFiles.length;
       },
-      styleVars() {
-        return {
-          "--x": `${this.mouse.x}px`,
-          "--y": `${this.mouse.y}px`,
-        };
-      }
     },
     methods: {
       mouseMove(e) {
-        this.mouse.x = e.pageX + 1;
-        this.mouse.y = e.pageY + 1;
+        if (!this.hovery) {
+          return;
+        }
+        for (let {target} = e; target !== e.currentTarget;
+          target = target.parentElement) {
+          if (!target.classList.contains("file-container")) {
+            continue;
+          }
+          const thumb = target.firstChild.nextElementSibling;
+
+          if (!thumb) {
+            break;
+          }
+          const rect = e.currentTarget.getBoundingClientRect();
+
+          thumb.style.setProperty(
+            "transform",
+            `translate(${e.clientX + 1 - rect.left}px, ${e.clientY + 1 - rect.top}px)`
+          );
+        }
       },
       async wake() {
         return await this.$data.wakeUploader();

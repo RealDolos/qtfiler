@@ -34,7 +34,7 @@ export default {
                 {
                     name: "Hovery thumbs",
                     key: "hover",
-                    value: false
+                    value: true
                 }
             ];
         }

@@ -56,22 +56,20 @@ html {
 }
 
 .nav-container {
-    width: 100%;
     border-color: var(--lighter-dark-background);
     border-bottom: 2px solid var(--border-color);
     background-color: var(--lighter-dark-background);
 }
 
 .navigation {
-    width: 100%;
-    font-size: 1.6em;
+    font-size: 1.62em;
     line-height: 100px;
 }
 
 #room {
     background: var(--dark-background);
-    margin-left: 10px;
-    margin-right: 10px;
+    padding-left: 8px;
+    padding-right: 8px;
 }
 
 .header-icon {
@@ -97,7 +95,6 @@ html {
 
 .user-profile {
     text-align: center;
-    width: 100%;
 }
 
 .huge-text {
@@ -111,16 +108,23 @@ html {
 }
 
 #file-list-container {
-    box-sizing: border-box;
+    overflow-x: hidden;
 }
 
-.column, body, html {
+#file-list {
+}
+
+.column, body, html, .container, main {
     display: flex;
     flex-direction: column;
     flex-wrap: nowrap;
     justify-content: flex-start;
     align-items: stretch;
     align-content: flex-start;
+}
+
+#debug-message {
+    margin: 10px;
 }
 
 .column-wrap {
@@ -137,6 +141,10 @@ html {
     align-content: flex-start;
 }
 
+.row-top {
+    align-items: flex-start;
+}
+
 .row-right {
     justify-content: flex-end;
 }
@@ -145,7 +153,7 @@ html {
     justify-content: space-between;
 }
 
-.grow, .wrapped, body {
+.grow, .wrapped, body, .container, main {
     flex-grow: 1;
 }
 
@@ -175,24 +183,36 @@ html {
 
 .scroll-container {
     overflow-y: auto;
+    will-change: transform;
 }
 
 .scroll-content {
     min-height: 100%;
-    width: 100%;
+    will-change: scroll-position;
 }
 
 .auto-basis {
     flex-basis: auto;
 }
 
-.zero-basis, .wrapped, body {
+.zero-basis, .wrapped, body, .container, main {
     flex-basis: 0;
 }
 
+.wrapped, body, .container, main {
+    min-height: 0;
+    max-height: none;
+    min-width: 0;
+    max-width: none;
+}
+
+body, html, .container, main {
+    overflow: hidden;
+}
+
 .file-container {
-    padding-top: 8px;
     padding-bottom: 8px;
+    padding-top: 8px;
     padding-left: 4px;
     padding-right: 3px;
     background-color: var(--lighter-dark-background);
@@ -217,27 +237,49 @@ html {
     font-size: 0.7em;
     margin-left: 5px;
     display: inline-block;
+    flex-shrink: 4;
 }
 
-.file-right, .file-left {
+.file-main {
     display: flex;
     flex-direction: row;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    justify-content: space-between;
     align-items: baseline;
+    align-content: flex-start;
 }
 
-.file-right {
-    text-align: right;
-    flex: 1 1 auto;
-    justify-content: flex-end;
-    align-content: flex-end;
+.file-container, .file-main, .file-left, .file-right, .file-link, .file-expiration, .file-uploader {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+}
+
+.file-container, .file-main, .file-left, .file-right {
+    height: 1.62em;
+    min-height: 0;
 }
 
 .file-left {
-    text-align: left;
-    flex: 4.2 1 auto;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: baseline;
     justify-content: flex-start;
     align-content: flex-start;
+    flex: 1 0 0;
+    text-align: left;
+}
+
+.file-right {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: baseline;
+    justify-content: flex-end;
+    align-content: flex-end;
+    text-align: right;
 }
 
 [v-cloak] {
@@ -245,7 +287,12 @@ html {
 }
 
 .form-group {
-    margin: 10px;
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
+
+.form-group + .form-group {
+    margin-left: 8px;
 }
 
 #dim-screen {
@@ -359,6 +406,10 @@ html {
 .control-bar {
 }
 
+body {
+    margin: 0;
+}
+
 .presence-container-medium {
     max-height: 50vh;
 }
@@ -368,20 +419,27 @@ html {
 }
 
 .container-hide {
-    visibility: collapse;
+    /*visibility: collapse; doesn't work in chrome yet*/
+    display: none;
 }
 
 .container-half {
     max-height: 50vh;
 }
 
-.hovery .file-container .thumbnail {
-    position: absolute;
+.hovery .file-container #thumbnail {
+    position: fixed;
     background: var(--upload-bg);
-    left: var(--x);
-    top: var(--y);
+    transform: translate(var(--x), var(--y));
     overflow: hidden;
     z-index: 1;
+    top: 0;
+    left: 0;
+    will-change: transform;
+}
+
+.not-hovery .info-displayed {
+    height: auto;
 }
 
 .button, .custom-file-upload, button {
@@ -391,9 +449,9 @@ html {
     display: block;
     cursor: pointer;
     color: var(--upload-text);
-    font-size: 0.9em;
+    font-size: 0.79em;
     font-weight: bold;
-    padding: 11px 23px;
+    padding: 5px 8px;
     text-decoration: none;
     text-align: center;
 }
@@ -408,13 +466,13 @@ html {
 }
 
 .small.delete.button, .mark {
-    margin: 1px 3px 1px 3px;
     padding: 0;
     display: inline-block;
+    margin: 1px 3px 1px 3px;
 }
 
 .row-centre {
-    align-content: center;
+    align-items: center;
 }
 
 .file-odd {
@@ -448,8 +506,4 @@ html {
 
 .hidden {
     display: none;
-}
-
-.container, main, #file-dropzone {
-    display: contents;
 }

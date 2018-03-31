@@ -47,7 +47,7 @@ defmodule Qtfile.FileProcessing.VideoPreviewGenerator do
 
   def handle_events(tagged_files, _from, {}) do
     video_previews = Enum.flat_map(video_types(), fn(params) ->
-      Enum.flat_map(tagged_files, fn({:media, :video, file}) ->
+      Enum.flat_map(tagged_files, fn({:media, _, file}) ->
         try do
           [generate_video_preview(file, params)]
         rescue
@@ -76,7 +76,7 @@ defmodule Qtfile.FileProcessing.VideoPreviewGenerator do
     result = Porcelain.exec("ffmpeg",
       [
         "-i", path, "-map_metadata", "-1", "-an", "-sn", "-map", "0:v", "-c:v", codec,
-        "-crf", "23", "-b:v", "64k", "-f", type, "-nostdin", "-y",
+        "-crf", "23", "-b:v", "64k", "-f", type, "-nostdin", "-y", "-pix_fmt", "yuv420p",
         "-vf", "scale=w=256:h=256:force_original_aspect_ratio=decrease", "-t", "15",
       ] ++ extra_options ++ [output_path]
     )
